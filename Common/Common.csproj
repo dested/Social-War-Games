@@ -67,6 +67,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\MongoGameStateData.cs" />
     <Compile Include="Data\MongoUser.cs" />
     <Compile Include="Utils\Mongo\QueryField.cs" />
     <Compile Include="Utils\Mongo\IMongoModel.cs" />

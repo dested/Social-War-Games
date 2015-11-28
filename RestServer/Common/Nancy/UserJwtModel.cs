@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace RestServer.Common
+namespace RestServer.Common.Nancy
 {
     public class UserJwtModel
     {

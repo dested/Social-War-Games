@@ -13,6 +13,7 @@ using Nancy.TinyIoc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RestServer.Common;
+using RestServer.Common.Nancy;
 using RestServer.Modules;
 
 namespace RestServer

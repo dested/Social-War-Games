@@ -1,6 +1,6 @@
 using System;
 
-namespace RestServer.Common
+namespace RestServer.Common.Nancy
 {
     public abstract class RequestException : Exception
     {

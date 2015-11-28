@@ -2,6 +2,7 @@
 using Common.Data;
 using Common.Utils.Mongo;
 using RestServer.Common;
+using RestServer.Common.Nancy;
 using RestServer.Modules;
 
 namespace RestServer.Logic

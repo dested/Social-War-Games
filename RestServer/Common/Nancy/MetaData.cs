@@ -1,4 +1,4 @@
-namespace RestServer.Common
+namespace RestServer.Common.Nancy
 {
     public abstract class MetaData
     {

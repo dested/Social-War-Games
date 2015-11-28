@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Nancy;
 using Nancy.Responses.Negotiation;
 
-namespace RestServer.Common
+namespace RestServer.Common.Nancy
 {
     public static class ResponseBuilder
     {

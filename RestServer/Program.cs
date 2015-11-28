@@ -1,11 +1,9 @@
-﻿using RestServer;
+﻿using System;
+using Nancy.Hosting.Self;
 using Simulation;
 
-namespace RestServer2
+namespace RestServer
 {
-    using System;
-    using Nancy.Hosting.Self;
-
     class Program
     {
         static void Main(string[] args)
@@ -14,9 +12,6 @@ namespace RestServer2
                 new Uri("http://127.0.0.1:3569");
             HostConfiguration hostConfigs = new HostConfiguration();
             hostConfigs.UrlReservations.CreateAutomatically = true;
-
-            SocialTestGame stg = new SocialTestGame();
-
 
             using (var host = new NancyHost(uri,new Bootstrapper(), hostConfigs))
             {
