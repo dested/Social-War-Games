@@ -80,7 +80,9 @@ namespace Simulation
                 }
                 votes.Clear();
                 StateData.Generation += 1;
-                Console.WriteLine("Vote unlocke");
+                StateData.Update();
+
+                Console.WriteLine("Vote unlocked");
             }
         }
 
