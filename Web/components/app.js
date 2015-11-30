@@ -1,4 +1,4 @@
-var module=angular.module('ACG.Client',[
+var module=angular.module('Social.Client',[
   'ui.router'
 ]);
 
