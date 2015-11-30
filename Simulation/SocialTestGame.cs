@@ -31,6 +31,8 @@ namespace Simulation
 
         public void VoteAction(Vote vote)
         {
+            Console.WriteLine("Vote Recorded " + vote.Generation);
+
             bool found = false;
             foreach (var v in votes)
             {
@@ -66,6 +68,32 @@ namespace Simulation
 
             StateData = stateData;
         }
+        private void progressGeneration(object sender, ElapsedEventArgs e)
+        {
+            lock (@lock)
+            {
+                Console.WriteLine("Vote locked");
+                foreach (var unitVotes in votes.GroupBy(a => a.UnitId))
+                {
+                    var vote = unitVotes.OrderByDescending(a => a.Count).First();
+                    vote.Complete(StateData);
+                }
+                votes.Clear();
+                StateData.Generation += 1;
+                Console.WriteLine("Vote unlocke");
+            }
+        }
+
+        private static readonly object @lock = new object();
+
+
+
+
+
+
+
+
+
 
         private MongoGameStateData.GameStateData initializeGameState()
         {
@@ -87,11 +115,11 @@ namespace Simulation
                 }
                 boardStr += "|";
             }
+            stateData.Board.Width = 40;
+            stateData.Board.Height = 40;
             stateData.Board.BoardStr = boardStr;
 
-            stateData.LastTick = DateTime.UtcNow.AddMinutes(1);
-            stateData.Width = 10;
-            stateData.Height = 10;
+            stateData.LastGeneration = DateTime.UtcNow.AddMinutes(1);
             stateData.Factions = new List<MongoGameStateData.GameFaction>();
             for (int f = 0; f < 3; f++)
             {
@@ -174,22 +202,6 @@ namespace Simulation
             stateData.Insert();
             return stateData;
         }
-
-        private void progressGeneration(object sender, ElapsedEventArgs e)
-        {
-            lock (@lock)
-            {
-                foreach (var unitVotes in votes.GroupBy(a => a.UnitId))
-                {
-                    var vote = unitVotes.OrderByDescending(a => a.Count).First();
-                    vote.Complete(StateData);
-                }
-                votes.Clear();
-                StateData.Generation += 1;
-            }
-        }
-
-        private static readonly object @lock = new object();
 
     }
 

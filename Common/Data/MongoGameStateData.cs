@@ -26,9 +26,7 @@ namespace Common.Data
         public class GameStateData : IMongoModel
         {
             public ObjectId Id { get; set; }
-            public DateTime LastTick { get; set; }
-            public int Width { get; set; }
-            public int Height { get; set; }
+            public DateTime LastGeneration{ get; set; }
             public HexBoard Board { get; set; }
             public List<GameFaction> Factions { get; set; }
             public int Generation { get; set; }
@@ -37,6 +35,8 @@ namespace Common.Data
         [BsonIgnoreExtraElements]
         public class HexBoard
         {
+            public int Width { get; set; }
+            public int Height { get; set; }
             public string BoardStr { get; set; }
         }
         [BsonIgnoreExtraElements]
