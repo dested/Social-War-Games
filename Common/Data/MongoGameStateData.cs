@@ -29,7 +29,14 @@ namespace Common.Data
             public DateTime LastTick { get; set; }
             public int Width { get; set; }
             public int Height { get; set; }
+            public HexBoard Board { get; set; }
             public List<GameFaction> Factions { get; set; }
+        }
+        
+        [BsonIgnoreExtraElements]
+        public class HexBoard
+        {
+            public string BoardStr { get; set; }
         }
         [BsonIgnoreExtraElements]
         public class GameFaction
@@ -103,6 +110,7 @@ namespace Common.Data
         }
 
     }
+
 
     public enum GameUnitType
     {

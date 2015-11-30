@@ -49,7 +49,7 @@ namespace Simulation
         }
 
         private List<Vote> votes = new List<Vote>();
-         
+
 
         private void loadGameState()
         {
@@ -70,6 +70,25 @@ namespace Simulation
         private MongoGameStateData.GameStateData initializeGameState()
         {
             MongoGameStateData.GameStateData stateData = new MongoGameStateData.GameStateData();
+            stateData.Board = new MongoGameStateData.HexBoard();
+            string boardStr = "";
+            for (int y = 0; y < 40; y++)
+            {
+                for (int x = 0; x < 40; x++)
+                {
+                    if (random.Next(0, 100) < 15)
+                    {
+                        boardStr += "0";
+                    }
+                    else
+                    {
+                        boardStr += random.Next(1, 4);
+                    }
+                }
+                boardStr += "|";
+            }
+            stateData.Board.BoardStr = boardStr;
+
             stateData.LastTick = DateTime.UtcNow.AddMinutes(1);
             stateData.Width = 10;
             stateData.Height = 10;
