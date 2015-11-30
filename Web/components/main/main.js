@@ -50,7 +50,7 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
         $t2.y = 0;
         $t2.z = y;
         var $t3 = new Hexagon();
-        if (x == 20 && y == 20) {
+        if (x == 19 && y == 19) {
           $t3.hexColor = new HexagonColor('#0000FF');
         } else {
           $t3.hexColor = new HexagonColor('#FF0000');

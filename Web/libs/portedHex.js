@@ -144,9 +144,11 @@ Hexagon.prototype.drawTop = function (context) {
   context.fill(this.$topPath);
 };
 Hexagon.prototype.drawIcon = function (context) {
+  if(!this.distance)return;
   context.save();
   context.font="20px Georgia";
-  context.fillText(window.distance,10,50);
+  context.fillStyle="green";
+  context.fillText(this.distance,0,0);
   context.restore();
 };
 Hexagon.prototype.draw = function (context) {
