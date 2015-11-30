@@ -15,7 +15,13 @@ namespace RestServer.Modules
                 var model = ValidateRequest<GetStateRequest>();
                 var response = GameLogic.GetState(model);
                 return this.Success(response);
-            }; 
+            };
+            Post["/vote"] = _ =>
+            {
+                var model = ValidateRequest<PostVoteRequest>();
+                var response = GameLogic.VoteAction(model);
+                return this.Success(response);
+            };
         }
 
     }
@@ -44,6 +50,18 @@ namespace RestServer.Modules
     public class GetStateResponse
     {
         public MongoGameStateData.GameStateData StateData { get; set; }
-    } 
+    }
+    public class PostVoteRequest
+    {
+        public string UnitId { get; set; }
+        public string Action { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
+    }
+    
+    public class PostVoteResponse
+    {
+        public MongoGameStateData.GameStateData StateData { get; set; }
+    }
 
 }

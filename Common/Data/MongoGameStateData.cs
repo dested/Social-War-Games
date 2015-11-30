@@ -48,7 +48,60 @@ namespace Common.Data
             public int Health { get; set; }
             public int X { get; set; }
             public int Y { get; set; }
+
+            public void Hurt(int amount,GameStateData gameState)
+            {
+                Health -= amount;
+                if (Health <= 0)
+                {
+                    var faction = gameState.GetFactionByUnitId(Id);
+                    faction.Units.Remove(this);
+                }
+            }
         }
+        public static MongoGameStateData.GameUnit GetUnitById(this GameStateData stateData, string id)
+        {
+            foreach (var gameFaction in stateData.Factions)
+            {
+                foreach (var gameUnit in gameFaction.Units)
+                {
+                    if (gameUnit.Id == id)
+                    {
+                        return gameUnit;
+                    }
+                }
+            }
+            return null;
+        }
+        public static GameFaction GetFactionByUnitId(this GameStateData stateData, string unitId)
+        {
+            foreach (var gameFaction in stateData.Factions)
+            {
+                foreach (var gameUnit in gameFaction.Units)
+                {
+                    if (gameUnit.Id == unitId)
+                    {
+                        return gameFaction;
+                    }
+                }
+            }
+            return null;
+        }
+        public static MongoGameStateData.GameUnit GetUnitByLocation(this GameStateData stateData, int x, int y)
+        {
+            foreach (var gameFaction in stateData.Factions)
+            {
+                foreach (var gameUnit in gameFaction.Units)
+                {
+                    if (gameUnit.X == x && gameUnit.Y == y)
+                    {
+                        return gameUnit;
+                    }
+                }
+            }
+            return null;
+        }
+
     }
 
     public enum GameUnitType

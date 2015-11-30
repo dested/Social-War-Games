@@ -8,6 +8,7 @@ using System.Timers;
 using Common.Data;
 using Common.Utils.Mongo;
 using MongoDB.Bson;
+using Simulation.Votes;
 
 namespace Simulation
 {
@@ -17,57 +18,38 @@ namespace Simulation
         public static SocialTestGame Instance => instance ?? (instance = new SocialTestGame());
         private Random random = new Random();
 
-        private Dictionary<string, Action<MongoGameStateData.GameUnit, MongoGameStateData.GameFaction>  actions
-            = new Dictionary<string, Action<MongoGameStateData.GameUnit, MongoGameStateData.GameFaction>>();
 
         public MongoGameStateData.GameStateData StateData { get; set; }
         public SocialTestGame()
         {
-
             loadGameState();
-
             Timer t = new Timer(TimeSpan.FromMinutes(1).TotalMilliseconds);
             t.AutoReset = true;
             t.Elapsed += gameTick;
             t.Start();
         }
 
-        public void VoteAction(string unitId, string userFactionId, string actionId)
+        public void VoteAction(Vote vote)
         {
-            foreach (var gameFaction in StateData.Factions)
+            bool found = false;
+            foreach (var v in votes)
             {
-                if (gameFaction.Id == userFactionId)
+                if (v.Equivalent(vote))
                 {
-                    foreach (var gameUnit in gameFaction.Units)
-                    {
-                        if (gameUnit.Id==unitId)
-                        {
-                            appendVote(unitId,actionId);
-                        }
-                    }
+                    found = true;
+                    v.Count++;
+                    break;
                 }
             }
-        }
-
-        private Dictionary<string, Dictionary<string, int>> votes = new Dictionary<string, Dictionary<string, int>>();
-
-        private void appendVote(string unitId, string actionId)
-        { 
-            if (!votes.ContainsKey(unitId))
+            if (!found)
             {
-                votes[unitId] = new Dictionary<string, int>();
-            }
-
-            if (votes[unitId].ContainsKey(actionId))
-            {
-                votes[unitId][actionId]++;
-            }
-            else
-            {
-                votes[unitId][actionId] = 1;
+                vote.Count = 1;
+                votes.Add(vote);
             }
         }
 
+        private List<Vote> votes = new List<Vote>();
+         
 
         private void loadGameState()
         {
@@ -176,36 +158,15 @@ namespace Simulation
 
         private void gameTick(object sender, ElapsedEventArgs e)
         {
-            foreach (var vote in votes)
+            foreach (var unitVotes in votes.GroupBy(a => a.UnitId))
             {
-                var unit = GetUnitById(vote.Key);
-                if (unit == null)
-                {
-                    //idk
-                }
-                else
-                {
-                    var actionId = vote.Value.OrderByDescending(a => a.Value).First().Key;
-
-                }
+                var vote = unitVotes.OrderByDescending(a => a.Count).First();
+                vote.Complete(StateData);
             }
+            votes.Clear();
         }
 
-        public MongoGameStateData.GameUnit GetUnitById(string id)
-        {
-            foreach (var gameFaction in StateData.Factions)
-            {
-                foreach (var gameUnit in gameFaction.Units)
-                {
-                    if (gameUnit.Id == id)
-                    {
-                        return gameUnit;
-                    }
-                }
-            }
-            return null;
-        }
 
     }
-     
+
 }

@@ -50,6 +50,8 @@
   <ItemGroup>
     <Compile Include="SocialTestGame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Votes\Vote.cs" />
+    <Compile Include="Votes\MoveInfantryVote.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">

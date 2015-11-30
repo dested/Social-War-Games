@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>RestServer.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="JWT, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\JWT.1.3.4\lib\3.5\JWT.dll</HintPath>
@@ -90,6 +93,13 @@
     <Compile Include="Common\Nancy\ServerErrorException.cs" />
     <Compile Include="Common\Nancy\TokenMetaData.cs" />
     <Compile Include="Common\Nancy\UserJwtModel.cs" />
+    <Compile Include="HexUtils\FractionalHex.cs" />
+    <Compile Include="HexUtils\Hex.cs" />
+    <Compile Include="HexUtils\Layout.cs" />
+    <Compile Include="HexUtils\OffsetCoord.cs" />
+    <Compile Include="HexUtils\Orientation.cs" />
+    <Compile Include="HexUtils\Point.cs" />
+    <Compile Include="HexUtils\Tests.cs" />
     <Compile Include="Logic\GameLogic.cs" />
     <Compile Include="Logic\UserLogic.cs" />
     <Compile Include="Modules\GameModule.cs" />
