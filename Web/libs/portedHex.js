@@ -34,14 +34,14 @@ function GridHexagon() {
   this.y = 0;
   this.z = 0;
   this.hexagon = null;
-};
+}
 GridHexagon.prototype.click = function () {
   if (this.hexagon.enabled) {
     this.hexagon.set_height(this.hexagon.get_height() + 0.5);
   } else {
     this.hexagon.enabled = true;
   }
-}
+};
 
 
 GridHexagonConstants = {};
@@ -49,7 +49,7 @@ GridHexagonConstants = {};
 GridHexagonConstants.heightSkew = 0;
 GridHexagonConstants.depthHeightSkew = 0;
 GridHexagonConstants.width = 0;
-GridHexagonConstants.width = 131;
+GridHexagonConstants.width = 30;
 GridHexagonConstants.heightSkew = 0.55;
 GridHexagonConstants.depthHeightSkew = 0.4;
 
@@ -248,7 +248,6 @@ function OrderBy(list,callback){
     var obj = list[i];
     itms.push({item:obj,val:callback(obj)});
   }
-  debugger;
   itms.sort(function compareNumbers(a, b) {
     return a.val- b.val;
   });
