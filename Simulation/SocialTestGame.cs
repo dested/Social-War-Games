@@ -25,7 +25,7 @@ namespace Simulation
             loadGameState();
             Timer t = new Timer(TimeSpan.FromMinutes(1).TotalMilliseconds);
             t.AutoReset = true;
-            t.Elapsed += gameTick;
+            t.Elapsed += progressGeneration;
             t.Start();
         }
 
@@ -175,16 +175,21 @@ namespace Simulation
             return stateData;
         }
 
-        private void gameTick(object sender, ElapsedEventArgs e)
+        private void progressGeneration(object sender, ElapsedEventArgs e)
         {
-            foreach (var unitVotes in votes.GroupBy(a => a.UnitId))
+            lock (@lock)
             {
-                var vote = unitVotes.OrderByDescending(a => a.Count).First();
-                vote.Complete(StateData);
+                foreach (var unitVotes in votes.GroupBy(a => a.UnitId))
+                {
+                    var vote = unitVotes.OrderByDescending(a => a.Count).First();
+                    vote.Complete(StateData);
+                }
+                votes.Clear();
+                StateData.Generation += 1;
             }
-            votes.Clear();
         }
 
+        private static readonly object @lock = new object();
 
     }
 

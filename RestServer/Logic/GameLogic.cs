@@ -25,6 +25,12 @@ namespace RestServer.Logic
         public static PostVoteResponse VoteAction(PostVoteRequest model)
         {
             var gameStateData = SocialTestGame.Instance.StateData;
+
+            if (model.Generation != gameStateData.Generation)
+            {
+                throw new ValidationException("Generation invalid");
+            }
+
             var unit = gameStateData.GetUnitById(model.UnitId);
             if (unit == null) throw new ValidationException("Unit not found");
             Layout n = new Layout(Layout.flat, new Point(1, 1), new Point(50, 50));
@@ -50,6 +56,7 @@ namespace RestServer.Logic
                                 X = model.X,
                                 Y = model.Y,
                                 UnitId = model.UnitId,
+                                Generation=model.Generation
                             });
                             break;
 
@@ -64,6 +71,7 @@ namespace RestServer.Logic
                                 X = model.X,
                                 Y = model.Y,
                                 UnitId = model.UnitId,
+                                Generation = model.Generation
                             });
                             break;
                     }

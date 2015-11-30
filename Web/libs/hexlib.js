@@ -159,7 +159,7 @@ function hex_to_pixel(layout, h)
   var origin = layout.origin;
   var x = (M.f0 * h.q + M.f1 * h.r) * size.x;
   var y = (M.f2 * h.q + M.f3 * h.r) * size.y;
-  return Point(x + origin.x, y + origin.y);
+  return new Point(x + origin.x, y + origin.y);
 }
 
 function pixel_to_hex(layout, p)
@@ -167,7 +167,7 @@ function pixel_to_hex(layout, p)
   var M = layout.orientation;
   var size = layout.size;
   var origin = layout.origin;
-  var pt = Point((p.x - origin.x) / size.x, (p.y - origin.y) / size.y);
+  var pt = new Point((p.x - origin.x) / size.x, (p.y - origin.y) / size.y);
   var q = M.b0 * pt.x + M.b1 * pt.y;
   var r = M.b2 * pt.x + M.b3 * pt.y;
   return Hex(q, r, -q - r);
@@ -178,7 +178,7 @@ function hex_corner_offset(layout, corner)
   var M = layout.orientation;
   var size = layout.size;
   var angle = 2.0 * Math.PI * (corner + M.start_angle) / 6;
-  return Point(size.x * Math.cos(angle), size.y * Math.sin(angle));
+  return new Point(size.x * Math.cos(angle), size.y * Math.sin(angle));
 }
 
 function polygon_corners(layout, h)
@@ -188,7 +188,7 @@ function polygon_corners(layout, h)
   for (var i = 0; i < 6; i++)
   {
     var offset = hex_corner_offset(layout, i);
-    corners.push(Point(center.x + offset.x, center.y + offset.y));
+    corners.push(new Point(center.x + offset.x, center.y + offset.y));
   }
   return corners;
 }
@@ -281,9 +281,9 @@ function test_hex_linedraw()
 function test_layout()
 {
   var h = Hex(3, 4, -7);
-  var flat = Layout(layout_flat, Point(10, 15), Point(35, 71));
+  var flat = Layout(layout_flat, new Point(10, 15), new Point(35, 71));
   equal_hex("layout", h, hex_round(pixel_to_hex(flat, hex_to_pixel(flat, h))));
-  var pointy = Layout(layout_pointy, Point(10, 15), Point(35, 71));
+  var pointy = Layout(layout_pointy, new Point(10, 15),new  Point(35, 71));
   equal_hex("layout", h, hex_round(pixel_to_hex(pointy, hex_to_pixel(pointy, h))));
 }
 

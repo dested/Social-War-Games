@@ -31,6 +31,7 @@ namespace Common.Data
             public int Height { get; set; }
             public HexBoard Board { get; set; }
             public List<GameFaction> Factions { get; set; }
+            public int Generation { get; set; }
         }
         
         [BsonIgnoreExtraElements]

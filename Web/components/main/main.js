@@ -6,6 +6,7 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
 
   var hexBoard = new HexBoard();
 
+  var flat = new Layout(layout_flat, new Point(1, 1), new Point(50, 50));
 
   var canvas = document.getElementById("hex");
   canvas.width = document.body.clientWidth;
@@ -13,20 +14,23 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
   canvas.onclick = function (e) {
     var x = e.offsetX;
     var y = e.offsetY;
-    hexBoard.clickBoard(x, y);
+
+    var h = hex_round(pixel_to_hex(flat, new Point(20, 20)));
+    var item = hexBoard.getHexAtPoint(x, y);
+    var c = hex_round(pixel_to_hex(flat, new Point(item.x, item.z)));
+    var distance = hex_distance(h, c);
+    item.hexagon.distance = distance;
+    console.log(distance);
   };
 
 
   var context = canvas.getContext("2d");
-
 
   setInterval(function () {
     canvas.width = canvas.width;
     hexBoard.drawBoard(context);
   }, 1000 / 60);
 
-
-  var flat = Layout(layout_flat, Point(1, 1), Point(50, 50));
 
   $http({
     method: "GET",
@@ -46,12 +50,18 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
         $t2.y = 0;
         $t2.z = y;
         var $t3 = new Hexagon();
-        $t3.hexColor = new HexagonColor('#FF0000');
+        if (x == 20 && y == 20) {
+          $t3.hexColor = new HexagonColor('#0000FF');
+        } else {
+          $t3.hexColor = new HexagonColor('#FF0000');
+        }
         $t3.enabled = true;
-        $t3.set_height(xItem *.5);
+        $t3.set_height(xItem * .5);
         $t2.hexagon = $t3;
         hexBoard.$addHexagon($t2);
       }
+
+      hexBoard.$reorderHexList();
     }
   })
 

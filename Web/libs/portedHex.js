@@ -81,7 +81,7 @@ function Hexagon() {
   this.$leftDepthPath = null;
   this.$bottomDepthPath = null;
   this.$rightDepthPath = null;
-};
+}
 
 Hexagon.prototype.get_height = function () {
   return this.$height;
@@ -138,11 +138,16 @@ Hexagon.prototype.drawRightDepth = function (context) {
   context.fill(this.$rightDepthPath);
 };
 Hexagon.prototype.drawTop = function (context) {
-  //            context.SetLineDash(new double[] { 9 });
   context.strokeStyle = 'black';
   context.stroke(this.$topPath);
   context.fillStyle = this.hexColor.color;
   context.fill(this.$topPath);
+};
+Hexagon.prototype.drawIcon = function (context) {
+  context.save();
+  context.font="20px Georgia";
+  context.fillText(window.distance,10,50);
+  context.restore();
 };
 Hexagon.prototype.draw = function (context) {
   if (this.enabled) {
@@ -151,16 +156,13 @@ Hexagon.prototype.draw = function (context) {
     this.drawBottomDepth(context);
     this.drawRightDepth(context);
     this.drawTop(context);
+    this.drawIcon(context);
     context.restore();
   }
 };
 
 
 var HexagonColor = function (color) {
-  this.color = null;
-  this.dark1 = null;
-  this.dark2 = null;
-  this.dark3 = null;
   this.color = color;
   this.dark1 = DrawingUtilities.colorLuminance(color, -0.2);
   this.dark2 = DrawingUtilities.colorLuminance(color, -0.4);
@@ -195,7 +197,7 @@ HexBoard.prototype.xyToHex = function (clickX, clickY) {
   y = rz + (rx + rx % 2) / 2;
   return new Point(x, y);
 };
-HexBoard.prototype.clickBoard = function (clickX, clickY) {
+HexBoard.prototype.getHexAtPoint = function (clickX, clickY) {
   var lastClick = null;
   var ff = this.xyToHex(clickX, clickY);
   for (var $t1 = 0; $t1 < this.hexList.length; $t1++) {
@@ -217,21 +219,8 @@ HexBoard.prototype.clickBoard = function (clickX, clickY) {
       lastClick = gridHexagon;
     }
   }
-  if (lastClick) {
-    lastClick.click();
-    this.$reorderHexList();
-  } else {
-    var $t2 = new GridHexagon();
-    $t2.x = ff.x | 0;
-    $t2.y = 0;
-    $t2.z = ff.y | 0;
-    var $t3 = new Hexagon();
-    $t3.hexColor = new HexagonColor('#FF0000');
-    $t3.enabled = true;
-    $t3.set_height(0);
-    $t2.hexagon = $t3;
-    this.$addHexagon($t2);
-  }
+
+  return lastClick;
 };
 HexBoard.prototype.$addHexagon = function (hexagon) {
   this.hexList.push(hexagon);
@@ -242,19 +231,19 @@ HexBoard.prototype.$reorderHexList = function () {
     return (m.z - m.y) * 1000 + (m.x % 2) * -200 + m.hexagon.get_height()
   });
 };
-function OrderBy(list,callback){
-  var itms=[];
+function OrderBy(list, callback) {
+  var itms = [];
   for (var i = 0; i < list.length; i++) {
     var obj = list[i];
-    itms.push({item:obj,val:callback(obj)});
+    itms.push({item: obj, val: callback(obj)});
   }
   itms.sort(function compareNumbers(a, b) {
-    return a.val- b.val;
+    return a.val - b.val;
   });
-  list=[];
+  list = [];
   for (var i = 0; i < itms.length; i++) {
     var obj1 = itms[i];
-    list.push(obj1.item)  ;
+    list.push(obj1.item);
   }
   return list;
 }

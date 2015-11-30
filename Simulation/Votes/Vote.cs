@@ -7,8 +7,7 @@ namespace Simulation.Votes
         public string UnitId { get; set; }
         public abstract bool Equivalent(Vote vote);
         public int Count { get; set; }
-
+        public int Generation { get; set; }
         public abstract void Complete(MongoGameStateData.GameStateData stateData);
-
     }
 }
