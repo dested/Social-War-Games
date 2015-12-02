@@ -6,7 +6,7 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
 
   var hexBoard = new HexBoard();
 
-  var flat = new Layout(layout_flat, new Point(1, 1), new Point(50, 50));
+  var flat = new Layout(layout_flat, new Point(1, 1), new Point(0, 0));
 
   var canvas = document.getElementById("hex");
   canvas.width = document.body.clientWidth;
@@ -15,11 +15,10 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
     var x = e.offsetX;
     var y = e.offsetY;
 
-    var h = hex_round(pixel_to_hex(flat, new Point(20, 20)));
+
+
     var item = hexBoard.getHexAtPoint(x, y);
-    var c = hex_round(pixel_to_hex(flat, new Point(item.x, item.z)));
-    var distance = hex_distance(h, c);
-    item.hexagon.distance = distance;
+    item.hexagon.distance = distance(new Point(20, 20),new Point(item.x, item.z));
     console.log(distance);
   };
 
@@ -45,18 +44,20 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
       for (var x = 0; x < yItem.length; x++) {
         var xItem = parseInt(yItem[x]);
         if (xItem == 0)continue;
+
         var $t2 = new GridHexagon();
         $t2.x = x;
         $t2.y = 0;
         $t2.z = y;
         var $t3 = new Hexagon();
-        if (x == 19 && y == 19) {
-          $t3.hexColor = new HexagonColor('#0000FF');
+
+        if (x == 20 && y == 20) {
+          $t3.hexColor = new HexagonColor('#00FFFF');
         } else {
           $t3.hexColor = new HexagonColor('#FF0000');
         }
         $t3.enabled = true;
-        $t3.set_height(xItem * .5);
+        $t3.set_height(xItem);
         $t2.hexagon = $t3;
         hexBoard.$addHexagon($t2);
       }
@@ -66,6 +67,21 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
   })
 
 });
+
+function distance(p1, p2) {
+  var x1 = p1.x;
+  var y1 = p1.y;
+
+  var x2 = p2.x;
+  var y2 = p2.y;
+
+  var du = x2 - x1;
+  var dv = (y2 + ((x2 / 2) | 0)) - (y1 + ((x1 / 2) | 0));
+  if ((du >= 0 && dv >= 0) || (du < 0 && dv < 0))
+    return Math.max(Math.abs(du), Math.abs(dv));
+  else
+    return Math.abs(du) + Math.abs(dv);
+}
 
 
 module.config(function ($locationProvider, $stateProvider, $urlRouterProvider) {

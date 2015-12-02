@@ -46,12 +46,6 @@ GridHexagon.prototype.click = function () {
 
 GridHexagonConstants = {};
 
-GridHexagonConstants.heightSkew = 0;
-GridHexagonConstants.depthHeightSkew = 0;
-GridHexagonConstants.width = 0;
-GridHexagonConstants.width = 30;
-GridHexagonConstants.heightSkew = 0.55;
-GridHexagonConstants.depthHeightSkew = 0.4;
 
 GridHexagonConstants.height = function () {
   return Math.sqrt(3) / 2 * GridHexagonConstants.width * GridHexagonConstants.heightSkew;
@@ -146,9 +140,9 @@ Hexagon.prototype.drawTop = function (context) {
 Hexagon.prototype.drawIcon = function (context) {
   if(!this.distance)return;
   context.save();
-  context.font="20px Georgia";
-  context.fillStyle="green";
-  context.fillText(this.distance,0,0);
+  context.font="10px Georgia";
+  context.fillStyle="white";
+  context.fillText(this.distance,-5,0);
   context.restore();
 };
 Hexagon.prototype.draw = function (context) {
@@ -274,3 +268,10 @@ var Point = function (x, y) {
   this.x = x;
   this.y = y;
 };
+
+GridHexagonConstants.heightSkew = 0;
+GridHexagonConstants.depthHeightSkew = 0;
+GridHexagonConstants.width = 0;
+GridHexagonConstants.width = 90;
+GridHexagonConstants.heightSkew = .5;
+GridHexagonConstants.depthHeightSkew = .2;
