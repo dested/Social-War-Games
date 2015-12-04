@@ -21,7 +21,7 @@ function Node(parent, piece) {
   // the location coordinates of this Node
   this.x = piece.x;
   this.y = piece.z;
-  this.hexagon = piece;
+  this.item = piece;
   // the distanceFunction cost to get
   // TO this Node from the START
   this.f = 0;
@@ -49,6 +49,22 @@ function distance(p1, p2) {
     return Math.abs(du) + Math.abs(dv);
 }
 
+function orderBy(list, callback) {
+  var itms = [];
+  for (var i = 0; i < list.length; i++) {
+    var obj = list[i];
+    itms.push({item: obj, val: callback(obj)});
+  }
+  itms.sort(function compareNumbers(a, b) {
+    return a.val - b.val;
+  });
+  list = [];
+  for (var i = 0; i < itms.length; i++) {
+    var obj1 = itms[i];
+    list.push(obj1.item);
+  }
+  return list;
+}
 
 
 DrawingUtilities = {};

@@ -1,4 +1,6 @@
 var module = angular.module('Social.Client');
+var baseColor = new HexagonColor('#FF0000');
+var selectedColor = new HexagonColor('#00FF00');
 
 module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
   $scope.model = {};
@@ -9,20 +11,30 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
   var canvas = document.getElementById("hex");
   canvas.width = document.body.clientWidth;
   canvas.height = document.body.clientHeight;
+  var lItem;
   canvas.onclick = function (e) {
     var x = e.offsetX;
     var y = e.offsetY;
 
     var item = hexBoard.getHexAtPoint(x, y);
     if (!item)return;
-    var path = hexBoard.getPath(hexBoard.xyToHexIndex(10, 10), item);
+
+
+
+    if(!lItem){
+      lItem=item;
+      return;
+    }
+
+    var path = hexBoard.getPath(lItem, item);
+    lItem=item;
 
     for (var i = 0; i < hexBoard.hexList.length; i++) {
       var h = hexBoard.hexList[i];
-      h.onPath = false;
+      h.hexColor = baseColor;
     }
     for (var i = 0; i < path.length; i++) {
-      path[i].onPath = true;
+      path[i].hexColor = selectedColor;
     }
 
   };
@@ -48,8 +60,7 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
       var yItem = ys[y].split('');
       for (var x = 0; x < yItem.length; x++) {
         var xItem = parseInt(yItem[x]);
-        if (x == 10 && y == 10)
-          xItem = 1;
+
         if (xItem == 0)continue;
 
         var gridHexagon = new GridHexagon();
@@ -59,16 +70,11 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
         gridHexagon.z = y;
         gridHexagon.height = xItem;
 
-        if (x == 10 && y == 10) {
-          gridHexagon.hexColor = new HexagonColor('#00FFFF');
-        } else {
-          gridHexagon.hexColor = new HexagonColor('#FF0000');
-        }
-        gridHexagon.buildPaths();
-        hexBoard.$addHexagon(gridHexagon);
-      }
 
-      hexBoard.$reorderHexList();
+        gridHexagon.hexColor = baseColor;
+        gridHexagon.buildPaths();
+        hexBoard.addHexagon(gridHexagon);
+      }
     }
   })
 

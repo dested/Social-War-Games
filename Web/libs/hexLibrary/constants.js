@@ -25,4 +25,5 @@ GridHexagonConstants.hexagonDepthRightPolygon = function (depthHeight) {
 
 GridHexagonConstants.width = 70;
 GridHexagonConstants.heightSkew = .7;
-GridHexagonConstants.depthHeightSkew = .2;
+GridHexagonConstants.depthHeightSkew = .3;
+GridHexagonConstants.depthHeightSkew = .3;

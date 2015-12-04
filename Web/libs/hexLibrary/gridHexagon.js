@@ -1,4 +1,3 @@
-
 function GridHexagon() {
   this.x = 0;
   this.y = 0;
@@ -13,7 +12,7 @@ function GridHexagon() {
 }
 
 GridHexagon.prototype.get_$depthHeight = function () {
-  return (this.height + 1) * GridHexagonConstants.depthHeight();
+  return (this.height ) * GridHexagonConstants.depthHeight();
 };
 GridHexagon.prototype.buildPaths = function () {
   this.$topPath = new Path2D();
@@ -66,12 +65,7 @@ GridHexagon.prototype.drawTop = function (context) {
   context.fill(this.$topPath);
 };
 GridHexagon.prototype.drawIcon = function (context) {
-  if (!this.onPath)return;
 
-  context.strokeStyle = 'black';
-  context.stroke(this.$topPath);
-  context.fillStyle = "blue";
-  context.fill(this.$topPath);
 };
 GridHexagon.prototype.draw = function (context) {
   context.save();

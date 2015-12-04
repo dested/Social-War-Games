@@ -112,12 +112,12 @@ namespace Simulation
                     }
                     else
                     {
-                        if (random.Next(0, 100) < 30)
+                        if (random.Next(0, 100) < 20)
                             boardStr += 2;
-                        else if (random.Next(0, 100) < 30)
-                            boardStr += 1;
+                        else if (random.Next(0, 100) < 10)
+                            boardStr += 3;
                         else
-                            boardStr += 2;
+                            boardStr += 1;
 
                     }
                 }
