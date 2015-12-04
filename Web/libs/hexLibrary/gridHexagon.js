@@ -59,7 +59,7 @@ GridHexagon.prototype.drawRightDepth = function (context) {
   context.fill(this.$rightDepthPath);
 };
 GridHexagon.prototype.drawTop = function (context) {
-  context.strokeStyle = 'black';
+  context.strokeStyle = this.hexColor.darkBorder;
   context.stroke(this.$topPath);
   context.fillStyle = this.hexColor.color;
   context.fill(this.$topPath);
