@@ -106,13 +106,19 @@ namespace Simulation
             {
                 for (int x = 0; x < 40; x++)
                 {
-                    if (random.Next(0, 100) < 40)
+                    if (random.Next(0, 100) < 10)
                     {
                         boardStr += "0";
                     }
                     else
                     {
-                        boardStr += random.Next(1, 4);
+                        if (random.Next(0, 100) < 30)
+                            boardStr += 2;
+                        else if (random.Next(0, 100) < 30)
+                            boardStr += 1;
+                        else
+                            boardStr += 2;
+
                     }
                 }
                 boardStr += "|";
