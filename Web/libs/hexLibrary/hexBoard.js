@@ -1,10 +1,21 @@
-var HexBoard = function () {
+function HexBoard() {
   this.hexList = [];
   this.hexBlock = {};
-};
+  this.viewPort = {x: 0, y: 0, width: 400, height: 400, padding: GridHexagonConstants.width * 2};
+}
 
 HexBoard.prototype.xyToHexIndex = function (x, y) {
   return this.hexBlock[x + y * 5000];
+};
+
+HexBoard.prototype.resize = function (width, height) {
+  this.viewPort.width = width;
+  this.viewPort.height = height;
+};
+
+HexBoard.prototype.offsetView = function (x, y) {
+  this.viewPort.x += x;
+  this.viewPort.y += y;
 };
 
 HexBoard.prototype.getHexAtPoint = function (clickX, clickY) {
@@ -43,6 +54,7 @@ HexBoard.prototype.reorderHexList = function () {
 };
 HexBoard.prototype.drawBoard = function (context) {
   context.save();
+  context.translate(-this.viewPort.x, -this.viewPort.y);
   context.lineWidth = 1;
   for (var i = 0; i < this.hexList.length; i++) {
     var gridHexagon = this.hexList[i];
@@ -51,14 +63,25 @@ HexBoard.prototype.drawBoard = function (context) {
   context.restore();
 };
 HexBoard.prototype.drawHexagon = function (context, gridHexagon) {
-  context.save();
+
   var x = GridHexagonConstants.width * 3 / 4 * gridHexagon.x;
   var z = gridHexagon.z * GridHexagonConstants.height() + ((gridHexagon.x % 2 === 1) ? (-GridHexagonConstants.height() / 2) : 0);
-  z += -gridHexagon.height * GridHexagonConstants.depthHeight();
+
+  z -= gridHexagon.height * GridHexagonConstants.depthHeight();
   z += gridHexagon.y * GridHexagonConstants.depthHeight();
+
+  if (!(x > this.viewPort.x - this.viewPort.padding &&
+    x < this.viewPort.x + this.viewPort.width + this.viewPort.padding &&
+    z > this.viewPort.y - this.viewPort.padding &&
+    z < this.viewPort.y + this.viewPort.height + this.viewPort.padding)) {
+    return;
+  }
+
+  context.save();
   context.translate(x, z);
   gridHexagon.draw(context);
   context.restore();
+
 };
 HexBoard.prototype.getPath = function (start, finish) {
   var mypathStart = new Node(null, start);

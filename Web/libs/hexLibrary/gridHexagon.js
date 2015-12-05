@@ -4,82 +4,135 @@ function GridHexagon() {
   this.z = 0;
   this.height = 0;
 
+  this.icon = null;
+
   this.hexColor = null;
-  this.$topPath = null;
-  this.$leftDepthPath = null;
-  this.$bottomDepthPath = null;
-  this.$rightDepthPath = null;
+  this.topPath = null;
+  this.leftDepthPath = null;
+  this.bottomDepthPath = null;
+  this.rightDepthPath = null;
+
+  if (Math.random() * 100 < 15) {
+    this.setIcon('castle', {width: 40, height: 100}, {x: 20, y: 80});
+  }
+  this.drawCache = null;
 }
 
-GridHexagon.prototype.get_$depthHeight = function () {
+GridHexagon.prototype.getDepthHeight = function () {
   return (this.height ) * GridHexagonConstants.depthHeight();
 };
-GridHexagon.prototype.buildPaths = function () {
-  this.$topPath = new Path2D();
-  var $t1 = GridHexagonConstants.hexagonTopPolygon();
-  for (var $t2 = 0; $t2 < $t1.length; $t2++) {
-    var point = $t1[$t2];
-    this.$topPath.lineTo(point.x, point.y);
-  }
-  this.$leftDepthPath = new Path2D();
-  var $t3 = GridHexagonConstants.hexagonDepthLeftPolygon(this.get_$depthHeight());
-  for (var $t4 = 0; $t4 < $t3.length; $t4++) {
-    var point1 = $t3[$t4];
-    this.$leftDepthPath.lineTo(point1.x, point1.y);
-  }
-  this.$bottomDepthPath = new Path2D();
-  var $t5 = GridHexagonConstants.hexagonDepthBottomPolygon(this.get_$depthHeight());
-  for (var $t6 = 0; $t6 < $t5.length; $t6++) {
-    var point2 = $t5[$t6];
-    this.$bottomDepthPath.lineTo(point2.x, point2.y);
-  }
-  this.$rightDepthPath = new Path2D();
-  var $t7 = GridHexagonConstants.hexagonDepthRightPolygon(this.get_$depthHeight());
-  for (var $t8 = 0; $t8 < $t7.length; $t8++) {
-    var point3 = $t7[$t8];
-    this.$rightDepthPath.lineTo(point3.x, point3.y);
-  }
+
+GridHexagon.prototype.setIcon = function (name, size, base) {
+  this.icon = {name: name, size: size, base: base};
+  this.invalidate();
 };
+
+GridHexagon.prototype.buildPaths = function () {
+  var depthHeight = this.getDepthHeight();
+  this.topPath = buildPath(GridHexagonConstants.hexagonTopPolygon());
+  this.leftDepthPath = buildPath(GridHexagonConstants.hexagonDepthLeftPolygon(depthHeight));
+  this.bottomDepthPath = buildPath(GridHexagonConstants.hexagonDepthBottomPolygon(depthHeight));
+  this.rightDepthPath = buildPath(GridHexagonConstants.hexagonDepthRightPolygon(depthHeight));
+};
+
+function buildPath(path) {
+  var p2d = new Path2D();
+  for (var i = 0; i < path.length; i++) {
+    var point = path[i];
+    p2d.lineTo(point.x, point.y);
+  }
+  return p2d;
+}
+
 GridHexagon.prototype.drawLeftDepth = function (context) {
   context.strokeStyle = this.hexColor.dark1;
-  context.stroke(this.$leftDepthPath);
+  context.stroke(this.leftDepthPath);
   context.fillStyle = this.hexColor.dark1;
-  context.fill(this.$leftDepthPath);
+  context.fill(this.leftDepthPath);
 };
 GridHexagon.prototype.drawBottomDepth = function (context) {
   context.strokeStyle = this.hexColor.dark2;
-  context.stroke(this.$bottomDepthPath);
+  context.stroke(this.bottomDepthPath);
   context.fillStyle = this.hexColor.dark2;
-  context.fill(this.$bottomDepthPath);
+  context.fill(this.bottomDepthPath);
 };
 GridHexagon.prototype.drawRightDepth = function (context) {
   context.strokeStyle = this.hexColor.dark3;
-  context.stroke(this.$rightDepthPath);
+  context.stroke(this.rightDepthPath);
   context.fillStyle = this.hexColor.dark3;
-  context.fill(this.$rightDepthPath);
+  context.fill(this.rightDepthPath);
 };
 GridHexagon.prototype.drawTop = function (context) {
-  if((this.y+this.height)!=1)
-    context.strokeStyle = this.hexColor.darkBorder;
-  else
-    context.strokeStyle = this.hexColor.color;
-
-  //context.strokeStyle = this.hexColor.darkBorder;
-  context.stroke(this.$topPath);
+  /*
+   if ((this.y + this.height) != 1)
+   context.strokeStyle = this.hexColor.darkBorder;
+   else
+   context.strokeStyle = this.hexColor.color;
+   */
+  context.strokeStyle = this.hexColor.darkBorder;
+  context.stroke(this.topPath);
   context.fillStyle = this.hexColor.color;
-  context.fill(this.$topPath);
+  context.fill(this.topPath);
 };
 GridHexagon.prototype.drawIcon = function (context) {
-
+  if (this.icon) {
+    context.save();
+    context.translate(-this.icon.base.x, -this.icon.base.y);
+    context.drawImage(window.assetManager.assets[this.icon.name], 0, 0, this.icon.size.width, this.icon.size.height);
+    context.restore();
+  }
 };
+GridHexagon.prototype.invalidate = function () {
+  this.drawCache = null;
+};
+
+GridHexagon.prototype.envelope = function () {
+  var size = {};
+  size.width = GridHexagonConstants.width;
+  size.height = GridHexagonConstants.height();
+
+  if (this.icon && size.height < (this.icon.base.y + size.height)) {
+    size.height = this.icon.base.y + size.height ;
+  }
+
+  size.height += this.getDepthHeight();
+  return size;
+};
+
+GridHexagon.prototype.hexCenter = function () {
+  var diff = 0;
+
+  if (this.icon && (GridHexagonConstants.height() < (this.icon.base.y))) {
+    diff = this.icon.base.y;
+  }
+
+  return GridHexagonConstants.height() / 2 + diff;
+};
+
 GridHexagon.prototype.draw = function (context) {
-  context.save();
-  this.drawLeftDepth(context);
-  this.drawBottomDepth(context);
-  this.drawRightDepth(context);
-  this.drawTop(context);
-  this.drawIcon(context);
-  context.restore();
+
+  if (this.drawCache) {
+    context.drawImage(this.drawCache, -this.drawCache.width / 2, -this.hexCenter());
+  } else {
+    var can = document.createElement('canvas');
+    var ctx = can.getContext('2d');
+//ctx=context;
+
+    var size = this.envelope();
+    can.width = size.width;
+    can.height = size.height;
+    ctx.save();
+
+    ctx.translate(size.width / 2, this.hexCenter());
+    this.drawLeftDepth(ctx);
+    this.drawBottomDepth(ctx);
+    this.drawRightDepth(ctx);
+    this.drawTop(ctx);
+    this.drawIcon(ctx);
+    ctx.restore();
+    this.drawCache = can;
+    this.draw(context);
+  }
 };
 GridHexagon.prototype.getNeighbors = function () {
 
