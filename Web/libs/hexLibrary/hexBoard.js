@@ -1,4 +1,3 @@
-
 var HexBoard = function () {
   this.hexList = [];
   this.hexBlock = {};
@@ -97,6 +96,8 @@ HexBoard.prototype.getPath = function (start, finish) {
       for (i = 0, j = neighbours.length; i < j; i++) {
         var n = this.xyToHexIndex(neighbours[i].x, neighbours[i].y);
         if (!n)continue;
+        if (Math.abs((node.item.y + node.item.height) - (n.y + n.height)) >= 2)
+          continue;
         path = new Node(node, n);
         if (!aStar[path.value()]) {
           path.g = node.g + distance(n, node.item) + (Math.abs((node.item.y + node.item.height) - (n.y + n.height)) * 2);
