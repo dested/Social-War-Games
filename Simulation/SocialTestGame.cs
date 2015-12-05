@@ -138,13 +138,13 @@ namespace Simulation
                 switch (f)
                 {
                     case 0:
-                        gameFaction.Color = "red";
+                        gameFaction.Color = "#FFFFFF";
                         break;
                     case 1:
-                        gameFaction.Color = "green";
+                        gameFaction.Color = "#00FFFF";
                         break;
                     case 2:
-                        gameFaction.Color = "blue";
+                        gameFaction.Color = "#00000FF";
                         break;
                 }
 

@@ -1,15 +1,17 @@
+var module = angular.module('Social.Client', [
+  'ui.router'
+]);
+
 window.assetManager = new AssetManager(startApp);
-window.assetManager.addAsset('castle', 'images/castle.png');
+var size = {width:50,height:50};
+var base = {x:25,y:40};
+window.assetManager.addAsset('Infantry', 'images/tower_10.png', size, base);
+window.assetManager.addAsset('Tank', 'images/tower_40.png', size, base);
+window.assetManager.addAsset('Base', 'images/tower_42.png', size, base);
 window.assetManager.start();
 
 
-
-
 function startApp() {
-  var module = angular.module('Social.Client', [
-    'ui.router'
-  ]);
-
 
   module.config(function ($locationProvider, $stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');

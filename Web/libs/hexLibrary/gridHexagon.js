@@ -11,10 +11,6 @@ function GridHexagon() {
   this.leftDepthPath = null;
   this.bottomDepthPath = null;
   this.rightDepthPath = null;
-
-  if (Math.random() * 100 < 15) {
-    this.setIcon('castle', {width: 40, height: 100}, {x: 20, y: 80});
-  }
   this.drawCache = null;
 }
 
@@ -22,8 +18,13 @@ GridHexagon.prototype.getDepthHeight = function () {
   return (this.height ) * GridHexagonConstants.depthHeight();
 };
 
-GridHexagon.prototype.setIcon = function (name, size, base) {
-  this.icon = {name: name, size: size, base: base};
+GridHexagon.prototype.setIcon = function (name) {
+  this.icon = window.assetManager.assets[name];
+  this.invalidate();
+};
+
+GridHexagon.prototype.setColor = function (hexColor) {
+  this.hexColor = hexColor;
   this.invalidate();
 };
 
@@ -78,7 +79,7 @@ GridHexagon.prototype.drawIcon = function (context) {
   if (this.icon) {
     context.save();
     context.translate(-this.icon.base.x, -this.icon.base.y);
-    context.drawImage(window.assetManager.assets[this.icon.name], 0, 0, this.icon.size.width, this.icon.size.height);
+    context.drawImage(this.icon.image, 0, 0, this.icon.size.width, this.icon.size.height);
     context.restore();
   }
 };
@@ -116,7 +117,10 @@ GridHexagon.prototype.draw = function (context) {
   } else {
     var can = document.createElement('canvas');
     var ctx = can.getContext('2d');
-//ctx=context;
+
+    if(this.icon){
+      debugger;
+    }
 
     var size = this.envelope();
     can.width = size.width;
