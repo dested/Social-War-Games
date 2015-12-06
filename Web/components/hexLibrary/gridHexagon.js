@@ -111,35 +111,51 @@ GridHexagon.prototype.envelope = function () {
   }
 
   size.height += this.getDepthHeight();
+
+
+  size.width += 12;
+  size.height += 6;
+
   return size;
 };
 
 GridHexagon.prototype.hexCenter = function () {
-  var center = GridHexagonConstants.height() / 2;
+  var center = {};
+
+  center.y = GridHexagonConstants.height() / 2;
   if (this.icon) {
-    return Math.max(center, this.icon.base.y);
+    center.y = Math.max(center.y, this.icon.base.y);
   }
 
+  center.x = GridHexagonConstants.width / 2;
+  if (this.icon) {
+    center.x = center.x;
+  }
+
+
+  center.x += 6;
+  center.y += 6;
   return center;
 };
 
 var caches = {};
 function getCacheImage(height, icon, hexColor) {
-  var c = (icon?icon.name:'') + "-" + height + "-" + hexColor.color;
+  var c = (icon ? icon.name : '') + "-" + height + "-" + hexColor.color;
   return caches[c]
 }
 function setCacheImage(height, icon, hexColor, img) {
-  var c = (icon?icon.name:'') + "-" + height + "-" + hexColor.color;
+  var c = (icon ? icon.name : '') + "-" + height + "-" + hexColor.color;
   caches[c] = img;
 }
 
 GridHexagon.prototype.draw = function (context) {
 
+  var center = this.hexCenter();
   if (this.drawCache) {
-    context.drawImage(this.drawCache, -this.drawCache.width / 2, -this.hexCenter());
+    context.drawImage(this.drawCache, -center.x, -center.y);
     //this.drawCache=null;
   } else {
-    var c = getCacheImage(this.height, this.icon ? this.icon.name : '', this.highlightColor||this.hexColor);
+    var c = getCacheImage(this.height, this.icon ? this.icon.name : '', this.highlightColor || this.hexColor);
     if (!c) {
       var can = document.createElement('canvas');
       var ctx = can.getContext('2d');
@@ -149,22 +165,30 @@ GridHexagon.prototype.draw = function (context) {
       can.height = size.height;
       ctx.save();
 
-      ctx.translate(size.width / 2, this.hexCenter());
+
+      ctx.translate(center.x, center.y);
       this.drawLeftDepth(ctx);
       this.drawBottomDepth(ctx);
       this.drawRightDepth(ctx);
+
+      ctx.save();
+      //ctx.lineWidth = 1;
+      //ctx.lineCap = "round";
+      //ctx.lineJoin = "round";
       this.drawTop(ctx);
+      ctx.restore();
+
+
       this.drawIcon(ctx);
       ctx.restore();
 
-      setCacheImage(this.height, this.icon ? this.icon.name : '', this.hexColor.color,can);
-      /*
-       ctx.strokeStyle='black';
+      setCacheImage(this.height, this.icon ? this.icon.name : '', this.hexColor.color, can);
+      /*       ctx.strokeStyle='black';
        ctx.lineWidth=1;
        ctx.strokeRect(0,0,can.width,can.height);*/
       this.drawCache = can;
 
-    }else{
+    } else {
       this.drawCache = c;
     }
     this.draw(context);
