@@ -2,109 +2,19 @@
 body {
   margin: 0;
   padding: 0;
+  height: 100vh;
+  width: 100vw;
 }
 
-.left {
-  width: 50%;
-  left: 0;
-  height: 100%;
+@dark-checker: #333;
+@light-checker:#CCC;
+
+
+.checkered {
+  background-color:@light-checker;
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%, transparent 75%, transparent);
 }
 
-.right {
-  left: 50%;
-  width: 50%;
-  height: 100%;
-}
-
-.side {
-  top: 0;
-  position: fixed;
-  transition: 2s;
-  background-color: rgba(25, 25, 25, 0.6);
-  z-index: -1;
-}
-
-.left.slide {
-  transform: translateX(-100%);
-}
-
-.right.slide {
-  transform: translateX(100%);
-}
-
-.back {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  background-image: url(http://www.menucool.com/slider/jsImgSlider/images/image-slider-2.jpg);
-  background-size: cover;
-  z-index: -2;
-}
-
-.carousel {
-  transition: 2s;
-}
-
-@items: 20;
-
-.swoop-up-loop (@i) when (@i >= 0) {
-  .swoop-up-@{i} {
-    transform: translateY(-1000px  + @i*200);
-  }
-  .swoop-up-loop(@i - 1);
-}
-
-.swoop-up-loop(@items);
-
-
-.swoop-down-loop (@i) when (@i >= 0) {
-  .swoop-down-@{i} {
-    transform: translateY(1000px - @i*200);
-  }
-  .swoop-down-loop(@i - 1);
-}
-
-.swoop-down-loop(@items);
-
-@iterations: 20;
-
-.translate-loop (@i) when (@i >= 0) {
-  .translate-left-@{i} {
-    transform: translateX(-227px*@i);
-
-  }
-  .translate-loop(@i - 1);
-}
-
-.translate-loop(@iterations);
-
-
-.scrollable{
-  overflow-y:hidden !important;
-}
-
-/* Let's get this party started */
-::-webkit-scrollbar {
-  width: 12px;
-
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-  -webkit-border-radius: 10px;
-  border-radius: 10px;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  -webkit-border-radius: 10px;
-
-  border-radius: 10px;
-  background: rgba(255,0,0,0.8);
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
-}
-::-webkit-scrollbar-thumb:window-inactive {
-  background: rgba(255,0,0,0.4);
+.stripes {
+  background-size: 10px 10px; /* Controls the size of the stripes */
 }

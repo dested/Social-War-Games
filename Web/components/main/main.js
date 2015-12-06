@@ -1,7 +1,7 @@
 var module = angular.module('SocialWarGames.Client');
 var baseColor = new HexagonColor('#FFFFFF');
 
-var selectedColor = new HexagonColor('#005500');
+var selectedColor = new HexagonColor('#BCFFF2');
 
 module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
   $scope.model = {};
@@ -52,6 +52,11 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
     }
 
     var path = hexBoard.getPath(lItem, item);
+
+    if(path.length==0){
+      path.push(item);
+    }
+
     lItem = item;
 
     for (var i = 0; i < hexBoard.hexList.length; i++) {
