@@ -102,8 +102,8 @@ namespace Simulation
             MongoGameStateData.GameStateData stateData = new MongoGameStateData.GameStateData();
             stateData.Board = new MongoGameStateData.HexBoard();
             string boardStr = "";
-            stateData.Board.Width = 40;
-            stateData.Board.Height = 45;
+            stateData.Board.Width = 84;
+            stateData.Board.Height = 84;
             for (int y = 0; y < stateData.Board.Height; y++)
             {
                 for (int x = 0; x < stateData.Board.Width; x++)
@@ -114,9 +114,9 @@ namespace Simulation
                     }
                     else
                     {
-                        if (random.Next(0, 100) < 20)
+                        if (random.Next(0, 100) < 15)
                             boardStr += 2;
-                        else if (random.Next(0, 100) < 10)
+                        else if (random.Next(0, 100) < 6)
                             boardStr += 3;
                         else
                             boardStr += 1;
@@ -150,7 +150,7 @@ namespace Simulation
                 }
 
 
-                var numOfUnits = 150;
+                var numOfUnits = 300;
                 for (int i = 0; i < numOfUnits; i++)
                 {
                     var unitType = random.Next(0, 100);

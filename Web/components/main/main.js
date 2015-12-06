@@ -121,6 +121,8 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
         hexBoard.addHexagon(gridHexagon);
       }
     }
+    hexBoard.reorderHexList();
+
 
     for (var i = 0; i < state.factions.length; i++) {
       var faction = state.factions[i];

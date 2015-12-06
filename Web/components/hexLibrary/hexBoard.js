@@ -48,7 +48,6 @@ HexBoard.prototype.getHexAtPoint = function (clickX, clickY) {
 HexBoard.prototype.addHexagon = function (hexagon) {
   this.hexList.push(hexagon);
   this.hexBlock[hexagon.x + hexagon.z * 5000] = hexagon;
-  this.reorderHexList();
 };
 HexBoard.prototype.reorderHexList = function () {
   this.hexList = orderBy(this.hexList, function (m) {
