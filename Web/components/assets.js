@@ -35,6 +35,9 @@ AssetManager.prototype.$imageLoaded = function (img, name) {
 
   this.$assetsLoaded++;
   if (this.$assetsLoaded == this.$assetsRequested) {
-    this.completed();
+    setTimeout((function(){
+      this.completed();
+    }).bind(this),100);
+
   }
 };

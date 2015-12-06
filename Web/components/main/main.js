@@ -12,7 +12,7 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
   var canvas = document.getElementById("hex");
 
   var mc = new Hammer.Manager(canvas);
-  mc.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
+  mc.add(new Hammer.Pan({threshold: 0, pointers: 0}));
   mc.add(new Hammer.Swipe()).recognizeWith(mc.get('pan'));
   mc.add(new Hammer.Tap());
 
@@ -27,28 +27,28 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
 
   mc.on('panstart', function (ev) {
     //hexBoard.offsetView(-ev.deltaX/10, -ev.deltaY/10);
-    tapStart.x=hexBoard.viewPort.x;
-    tapStart.y=hexBoard.viewPort.y;
-    hexBoard.viewPort.x=tapStart.x-ev.deltaX;
-    hexBoard.viewPort.y=tapStart.y-ev.deltaY;
+    swipeVelocity.x = swipeVelocity.y = 0;
+    tapStart.x = hexBoard.viewPort.x;
+    tapStart.y = hexBoard.viewPort.y;
+    hexBoard.setView(tapStart.x - ev.deltaX, tapStart.y - ev.deltaY);
   });
   mc.on('panmove', function (ev) {
-    hexBoard.viewPort.x=tapStart.x-ev.deltaX;
-    hexBoard.viewPort.y=tapStart.y-ev.deltaY;
+    hexBoard.setView(tapStart.x - ev.deltaX, tapStart.y - ev.deltaY);
   });
 
   mc.on('swipe', function (ev) {
     console.log('ss')
-    swipeVelocity.x = ev.velocityX*10;
-    swipeVelocity.y = ev.velocityY*10;
+    swipeVelocity.x = ev.velocityX * 10;
+    swipeVelocity.y = ev.velocityY * 10;
   });
-
 
 
   var lItem;
   mc.on('tap', function (ev) {
     var x = ev.center.x;
     var y = ev.center.y;
+
+    swipeVelocity.x = swipeVelocity.y = 0;
 
     var item = hexBoard.getHexAtPoint(x, y);
     if (!item)return;
@@ -60,7 +60,7 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
 
     var path = hexBoard.getPath(lItem, item);
 
-    if(path.length==0){
+    if (path.length == 0) {
       path.push(item);
     }
 
@@ -78,16 +78,17 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
 
   var context = canvas.getContext("2d");
 
-  function draw(){
+  function draw() {
     requestAnimationFrame(draw);
-tick();
+    tick();
     canvas.width = canvas.width;
     hexBoard.drawBoard(context);
   }
-  function tick(){
+
+  function tick() {
     if (Math.abs(swipeVelocity.x) > 0) {
       var sign = Math.sign(swipeVelocity.x);
-      swipeVelocity.x += 1.5 * -sign;
+      swipeVelocity.x += 0.7 * -sign;
       if (Math.sign(swipeVelocity.x) != sign) {
         swipeVelocity.x = 0;
       }
@@ -95,7 +96,7 @@ tick();
 
     if (Math.abs(swipeVelocity.y) > 0) {
       var sign = Math.sign(swipeVelocity.y);
-      swipeVelocity.y += 1.5 * -sign;
+      swipeVelocity.y += 0.7 * -sign;
       if (Math.sign(swipeVelocity.y) != sign) {
         swipeVelocity.y = 0;
       }
@@ -103,6 +104,7 @@ tick();
     hexBoard.offsetView(swipeVelocity.x, swipeVelocity.y);
 
   }
+
   draw();
 
 
@@ -112,7 +114,7 @@ tick();
     extractResponse: 'stateData'
   }).then(function (state) {
     var str = state.board.boardStr;
-
+    hexBoard.setSize(state.board.width, state.board.height);
 
     var factionColors = [];
     for (var i = 0; i < state.factions.length; i++) {

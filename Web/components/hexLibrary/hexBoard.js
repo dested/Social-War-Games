@@ -1,6 +1,7 @@
 function HexBoard() {
   this.hexList = [];
   this.hexBlock = {};
+  this.boardSize = {width: 0, height: 0};
   this.viewPort = {x: 0, y: 0, width: 400, height: 400, padding: GridHexagonConstants.width * 2};
 }
 
@@ -12,16 +13,42 @@ HexBoard.prototype.resize = function (width, height) {
   this.viewPort.width = width;
   this.viewPort.height = height;
 };
+HexBoard.prototype.setSize = function (width, height) {
+  this.boardSize.width = width;
+  this.boardSize.height = height;
+};
 
 HexBoard.prototype.offsetView = function (x, y) {
   this.viewPort.x += x;
   this.viewPort.y += y;
+  this.constrainViewPort();
 };
+HexBoard.prototype.setView = function (x, y) {
+  this.viewPort.x = x;
+  this.viewPort.y = y;
+};
+HexBoard.prototype.constrainViewPort = function (x, y) {
+  this.viewPort.x = Math.max(this.viewPort.x, 0 - this.viewPort.padding)
+  this.viewPort.y = Math.max(this.viewPort.y, 0 - this.viewPort.padding)
+  var size = this.gameDimensions();
+
+  this.viewPort.x = Math.min(this.viewPort.x, size.width + this.viewPort.padding - this.viewPort.width)
+  this.viewPort.y = Math.min(this.viewPort.y, size.height + this.viewPort.padding - this.viewPort.height)
+};
+
+
+HexBoard.prototype.gameDimensions = function () {
+  var size = {};
+  size.width = GridHexagonConstants.width * 3 / 4 * this.boardSize.width;
+  size.height = GridHexagonConstants.height() * this.boardSize.height;
+  return size;
+};
+
 
 HexBoard.prototype.getHexAtPoint = function (clickX, clickY) {
   var lastClick = null;
-  clickX+=this.viewPort.x;
-  clickY+=this.viewPort.y;
+  clickX += this.viewPort.x;
+  clickY += this.viewPort.y;
 
   for (var i = 0; i < this.hexList.length; i++) {
     var gridHexagon = this.hexList[i];
