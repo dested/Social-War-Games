@@ -11,9 +11,10 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
 
   var canvas = document.getElementById("hex");
 
-
-  var hammertime = new Hammer(canvas);
-
+  var mc = new Hammer.Manager(canvas);
+  mc.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
+  mc.add(new Hammer.Swipe()).recognizeWith(mc.get('pan'));
+  mc.add(new Hammer.Tap());
 
   canvas.width = document.body.clientWidth;
   canvas.height = document.body.clientHeight;
@@ -24,22 +25,28 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
   var swipeVelocity = {x: 0, y: 0};
   var tapStart = {x: 0, y: 0};
 
-  hammertime.on('panstart', function (ev) {
+  mc.on('panstart', function (ev) {
     //hexBoard.offsetView(-ev.deltaX/10, -ev.deltaY/10);
     tapStart.x=hexBoard.viewPort.x;
     tapStart.y=hexBoard.viewPort.y;
     hexBoard.viewPort.x=tapStart.x-ev.deltaX;
     hexBoard.viewPort.y=tapStart.y-ev.deltaY;
   });
-  hammertime.on('panmove', function (ev) {
+  mc.on('panmove', function (ev) {
     hexBoard.viewPort.x=tapStart.x-ev.deltaX;
     hexBoard.viewPort.y=tapStart.y-ev.deltaY;
+  });
+
+  mc.on('swipe', function (ev) {
+    console.log('ss')
+    swipeVelocity.x = ev.velocityX*10;
+    swipeVelocity.y = ev.velocityY*10;
   });
 
 
 
   var lItem;
-  hammertime.on('tap', function (ev) {
+  mc.on('tap', function (ev) {
     var x = ev.center.x;
     var y = ev.center.y;
 
@@ -73,9 +80,28 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
 
   function draw(){
     requestAnimationFrame(draw);
-
+tick();
     canvas.width = canvas.width;
     hexBoard.drawBoard(context);
+  }
+  function tick(){
+    if (Math.abs(swipeVelocity.x) > 0) {
+      var sign = Math.sign(swipeVelocity.x);
+      swipeVelocity.x += 1.5 * -sign;
+      if (Math.sign(swipeVelocity.x) != sign) {
+        swipeVelocity.x = 0;
+      }
+    }
+
+    if (Math.abs(swipeVelocity.y) > 0) {
+      var sign = Math.sign(swipeVelocity.y);
+      swipeVelocity.y += 1.5 * -sign;
+      if (Math.sign(swipeVelocity.y) != sign) {
+        swipeVelocity.y = 0;
+      }
+    }
+    hexBoard.offsetView(swipeVelocity.x, swipeVelocity.y);
+
   }
   draw();
 
