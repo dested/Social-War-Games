@@ -5,6 +5,7 @@ function GridHexagon() {
   this.height = 0;
 
   this.icon = null;
+  this.unit = null;
 
   this.highlightColor = null;
   this.hexColor = null;
@@ -19,7 +20,8 @@ GridHexagon.prototype.getDepthHeight = function () {
   return (this.height ) * GridHexagonConstants.depthHeight();
 };
 
-GridHexagon.prototype.setIcon = function (name) {
+GridHexagon.prototype.setUnit = function (name) {
+  this.unit = name;
   this.icon = window.assetManager.assets[name];
   this.invalidate();
 };

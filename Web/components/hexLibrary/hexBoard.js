@@ -37,6 +37,60 @@ HexBoard.prototype.constrainViewPort = function (x, y) {
 };
 
 
+HexBoard.prototype.initialize = function (state) {
+  var str = state.board.boardStr;
+  this.setSize(state.board.width, state.board.height);
+
+  var factionColors = [];
+  for (var i = 0; i < state.factions.length; i++) {
+    var faction = state.factions[i];
+    factionColors[i] = new HexagonColor(faction.color);
+  }
+
+
+  var ys = str.split('|');
+
+  for (var y = 0; y < ys.length; y++) {
+    var yItem = ys[y].split('');
+    for (var x = 0; x < yItem.length; x += 2) {
+      var xItem = parseInt(yItem[x]);
+      if (xItem == 0)continue;
+      var factionIndex = parseInt(yItem[x + 1]);
+
+
+      var gridHexagon = new GridHexagon();
+      gridHexagon.x = x / 2;
+      gridHexagon.y = 0;
+      gridHexagon.z = y;
+      gridHexagon.height = xItem;
+      if (factionIndex == 0) {
+        gridHexagon.hexColor = baseColor;
+
+      } else {
+        gridHexagon.hexColor = factionColors[factionIndex - 1];
+      }
+      gridHexagon.buildPaths();
+      this.addHexagon(gridHexagon);
+    }
+  }
+  this.reorderHexList();
+
+
+  for (var i = 0; i < state.factions.length; i++) {
+    var faction = state.factions[i];
+    var fColor = new HexagonColor(faction.color);
+    for (var j = 0; j < faction.units.length; j++) {
+      var unit = faction.units[j];
+      var gridHexagon = this.xyToHexIndex(unit.x, unit.y);
+      if (!gridHexagon)continue;
+      gridHexagon.setColor(fColor);
+      gridHexagon.setUnit(unit.unitType);
+    }
+  }
+
+
+};
+
 HexBoard.prototype.gameDimensions = function () {
   var size = {};
   size.width = GridHexagonConstants.width * 3 / 4 * this.boardSize.width;
@@ -112,7 +166,7 @@ HexBoard.prototype.drawHexagon = function (context, gridHexagon) {
   context.restore();
 
 };
-HexBoard.prototype.getPath = function (start, finish) {
+HexBoard.prototype.pathFind = function (start, finish) {
   var mypathStart = new Node(null, start);
   var mypathEnd = new Node(null, finish);
   var aStar = [];

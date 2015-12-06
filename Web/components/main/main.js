@@ -1,7 +1,7 @@
 var module = angular.module('SocialWarGames.Client');
 var baseColor = new HexagonColor('#FFFFFF');
 
-var selectedColor = new HexagonColor('#51F9FF');
+var highlightColor = new HexagonColor('#51F9FF');
 
 module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
   $scope.model = {};
@@ -10,14 +10,21 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
   var hexBoard = new HexBoard();
 
   var canvas = document.getElementById("hex");
+  var menu = document.getElementById("menu");
 
-  var mc = new Hammer.Manager(canvas);
+  var menuManager = new MenuManager(menu);
+
+  var overlay = document.getElementById("overlay");
+
+  var mc = new Hammer.Manager(overlay);
   mc.add(new Hammer.Pan({threshold: 0, pointers: 0}));
   mc.add(new Hammer.Swipe()).recognizeWith(mc.get('pan'));
   mc.add(new Hammer.Tap());
 
   canvas.width = document.body.clientWidth;
   canvas.height = document.body.clientHeight;
+  overlay.style.width = '100vw';
+  overlay.style.height = '100vh';
 
   hexBoard.resize(canvas.width, canvas.height);
 
@@ -26,6 +33,8 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
   var tapStart = {x: 0, y: 0};
 
   mc.on('panstart', function (ev) {
+    menuManager.closeMenu();
+
     //hexBoard.offsetView(-ev.deltaX/10, -ev.deltaY/10);
     swipeVelocity.x = swipeVelocity.y = 0;
     tapStart.x = hexBoard.viewPort.x;
@@ -37,7 +46,7 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
   });
 
   mc.on('swipe', function (ev) {
-    console.log('ss')
+    menuManager.closeMenu();
     swipeVelocity.x = ev.velocityX * 10;
     swipeVelocity.y = ev.velocityY * 10;
   });
@@ -47,18 +56,40 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
   mc.on('tap', function (ev) {
     var x = ev.center.x;
     var y = ev.center.y;
-
     swipeVelocity.x = swipeVelocity.y = 0;
+
+
+    if (menuManager.tap(x, y)) {
+      return;
+    }
+    menuManager.closeMenu();
+
+    for (var i = 0; i < hexBoard.hexList.length; i++) {
+      var h = hexBoard.hexList[i];
+      h.setHighlight(null);
+    }
 
     var item = hexBoard.getHexAtPoint(x, y);
     if (!item)return;
 
-
+    if (item.unit) {
+      menuManager.openMenu([
+        {image: window.assetManager.assets['Icon.Move'].image, action: 'move'},
+        {image: window.assetManager.assets['Icon.Attack'].image, action: 'attack'}
+      ], {x: x, y: y}, function (selectedItem) {
+        console.log(selectedItem.action);
+        item.setHighlight(highlightColor);
+        menuManager.closeMenu();
+      });
+      return;
+    } else {
+      return;
+    }
     if (!lItem) {
       lItem = item;
     }
 
-    var path = hexBoard.getPath(lItem, item);
+    var path = hexBoard.pathFind(lItem, item);
 
     if (path.length == 0) {
       path.push(item);
@@ -66,12 +97,9 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
 
     lItem = item;
 
-    for (var i = 0; i < hexBoard.hexList.length; i++) {
-      var h = hexBoard.hexList[i];
-      h.setHighlight(null);
-    }
+
     for (var i = 0; i < path.length; i++) {
-      path[i].setHighlight(selectedColor);
+      path[i].setHighlight(highlightColor);
     }
   });
 
@@ -83,6 +111,7 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
     tick();
     canvas.width = canvas.width;
     hexBoard.drawBoard(context);
+    menuManager.draw();
   }
 
   function tick() {
@@ -113,56 +142,9 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
     url: serviceUrl.path('${api}game/state'),
     extractResponse: 'stateData'
   }).then(function (state) {
-    var str = state.board.boardStr;
-    hexBoard.setSize(state.board.width, state.board.height);
-
-    var factionColors = [];
-    for (var i = 0; i < state.factions.length; i++) {
-      var faction = state.factions[i];
-      factionColors[i] = new HexagonColor(faction.color);
-    }
 
 
-    var ys = str.split('|');
-
-    for (var y = 0; y < ys.length; y++) {
-      var yItem = ys[y].split('');
-      for (var x = 0; x < yItem.length; x += 2) {
-        var xItem = parseInt(yItem[x]);
-        if (xItem == 0)continue;
-        var factionIndex = parseInt(yItem[x + 1]);
-
-
-        var gridHexagon = new GridHexagon();
-        gridHexagon.board = hexBoard;
-        gridHexagon.x = x / 2;
-        gridHexagon.y = 0;
-        gridHexagon.z = y;
-        gridHexagon.height = xItem;
-        if (factionIndex == 0) {
-          gridHexagon.hexColor = baseColor;
-
-        } else {
-          gridHexagon.hexColor = factionColors[factionIndex - 1];
-        }
-        gridHexagon.buildPaths();
-        hexBoard.addHexagon(gridHexagon);
-      }
-    }
-    hexBoard.reorderHexList();
-
-
-    for (var i = 0; i < state.factions.length; i++) {
-      var faction = state.factions[i];
-      var fColor = new HexagonColor(faction.color);
-      for (var j = 0; j < faction.units.length; j++) {
-        var unit = faction.units[j];
-        var gridHexagon = hexBoard.xyToHexIndex(unit.x, unit.y);
-        if (!gridHexagon)continue;
-        gridHexagon.setColor(fColor);
-        gridHexagon.setIcon(unit.unitType);
-      }
-    }
+    hexBoard.initialize(state);
 
   });
 

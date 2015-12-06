@@ -8,6 +8,11 @@ var base = {x: 40, y: 55};
 window.assetManager.addAsset('Infantry', 'images/tower_10.png', size, base);
 window.assetManager.addAsset('Tank', 'images/tower_40.png', size, base);
 window.assetManager.addAsset('Base', 'images/tower_42.png', size, base);
+
+
+window.assetManager.addAsset('Icon.Move', 'images/icons/move.png', size, base);
+window.assetManager.addAsset('Icon.Attack', 'images/icons/attack.png', size, base);
+
 window.assetManager.start();
 
 
