@@ -14,7 +14,7 @@ namespace RestServer.Logic
     {
         public static GetStateResponse GetState(GetStateRequest model)
         {
-            var stateData = SocialTestGame.Instance.StateData;
+            var stateData = SocialWarGames.Instance.StateData;
             return new GetStateResponse()
             {
                 StateData = stateData
@@ -24,7 +24,7 @@ namespace RestServer.Logic
 
         public static PostVoteResponse VoteAction(PostVoteRequest model)
         {
-            var gameStateData = SocialTestGame.Instance.StateData;
+            var gameStateData = SocialWarGames.Instance.StateData;
 
             if (model.Generation != gameStateData.Generation)
             {
@@ -51,7 +51,7 @@ namespace RestServer.Logic
                                 throw new ValidationException("Distance must be 1");
                             }
 
-                            SocialTestGame.Instance.VoteAction(new MoveInfantryVote()
+                            SocialWarGames.Instance.VoteAction(new MoveInfantryVote()
                             {
                                 X = model.X,
                                 Y = model.Y,
@@ -66,7 +66,7 @@ namespace RestServer.Logic
                                 throw new ValidationException("Distance must be 1");
                             }
 
-                            SocialTestGame.Instance.VoteAction(new AttackInfantryVote()
+                            SocialWarGames.Instance.VoteAction(new AttackInfantryVote()
                             {
                                 X = model.X,
                                 Y = model.Y,

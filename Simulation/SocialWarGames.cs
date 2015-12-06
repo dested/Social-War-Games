@@ -12,15 +12,15 @@ using Simulation.Votes;
 
 namespace Simulation
 {
-    public class SocialTestGame
+    public class SocialWarGames
     {
-        private static SocialTestGame instance;
-        public static SocialTestGame Instance => instance ?? (instance = new SocialTestGame());
+        private static SocialWarGames instance;
+        public static SocialWarGames Instance => instance ?? (instance = new SocialWarGames());
         private Random random = new Random();
 
 
         public MongoGameStateData.GameStateData StateData { get; set; }
-        public SocialTestGame()
+        public SocialWarGames()
         {
             loadGameState();
             Timer t = new Timer(TimeSpan.FromMinutes(1).TotalMilliseconds);

@@ -1,4 +1,4 @@
-angular.module('Social.Client')
+angular.module('SocialWarGames.Client')
   .factory('apiKey', function ($window) {
     var url = 'http://127.0.0.1:3569/api/'; // local
     return url;

@@ -1,4 +1,4 @@
-var module = angular.module('Social.Client', [
+var module = angular.module('SocialWarGames.Client', [
   'ui.router'
 ]);
 
