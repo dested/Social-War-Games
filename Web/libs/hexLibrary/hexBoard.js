@@ -20,6 +20,9 @@ HexBoard.prototype.offsetView = function (x, y) {
 
 HexBoard.prototype.getHexAtPoint = function (clickX, clickY) {
   var lastClick = null;
+  clickX+=this.viewPort.x;
+  clickY+=this.viewPort.y;
+
   for (var i = 0; i < this.hexList.length; i++) {
     var gridHexagon = this.hexList[i];
     var x = GridHexagonConstants.width * 3 / 4 * gridHexagon.x;

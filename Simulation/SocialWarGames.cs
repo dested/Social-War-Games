@@ -120,8 +120,9 @@ namespace Simulation
                             boardStr += 3;
                         else
                             boardStr += 1;
-
                     }
+
+                    boardStr += (y / (stateData.Board.Height / 3)) + 1;
                 }
                 boardStr += "|";
             }
@@ -159,7 +160,7 @@ namespace Simulation
                     while (true)
                     {
                         x = random.Next(0, stateData.Board.Width);
-                        y = random.Next(0, stateData.Board.Height);
+                        y = random.Next(stateData.Board.Height / 3*f, stateData.Board.Height / 3*(f+1));
                         if (!gameFaction.Units.Any(a => a.X == x && a.Y == y))
                         {
                             break;

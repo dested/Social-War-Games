@@ -46,8 +46,8 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
   var context = canvas.getContext("2d");
 
   setInterval(function () {
+    hexBoard.offsetView(0, 0);
     canvas.width = canvas.width;
-    //hexBoard.offsetView(10,10);
     hexBoard.drawBoard(context);
   }, 1000 / 60);
 
@@ -58,22 +58,37 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
   }).then(function (state) {
     var str = state.board.boardStr;
 
+
+    var factionColors = [];
+    debugger;
+    for (var i = 0; i < state.factions.length; i++) {
+      var faction = state.factions[i];
+      factionColors[i] = new HexagonColor(faction.color);
+    }
+
+
     var ys = str.split('|');
 
     for (var y = 0; y < ys.length; y++) {
       var yItem = ys[y].split('');
-      for (var x = 0; x < yItem.length; x++) {
+      for (var x = 0; x < yItem.length; x += 2) {
         var xItem = parseInt(yItem[x]);
-
         if (xItem == 0)continue;
+        var factionIndex = parseInt(yItem[x + 1]);
+
 
         var gridHexagon = new GridHexagon();
         gridHexagon.board = hexBoard;
-        gridHexagon.x = x;
+        gridHexagon.x = x/2;
         gridHexagon.y = 0;
         gridHexagon.z = y;
         gridHexagon.height = xItem;
-        gridHexagon.hexColor = baseColor;
+        if(factionIndex==0){
+          gridHexagon.hexColor = baseColor;
+
+        }else{
+          gridHexagon.hexColor = factionColors[factionIndex-1];
+        }
         gridHexagon.buildPaths();
         hexBoard.addHexagon(gridHexagon);
       }
