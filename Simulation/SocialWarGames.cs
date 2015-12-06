@@ -103,7 +103,7 @@ namespace Simulation
             stateData.Board = new MongoGameStateData.HexBoard();
             string boardStr = "";
             stateData.Board.Width = 40;
-            stateData.Board.Height = 40;
+            stateData.Board.Height = 45;
             for (int y = 0; y < stateData.Board.Height; y++)
             {
                 for (int x = 0; x < stateData.Board.Width; x++)
