@@ -22,7 +22,11 @@ GridHexagon.prototype.getDepthHeight = function () {
 
 GridHexagon.prototype.setUnit = function (name) {
   this.unit = name;
-  this.icon = window.assetManager.assets[name];
+  if(this.unit){
+    this.icon = window.assetManager.assets[this.unit];
+  }else{
+    this.icon=null;
+  }
   this.invalidate();
 };
 
