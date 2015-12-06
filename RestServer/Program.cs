@@ -9,7 +9,7 @@ namespace RestServer
         static void Main(string[] args)
         {
             var uri =
-                new Uri("http://127.0.0.1:3569");
+                new Uri("http://localhost:3569");
             HostConfiguration hostConfigs = new HostConfiguration();
             hostConfigs.UrlReservations.CreateAutomatically = true;
 

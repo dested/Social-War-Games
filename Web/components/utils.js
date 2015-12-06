@@ -1,6 +1,11 @@
 angular.module('SocialWarGames.Client')
   .factory('apiKey', function ($window) {
     var url = 'http://127.0.0.1:3569/api/'; // local
+
+    if(location.hostname!='localhost'){
+       url = 'http://45.79.186.117:3569/api/'; // local
+
+    }
     return url;
   })
   .provider('requestInterceptor', function () {

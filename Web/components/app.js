@@ -21,4 +21,7 @@ function startApp() {
     $httpProvider.defaults.useXDomain = true;
     delete $httpProvider.defaults.headers.common['X-Requested-With'];
   });
+
+
+  angular.bootstrap(document, ['SocialWarGames.Client']);
 }
