@@ -22,66 +22,20 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
 
 
   var swipeVelocity = {x: 0, y: 0};
+  var tapStart = {x: 0, y: 0};
 
-  hammertime.on('pan', function (ev) {
+  hammertime.on('panstart', function (ev) {
     //hexBoard.offsetView(-ev.deltaX/10, -ev.deltaY/10);
-    swipeVelocity.x = ev.velocityX*10;
-    swipeVelocity.y = ev.velocityY*10;
-
-    if(Math.abs(swipeVelocity.y)>60){
-      //swipeVelocity.y=10*Math.sign(swipeVelocity.y);
-    }
-    if(Math.abs(swipeVelocity.x)>60){
-      //swipeVelocity.x=10*Math.sign(swipeVelocity.x);
-    }
+    tapStart.x=hexBoard.viewPort.x;
+    tapStart.y=hexBoard.viewPort.y;
+    hexBoard.viewPort.x=tapStart.x-ev.deltaX;
+    hexBoard.viewPort.y=tapStart.y-ev.deltaY;
+  });
+  hammertime.on('panmove', function (ev) {
+    hexBoard.viewPort.x=tapStart.x-ev.deltaX;
+    hexBoard.viewPort.y=tapStart.y-ev.deltaY;
   });
 
-  setInterval(function () {
-    //return;
-    if (swipeVelocity.x != 0) {
-
-      hexBoard.offsetView(swipeVelocity.x, 0);
-
-      if (swipeVelocity.x > 0) {
-        swipeVelocity.x -= 0.6;
-        if (swipeVelocity.x < 0) {
-          swipeVelocity.x = 0;
-        }
-      }
-
-
-      if (swipeVelocity.x < 0) {
-        swipeVelocity.x += 0.6;
-        if (swipeVelocity.x > 0) {
-          swipeVelocity.x = 0;
-        }
-      }
-
-    }
-
-
-    if (swipeVelocity.y != 0) {
-
-      hexBoard.offsetView(0, swipeVelocity.y);
-
-      if (swipeVelocity.y > 0) {
-        swipeVelocity.y -= 0.6;
-        if (swipeVelocity.y < 0) {
-          swipeVelocity.y = 0;
-        }
-      }
-
-      if (swipeVelocity.y < 0) {
-        swipeVelocity.y += 0.6;
-        if (swipeVelocity.y > 0) {
-          swipeVelocity.y = 0;
-        }
-      }
-
-    }
-
-
-  }, 1000 / 60);
 
 
   var lItem;
@@ -95,7 +49,6 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
 
     if (!lItem) {
       lItem = item;
-      return;
     }
 
     var path = hexBoard.getPath(lItem, item);
@@ -113,10 +66,13 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
 
   var context = canvas.getContext("2d");
 
-  setInterval(function () {
+  function draw(){
+    requestAnimationFrame(draw);
+
     canvas.width = canvas.width;
     hexBoard.drawBoard(context);
-  }, 1000 / 60);
+  }
+  draw();
 
 
   $http({
