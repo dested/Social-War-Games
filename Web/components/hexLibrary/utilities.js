@@ -1,7 +1,7 @@
 
 var HexagonColor = function (color) {
   this.color = color;
-  this.darkBorder = DrawingUtilities.colorLuminance(color, -0.2);
+  this.darkBorder = DrawingUtilities.colorLuminance(color, -0.45);
   this.dark1 = DrawingUtilities.colorLuminance(color, -0.4);
   this.dark2 = DrawingUtilities.colorLuminance(color, -0.55);
   this.dark3 = DrawingUtilities.colorLuminance(color, -0.65);

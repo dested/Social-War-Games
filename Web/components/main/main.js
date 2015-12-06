@@ -1,7 +1,7 @@
 var module = angular.module('SocialWarGames.Client');
 var baseColor = new HexagonColor('#FFFFFF');
 
-var selectedColor = new HexagonColor('#BCFFF2');
+var selectedColor = new HexagonColor('#51F9FF');
 
 module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
   $scope.model = {};
