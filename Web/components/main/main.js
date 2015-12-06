@@ -34,14 +34,10 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
 
     for (var i = 0; i < hexBoard.hexList.length; i++) {
       var h = hexBoard.hexList[i];
-      if (h.hexColor != baseColor) {
-        h.hexColor = baseColor;
-        h.invalidate();
-      }
+      h.setHighlight(null);
     }
     for (var i = 0; i < path.length; i++) {
-      path[i].hexColor = selectedColor;
-      path[i].invalidate();
+      path[i].setHighlight(selectedColor);
     }
 
   };
@@ -53,7 +49,6 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
     canvas.width = canvas.width;
     //hexBoard.offsetView(10,10);
     hexBoard.drawBoard(context);
-
   }, 1000 / 60);
 
   $http({
@@ -87,7 +82,6 @@ module.controller('mainCtrl', function ($scope, $http, serviceUrl) {
     for (var i = 0; i < state.factions.length; i++) {
       var faction = state.factions[i];
       var fColor = new HexagonColor(faction.color);
-
       for (var j = 0; j < faction.units.length; j++) {
         var unit = faction.units[j];
         var gridHexagon = hexBoard.xyToHexIndex(unit.x, unit.y);

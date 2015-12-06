@@ -4,7 +4,7 @@ var module = angular.module('SocialWarGames.Client', [
 
 window.assetManager = new AssetManager(startApp);
 var size = {width:50,height:50};
-var base = {x:25,y:40};
+var base = {x:25,y:32};
 window.assetManager.addAsset('Infantry', 'images/tower_10.png', size, base);
 window.assetManager.addAsset('Tank', 'images/tower_40.png', size, base);
 window.assetManager.addAsset('Base', 'images/tower_42.png', size, base);

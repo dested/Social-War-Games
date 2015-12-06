@@ -6,6 +6,7 @@ function GridHexagon() {
 
   this.icon = null;
 
+  this.highlightColor = null;
   this.hexColor = null;
   this.topPath = null;
   this.leftDepthPath = null;
@@ -24,8 +25,17 @@ GridHexagon.prototype.setIcon = function (name) {
 };
 
 GridHexagon.prototype.setColor = function (hexColor) {
-  this.hexColor = hexColor;
-  this.invalidate();
+  if (this.hexColor != hexColor) {
+    this.hexColor = hexColor;
+    this.invalidate();
+  }
+};
+
+GridHexagon.prototype.setHighlight = function (hexColor) {
+  if (this.highlightColor != hexColor) {
+    this.highlightColor = hexColor;
+    this.invalidate();
+  }
 };
 
 GridHexagon.prototype.buildPaths = function () {
@@ -45,34 +55,38 @@ function buildPath(path) {
   return p2d;
 }
 
+GridHexagon.prototype.$getDrawingColor = function () {
+  return this.highlightColor || this.hexColor;
+};
+
 GridHexagon.prototype.drawLeftDepth = function (context) {
-  context.strokeStyle = this.hexColor.dark1;
+  context.strokeStyle = this.$getDrawingColor().dark1;
   context.stroke(this.leftDepthPath);
-  context.fillStyle = this.hexColor.dark1;
+  context.fillStyle = this.$getDrawingColor().dark1;
   context.fill(this.leftDepthPath);
 };
 GridHexagon.prototype.drawBottomDepth = function (context) {
-  context.strokeStyle = this.hexColor.dark2;
+  context.strokeStyle = this.$getDrawingColor().dark2;
   context.stroke(this.bottomDepthPath);
-  context.fillStyle = this.hexColor.dark2;
+  context.fillStyle = this.$getDrawingColor().dark2;
   context.fill(this.bottomDepthPath);
 };
 GridHexagon.prototype.drawRightDepth = function (context) {
-  context.strokeStyle = this.hexColor.dark3;
+  context.strokeStyle = this.$getDrawingColor().dark3;
   context.stroke(this.rightDepthPath);
-  context.fillStyle = this.hexColor.dark3;
+  context.fillStyle = this.$getDrawingColor().dark3;
   context.fill(this.rightDepthPath);
 };
 GridHexagon.prototype.drawTop = function (context) {
   /*
    if ((this.y + this.height) != 1)
-   context.strokeStyle = this.hexColor.darkBorder;
+   context.strokeStyle = this.$getDrawingColor().darkBorder;
    else
-   context.strokeStyle = this.hexColor.color;
+   context.strokeStyle = this.$getDrawingColor().color;
    */
-  context.strokeStyle = this.hexColor.darkBorder;
+  context.strokeStyle = this.$getDrawingColor().darkBorder;
   context.stroke(this.topPath);
-  context.fillStyle = this.hexColor.color;
+  context.fillStyle = this.$getDrawingColor().color;
   context.fill(this.topPath);
 };
 GridHexagon.prototype.drawIcon = function (context) {
@@ -92,8 +106,8 @@ GridHexagon.prototype.envelope = function () {
   size.width = GridHexagonConstants.width;
   size.height = GridHexagonConstants.height();
 
-  if (this.icon && size.height < (this.icon.base.y + size.height)) {
-    size.height = this.icon.base.y + size.height ;
+  if (this.icon) {
+    size.height = Math.max(size.height, this.icon.base.y + size.height / 2);
   }
 
   size.height += this.getDepthHeight();
@@ -101,26 +115,22 @@ GridHexagon.prototype.envelope = function () {
 };
 
 GridHexagon.prototype.hexCenter = function () {
-  var diff = 0;
-
-  if (this.icon && (GridHexagonConstants.height() < (this.icon.base.y))) {
-    diff = this.icon.base.y;
+  var center = GridHexagonConstants.height() / 2;
+  if (this.icon) {
+    return Math.max(center, this.icon.base.y);
   }
 
-  return GridHexagonConstants.height() / 2 + diff;
+  return center;
 };
 
 GridHexagon.prototype.draw = function (context) {
 
   if (this.drawCache) {
     context.drawImage(this.drawCache, -this.drawCache.width / 2, -this.hexCenter());
+    //this.drawCache=null;
   } else {
     var can = document.createElement('canvas');
     var ctx = can.getContext('2d');
-
-    if(this.icon){
-      debugger;
-    }
 
     var size = this.envelope();
     can.width = size.width;
@@ -134,6 +144,10 @@ GridHexagon.prototype.draw = function (context) {
     this.drawTop(ctx);
     this.drawIcon(ctx);
     ctx.restore();
+    /*
+     ctx.strokeStyle='black';
+     ctx.lineWidth=1;
+     ctx.strokeRect(0,0,can.width,can.height);*/
     this.drawCache = can;
     this.draw(context);
   }

@@ -102,9 +102,11 @@ namespace Simulation
             MongoGameStateData.GameStateData stateData = new MongoGameStateData.GameStateData();
             stateData.Board = new MongoGameStateData.HexBoard();
             string boardStr = "";
-            for (int y = 0; y < 40; y++)
+            stateData.Board.Width = 40;
+            stateData.Board.Height = 40;
+            for (int y = 0; y < stateData.Board.Height; y++)
             {
-                for (int x = 0; x < 40; x++)
+                for (int x = 0; x < stateData.Board.Width; x++)
                 {
                     if (random.Next(0, 100) < 10)
                     {
@@ -123,8 +125,6 @@ namespace Simulation
                 }
                 boardStr += "|";
             }
-            stateData.Board.Width = 40;
-            stateData.Board.Height = 40;
             stateData.Board.BoardStr = boardStr;
 
             stateData.LastGeneration = DateTime.UtcNow.AddMinutes(1);
@@ -138,18 +138,18 @@ namespace Simulation
                 switch (f)
                 {
                     case 0:
-                        gameFaction.Color = "#FFFFFF";
+                        gameFaction.Color = "#FF0000";
                         break;
                     case 1:
-                        gameFaction.Color = "#00FFFF";
+                        gameFaction.Color = "#00FF00";
                         break;
                     case 2:
-                        gameFaction.Color = "#00000FF";
+                        gameFaction.Color = "#0000FF";
                         break;
                 }
 
 
-                var numOfUnits = random.Next(10, 30);
+                var numOfUnits = 150;
                 for (int i = 0; i < numOfUnits; i++)
                 {
                     var unitType = random.Next(0, 100);
@@ -158,8 +158,8 @@ namespace Simulation
                     int y;
                     while (true)
                     {
-                        x = random.Next(0, 30);
-                        y = random.Next(0, 30);
+                        x = random.Next(0, stateData.Board.Width);
+                        y = random.Next(0, stateData.Board.Height);
                         if (!gameFaction.Units.Any(a => a.X == x && a.Y == y))
                         {
                             break;
