@@ -1,20 +1,42 @@
+html,
+body
+{
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
 
-body {
+body
+{
+  height: 100%;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.center
+{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body
+{
+  background-color: #012611;
+  font-family: 'Telex', sans-serif !important;
+
   margin: 0;
   padding: 0;
   height: 100vh;
   width: 100vw;
 }
-
-@dark-checker: #333;
-@light-checker:#CCC;
-
-
 .checkered {
-  background-color:@light-checker;
-  background-image: linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%, transparent 75%, transparent);
+  background-color: #CCC;
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
 }
-
 .stripes {
-  background-size: 10px 10px; /* Controls the size of the stripes */
+  background-size: 10px 10px;
+  /* Controls the size of the stripes */
 }
