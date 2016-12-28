@@ -9,16 +9,9 @@ namespace Common.Data
 {
     public static class MongoUser
     {
-        public static string CollectionName = "__user";
+        public static string CollectionName = "user";
 
-        public static MongoCollection<User> Collection
-        {
-            get { return MongoTools.GetCollection<User>(); }
-        }
-        public static MongoCollection<T> CollectionAs<T>() where T : User
-        {
-            return MongoTools.GetCollection<T>();
-        }
+        public static IMongoCollection<User> Collection => MongoTools.GetCollection<User>();
 
         [BsonIgnoreExtraElements]
         public class User : IMongoModel

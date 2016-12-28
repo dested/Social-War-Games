@@ -1,115 +1,79 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
 using Common.Data;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Driver.Builders;
 
 namespace Common.Utils.Mongo
 {
     public static class MongoQueryUtils
     {
-        public static T GetById<T>(this MongoCollection<T> collection, string id)
+        public static T GetById<T>(this IMongoCollection<T> collection, string id) where T : IMongoModel
         {
-            return collection.FindOneAs<T>(Query.EQ("_id", new ObjectId(id)));
+            var objectId = new ObjectId(id);
+            return collection.Find<T>(a => a.Id == objectId).FirstOrDefault();
+        }
+        public static T GetById<T>(this IMongoCollection<T> collection, ObjectId id) where T : IMongoModel
+        {
+            return collection.Find<T>(a => a.Id == id).FirstOrDefault();
         }
 
-        public static T GetOne<T>(this MongoCollection<T> collection, string name, BsonValue value)
+        public static T GetOne<T>(this IMongoCollection<T> collection, Expression<Func<T, bool>> expression)
         {
-            return collection.FindOneAs<T>(Query.EQ(name, value));
-        }
-
-        public static T GetOne<T>(this MongoCollection<T> collection, params QueryField[] keys)
-        {
-            return collection.FindOneAs<T>(Query.And(keys.Select(a => Query.EQ(a.Key, a.Value))));
-        }
-
-
-
-        public static T[] GetAll<T>(this MongoCollection<T> collection, int page, int limit, SortByBuilder sort, string name, BsonValue value)
-        {
-            return collection.Find(Query.EQ(name, value)).SetSortOrder(sort).SetSkip(page * limit).Take(limit).ToArray();
+            return collection.Find<T>(expression).FirstOrDefault();
         }
 
 
-
-        public static T[] GetAll<T>(this MongoCollection<T> collection, int page, int limit, SortByBuilder sort, params QueryField[] keys)
+        public static T[] GetAll<T>(this IMongoCollection<T> collection, Expression<Func<T, bool>> expression)
         {
-            if (!keys.Any())
-                return collection.FindAll().SetLimit(limit).SetSortOrder(sort).SetSkip((page) * limit).Take(limit).ToArray();
-
-            return collection.Find(Query.And(keys.Select(a => Query.EQ(a.Key, a.Value)))).SetSortOrder(sort).SetSkip((page) * limit).Take(limit).ToArray();
+            var findFluent = collection.Find<T>(expression);
+            return findFluent.ToList().ToArray();
         }
 
-        public static long Count<T>(this MongoCollection<T> collection, params QueryField[] keys)
+        public static T[] GetAll<T>(this IMongoCollection<T> collection)
         {
-            if (!keys.Any())
-                return collection.Count();
-
-            return collection.Count(Query.And(keys.Select(a => Query.EQ(a.Key, a.Value))));
+            return collection.Find<T>(a => true).ToList().ToArray();
         }
 
-        public static T[] GetAll<T>(this MongoCollection<T> collection, int page, int limit, SortByBuilder sort, IMongoQuery query)
+        public static long Count<T>(this IMongoCollection<T> collection, Expression<Func<T, bool>> expression)
         {
-            return collection.Find(query).SetSortOrder(sort).SetSkip((page) * limit).Take(limit).ToArray();
+            return collection.Find<T>(expression).Count();
         }
-        public static long Count<T>(this MongoCollection<T> collection, IMongoQuery query)
-        {
-            return collection.Count(query);
-        }
-
-
-        public static T[] GetAll<T>(this MongoCollection<T> collection, IMongoQuery query)
-        {
-            return collection.Find(query).ToArray();
-        }
-        public static T[] GetAll<T>(this MongoCollection<T> collection, string name, BsonValue value)
-        {
-            return collection.Find(Query.EQ(name, value)).ToArray();
-        }
-
-        public static T[] GetAll<T>(this MongoCollection<T> collection, params QueryField[] keys)
-        {
-            return collection.Find(Query.And(keys.Select(a => Query.EQ(a.Key, a.Value)))).ToArray();
-        }
-
-        public static T[] GetAll<T>(this MongoCollection<T> collection)
-        {
-            return collection.FindAll().ToArray();
-        }
-
-        public static T[] GetNear<T>(this MongoCollection<T> collection, string key, double x, double y, int limit)
-        {
-            collection.EnsureIndex(IndexKeys.GeoSpatial(key));
-            var query = Query.Near(key, x, y);
-            return collection.Find(query).Take(limit).ToArray();
-        }
-
-
 
         public static T Insert<T>(this T item) where T : IMongoModel
         {
             var collection = MongoTools.GetCollection<T>();
-            collection.Insert(item);
+            collection.InsertOne(item);
             return item;
         }
 
         public static T Update<T>(this T item) where T : IMongoModel
         {
             var collection = MongoTools.GetCollection<T>();
-            collection.Save(item);
+            collection.ReplaceOne(a => a.Id == item.Id, item);
             return item;
         }
+        /*      public static T UpdateAsync<T>(this T item) where T : IMongoModel
+              {
+                  var collection = StyrMongoUtils.GetCollection<T>();
+                  collection.ReplaceOneAsync(a => a.Id == item.Id, item);
+                  return item;
+              }*/
+
 
         public static void Delete<T>(this string id) where T : IMongoModel
         {
             var collection = MongoTools.GetCollection<T>();
-            collection.Remove(Query.EQ("_id", ObjectId.Parse(id)));
+            var oid = new ObjectId(id);
+            collection.DeleteOne(a => a.Id == oid);
         }
 
         public static void Delete<T>(this T item) where T : IMongoModel
         {
             var collection = MongoTools.GetCollection<T>();
-            collection.Remove(Query.EQ("_id", item.Id));
+            var oid = item.Id;
+            collection.DeleteOne(a => a.Id == oid);
         }
     }
 }

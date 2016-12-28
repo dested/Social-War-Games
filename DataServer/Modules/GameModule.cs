@@ -10,6 +10,7 @@ namespace DataServer.Modules
         {
             Get["/state"] = _ =>
             {
+                Program.PubSub.Publish("bar", "cock");
                 var model = ValidateRequest<GetStateRequest>();
                 var response = GameLogic.GetState(model);
                 return this.Success(response);

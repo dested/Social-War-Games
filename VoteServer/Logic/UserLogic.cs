@@ -9,7 +9,7 @@ namespace VoteServer.Logic
     {
         public static UserLoginResponse Login(UserLoginRequest model)
         {
-            var user = MongoUser.Collection.GetOne(QueryField.FromExpression<MongoUser.User>(a => a.Email, model.Email), QueryField.FromExpression<MongoUser.User>(a => a.Password, model.Password));
+            var user = MongoUser.Collection.GetOne(a => a.Email == model.Email && a.Password == model.Password);
 
             if (user == null)
             {
@@ -18,12 +18,12 @@ namespace VoteServer.Logic
 
             return new UserLoginResponse()
             {
-                UserId=user.Id.ToString()
+                UserId = user.Id.ToString()
             };
         }
         public static UserRegisterResponse Register(UserRegisterRequest model)
         {
-            var user = MongoUser.Collection.GetOne(QueryField.FromExpression<MongoUser.User>(a => a.Email, model.Email));
+            var user = MongoUser.Collection.GetOne(a => a.Email == model.Email);
 
             if (user != null)
             {
@@ -37,7 +37,7 @@ namespace VoteServer.Logic
 
             return new UserRegisterResponse()
             {
-                UserId=user.Id.ToString()
+                UserId = user.Id.ToString()
             };
         }
     }

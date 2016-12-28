@@ -10,6 +10,7 @@ namespace VoteServer.Modules
         {
             Get["/state"] = _ =>
             {
+                Program.PubSub.Publish("foo", "cook");
                 var model = ValidateRequest<GetStateRequest>();
                 var response = GameLogic.GetState(model);
                 return this.Success(response);

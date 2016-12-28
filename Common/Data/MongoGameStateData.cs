@@ -13,14 +13,7 @@ namespace Common.Data
     {
         public static string CollectionName = "gameState";
 
-        public static MongoCollection<GameStateData> Collection
-        {
-            get { return MongoTools.GetCollection<GameStateData>(); }
-        }
-        public static MongoCollection<T> CollectionAs<T>() where T : GameStateData
-        {
-            return MongoTools.GetCollection<T>();
-        }
+        public static IMongoCollection<GameStateData> Collection => MongoTools.GetCollection<GameStateData>();
 
         [BsonIgnoreExtraElements]
         public class GameStateData : IMongoModel
