@@ -4,16 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8DDA742A-8276-4EB9-BDF7-6DD8C7EA6375}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{F8A5A9AD-F680-46F4-806F-653E7E51A030}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Common</RootNamespace>
-    <AssemblyName>Common</AssemblyName>
+    <RootNamespace>DataServer</RootNamespace>
+    <AssemblyName>DataServer</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -21,18 +22,26 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>6</LangVersion>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>DataServer.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="JWT, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\JWT.1.3.4\lib\3.5\JWT.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MongoDB.Bson, Version=2.0.1.27, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Bson.2.0.1\lib\net45\MongoDB.Bson.dll</HintPath>
       <Private>True</Private>
@@ -49,54 +58,57 @@
       <HintPath>..\packages\mongocsharpdriver.2.0.1\lib\net45\MongoDB.Driver.Legacy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Nancy, Version=1.4.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nancy.1.4.3\lib\net40\Nancy.dll</HintPath>
+    <Reference Include="Nancy, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.1.2.0\lib\net40\Nancy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nancy.Hosting.Self, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Hosting.Self.1.2.0\lib\net40\Nancy.Hosting.Self.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="StackExchange.Redis, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\StackExchange.Redis.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\MongoGameStateData.cs" />
-    <Compile Include="Data\MongoUser.cs" />
-    <Compile Include="Utils\Nancy\BaseModule.cs" />
-    <Compile Include="Utils\Nancy\DefaultMetaData.cs" />
-    <Compile Include="Utils\Nancy\ErrorMetaData.cs" />
-    <Compile Include="Utils\Nancy\MetaData.cs" />
-    <Compile Include="Utils\Nancy\MetaDataType.cs" />
-    <Compile Include="Utils\Nancy\RequestException.cs" />
-    <Compile Include="Utils\Nancy\RequestExceptionType.cs" />
-    <Compile Include="Utils\Nancy\RequestUnauthorizedException.cs" />
-    <Compile Include="Utils\Nancy\RequestValidationException.cs" />
-    <Compile Include="Utils\Nancy\ResponseBuilder.cs" />
-    <Compile Include="Utils\Nancy\ServerErrorException.cs" />
-    <Compile Include="Utils\Nancy\STResponse.cs" />
-    <Compile Include="Utils\Nancy\TokenMetaData.cs" />
-    <Compile Include="Utils\Nancy\UserJwtModel.cs" />
-    <Compile Include="Utils\Mongo\QueryField.cs" />
-    <Compile Include="Utils\Mongo\IMongoModel.cs" />
+    <Compile Include="Bootstrapper.cs" />
+    <Compile Include="HexUtils\FractionalHex.cs" />
+    <Compile Include="HexUtils\Hex.cs" />
+    <Compile Include="HexUtils\Layout.cs" />
+    <Compile Include="HexUtils\OffsetCoord.cs" />
+    <Compile Include="HexUtils\Orientation.cs" />
+    <Compile Include="HexUtils\Point.cs" />
+    <Compile Include="HexUtils\Tests.cs" />
+    <Compile Include="Logic\GameLogic.cs" />
+    <Compile Include="Logic\UserLogic.cs" />
+    <Compile Include="Modules\GameModule.cs" />
+    <Compile Include="Modules\UserModule.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils\Mongo\MongoQueryUtils.cs" />
-    <Compile Include="Utils\Utils.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{8DDA742A-8276-4EB9-BDF7-6DD8C7EA6375}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MasterVoteServer\MasterVoteServer.csproj">
+      <Project>{55C8F774-C510-40E5-BCE1-0BA9484647FA}</Project>
+      <Name>MasterVoteServer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
