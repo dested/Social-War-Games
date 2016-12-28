@@ -20,10 +20,7 @@ export class ClientHexBoard extends HexBoard {
         this.viewPort.height = height;
     }
 
-    setSize(width, height) {
-        this.boardSize.width = width;
-        this.boardSize.height = height;
-    }
+
 
     offsetView(x, y) {
         this.viewPort.x += x;

@@ -100,11 +100,11 @@ export class ClientGameManager {
         this.draw();
 
 
-        fetch('http://localhost:9847/game-state', {})
+        fetch('http://localhost:3569/api/game/state', {})
             .then(response => {
                 response.text()
                     .then(data => {
-                        this.hexBoard.initialize(JSON.parse(new Compressor().DecompressText(data)));
+                        this.hexBoard.initialize(JSON.parse(data).data.state);
                     });
             })
             .catch((err) => {
@@ -192,13 +192,13 @@ export class ClientGameManager {
          this.menuManager.closeMenu();*/
 
 
-        for (var i = 0; i < this.hexBoard.hexList.length; i++) {
-            var h = <ClientGridHexagon> this.hexBoard.hexList[i];
+        for (let i = 0; i < this.hexBoard.hexList.length; i++) {
+            let h = <ClientGridHexagon> this.hexBoard.hexList[i];
             h.setHighlight(null);
             h.setHeightOffset(0);
         }
 
-        var item = this.hexBoard.getHexAtPoint(x, y);
+        let item = this.hexBoard.getHexAtPoint(x, y);
         if (!item) return;
 
 
@@ -209,15 +209,14 @@ export class ClientGameManager {
                 return;
             }
 
-            var path = this.hexBoard.pathFind(this.selectedHex, item);
+            let path = this.hexBoard.pathFind(this.selectedHex, item);
             for (let i = 1; i < path.length; i++) {
                 let p = path[i];
                 let oldP = path[i - 1];
                 // var direction = HexUtils.getDirection(oldP,p);
                 // sprite.currentDirection = direction;
                 setTimeout(()=> {
-                    var direction = HexUtils.getDirection(oldP,p);
-                    sprite.currentDirection = direction;
+                    sprite.currentDirection = HexUtils.getDirection(oldP, p);
                     sprite.setTile(this.hexBoard.getHexAtSpot(p.x, p.y, p.z));
                 }, i * 500);
             }

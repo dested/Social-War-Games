@@ -1,6 +1,6 @@
 ﻿import {GridHexagonConstants} from "./hexLibraries/gridHexagonConstants";
 import {GridHexagon} from "./gridHexagon";
-import {HexUtils, Node, Vector3d} from "./hexLibraries/hexUtils";
+import {HexUtils, Node, Vector3} from "./hexLibraries/hexUtils";
 import {SpriteManager} from "./spriteManager";
 
 export class HexBoard {
@@ -8,7 +8,10 @@ export class HexBoard {
     hexBlock: {[key: number]: GridHexagon} = {};
     boardSize = {width: 0, height: 0};
     spriteManager:SpriteManager;
-
+    setSize(width, height) {
+        this.boardSize.width = width;
+        this.boardSize.height = height;
+    }
     gameDimensions(): {width: number,height: number} {
         const size = {width: 0, height: 0};
         size.width = GridHexagonConstants.width * (3 / 4) * this.boardSize.width;
@@ -30,13 +33,13 @@ export class HexBoard {
         return this.hexBlock[x + y * 5000];
     }
 
-    pathFind(start: Vector3d, finish: Vector3d) {
+    pathFind(start: Vector3, finish: Vector3) {
         const myPathStart = new Node(null, start);
         const myPathEnd = new Node(null, finish);
         let aStar = [];
         let open = [myPathStart];
         let closed = [];
-        const result: Vector3d[] = [];
+        const result: Vector3[] = [];
         let neighbours;
         let node;
         let path;

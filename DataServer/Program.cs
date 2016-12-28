@@ -11,12 +11,6 @@ namespace DataServer
             var uri = new Uri("http://localhost:3569");
             HostConfiguration hostConfigs = new HostConfiguration();
             hostConfigs.UrlReservations.CreateAutomatically = true;
-            PubSub = new PubSub();
-            PubSub.Subscribe("foo", (msg) =>
-            {
-                Console.WriteLine("foo" + msg);
-            });
-
             using (var host = new NancyHost(uri, new Bootstrapper(), hostConfigs))
             {
                 host.Start();
@@ -26,7 +20,5 @@ namespace DataServer
                 Console.ReadLine();
             }
         }
-
-        public static PubSub PubSub { get; set; }
     }
 }

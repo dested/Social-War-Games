@@ -75,8 +75,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\GameUnitType.cs" />
     <Compile Include="Data\MongoGameStateData.cs" />
     <Compile Include="Data\MongoUser.cs" />
+    <Compile Include="GameLogic\Models\GameVoteMessage.cs" />
+    <Compile Include="GameLogic\Models\NewRoundMessage.cs" />
+    <Compile Include="GameLogic\Models\StopVoteMessage.cs" />
+    <Compile Include="HexUtils\GridHexagon.cs" />
+    <Compile Include="HexUtils\HexBoard.cs" />
+    <Compile Include="HexUtils\HexBoardModel.cs" />
+    <Compile Include="HexUtils\HexUtils.cs" />
+    <Compile Include="HexUtils\Node.cs" />
+    <Compile Include="HexUtils\Noise.cs" />
+    <Compile Include="HexUtils\Size.cs" />
+    <Compile Include="HexUtils\Vector3.cs" />
+    <Compile Include="Utils\Mongo\MongoTools.cs" />
     <Compile Include="Utils\Nancy\BaseModule.cs" />
     <Compile Include="Utils\Nancy\DefaultMetaData.cs" />
     <Compile Include="Utils\Nancy\ErrorMetaData.cs" />
@@ -94,6 +107,7 @@
     <Compile Include="Utils\Mongo\IMongoModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\Mongo\MongoQueryUtils.cs" />
+    <Compile Include="GameLogic\GameListener.cs" />
     <Compile Include="Utils\Redis\PubSub.cs" />
     <Compile Include="Utils\Utils.cs" />
   </ItemGroup>

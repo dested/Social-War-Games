@@ -1,13 +1,11 @@
 ﻿using System;
 
-namespace VoteServer
+namespace MasterVoteServer
 {
-    class Program
+  public  class Program
     {
         static void Main(string[] args)
         {
-         
-
                 Console.WriteLine("Press any [Enter] to close the host.");
                 Console.ReadLine();
         }

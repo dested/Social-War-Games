@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Common.Data;
-using DataServer.HexUtils;
 using DataServer.Modules;
+using Hex;
 using MasterVoteServer;
 using MasterVoteServer.Votes;
 
@@ -11,10 +11,9 @@ namespace DataServer.Logic
     {
         public static GetStateResponse GetState(GetStateRequest model)
         {
-            var stateData = SocialWarGames.Instance.StateData;
             return new GetStateResponse()
             {
-                StateData = stateData
+                State=HexBoard.GenerateBoard()
             };
         }
 
@@ -30,13 +29,8 @@ namespace DataServer.Logic
 
             var unit = gameStateData.GetUnitById(model.UnitId);
             if (unit == null) throw new ValidationException("Unit not found");
-            Layout n = new Layout(Layout.flat, new Point(1, 1), new Point(50, 50));
 
-            var h = FractionalHex.HexRound(Layout.PixelToHex(n, new Point(unit.X, unit.Y)));
-            var c = FractionalHex.HexRound(Layout.PixelToHex(n, new Point(model.X, model.Y)));
-
-            var distance = Hex.Distance(h, c);
-
+            var distance = 12;
             switch (unit.UnitType)
             {
                 case GameUnitType.Infantry:

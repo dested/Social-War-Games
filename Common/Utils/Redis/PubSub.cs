@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Configuration;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace Common.Utils.Redis
@@ -16,15 +18,16 @@ namespace Common.Utils.Redis
             this.subscriber = redis.GetSubscriber();
         }
 
-        public async void Publish(string channel, string message)
+        public async Task Publish<T>(string channel, T message)
         {
-            await subscriber.PublishAsync(channel, message);
+            await subscriber.PublishAsync(channel, JsonConvert.SerializeObject(message));
         }
-        public async void Subscribe(string channel,Action<string> callback)
+
+        public void Subscribe<T>(string channel, Action<T> callback)
         {
-            await subscriber.SubscribeAsync(channel, (_channel, value) =>
+            subscriber.Subscribe(channel, (_channel, value) =>
             {
-                callback(value);
+                callback(JsonConvert.DeserializeObject<T>(value));
             });
         }
     }

@@ -11,11 +11,7 @@ namespace VoteServer
             var uri = new Uri("http://localhost:3568");
             HostConfiguration hostConfigs = new HostConfiguration();
             hostConfigs.UrlReservations.CreateAutomatically = true;
-            PubSub = new PubSub();
-            PubSub.Subscribe("bar", (msg) =>
-            {
-                Console.WriteLine("bar" + msg);
-            });
+         
             using (var host = new NancyHost(uri,new Bootstrapper(), hostConfigs))
             {
                 host.Start();
@@ -25,7 +21,5 @@ namespace VoteServer
                 Console.ReadLine();
             }
         }
-
-        public static PubSub PubSub { get; set; }
     }
 }

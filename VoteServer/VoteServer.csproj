@@ -91,10 +91,15 @@
     <Compile Include="HexUtils\Orientation.cs" />
     <Compile Include="HexUtils\Point.cs" />
     <Compile Include="HexUtils\Tests.cs" />
+    <Compile Include="JsonNetSerializer.cs" />
+    <Compile Include="JwtToken.cs" />
     <Compile Include="Logic\GameLogic.cs" />
-    <Compile Include="Logic\UserLogic.cs" />
+    <Compile Include="ModuleSecurity.cs" />
     <Compile Include="Modules\GameModule.cs" />
-    <Compile Include="Modules\UserModule.cs" />
+    <Compile Include="Modules\GetStateRequest.cs" />
+    <Compile Include="Modules\GetStateResponse.cs" />
+    <Compile Include="Modules\PostVoteRequest.cs" />
+    <Compile Include="Modules\PostVoteResponse.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

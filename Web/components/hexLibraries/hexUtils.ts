@@ -2,11 +2,11 @@
     parent: Node = null;
     x = 0;
     y = 0;
-    item: Vector3d = null;
+    item: Vector3 = null;
     f = 0;
     g = 0;
 
-    constructor(parent: Node, piece: Vector3d) {
+    constructor(parent: Node, piece: Vector3) {
         this.parent = parent;
         // array index of this Node in the world linear array
 
@@ -27,7 +27,7 @@
     }
 }
 
-export interface Vector3d {
+export interface Vector3 {
     x: number;
     y: number;
     z: number;
@@ -73,7 +73,7 @@ export class HexUtils {
         return 0;
     }
 
-    static getDirection(p1: Vector3d, p2: Vector3d): Direction {
+    static getDirection(p1: Vector3, p2: Vector3): Direction {
         console.log('x1', p1.x, 'x2', p2.x, 'y1', p1.z, 'y2', p2.z);
         if (p1.x > p2.x) {
             if (p1.z == p2.z) {

@@ -24,25 +24,4 @@ namespace DataServer.Modules
         }
 
     }
-
-
-    public class UserLoginRequest
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
-    public class UserLoginResponse
-    {
-        public string UserId { get; set; }
-    }
-    public class UserRegisterRequest
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
-    public class UserRegisterResponse
-    {
-        public string UserId { get; set; }
-    }
-
 }

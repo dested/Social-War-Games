@@ -2,14 +2,14 @@ using Common.Data;
 
 namespace MasterVoteServer.Votes
 {
-    public class MoveInfantryVote : Vote
+    public class AttackInfantryVote : Vote
     {
         public int X { get; set; }
         public int Y { get; set; }
 
         public override bool Equivalent(Vote vote)
         {
-            var infantryVote = vote as MoveInfantryVote;
+            var infantryVote = vote as AttackInfantryVote;
             if (infantryVote == null)
             {
                 return false;
@@ -25,8 +25,11 @@ namespace MasterVoteServer.Votes
             var unit = stateData.GetUnitById(UnitId);
             if (unit != null)
             {
-                unit.X = this.X;
-                unit.Y = this.Y;
+                var enemy = stateData.GetUnitByLocation(X, Y);
+                if (enemy != null)
+                {
+                    enemy.Hurt(1, stateData);
+                }
             }
         }
     }
