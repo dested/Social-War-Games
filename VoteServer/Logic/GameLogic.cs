@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Common.Data;
 using Common.GameLogic;
+using Common.GameLogic.Models;
 using Common.HexUtils;
 using Common.Utils.Mongo;
 using MasterVoteServer.Votes;
@@ -42,18 +43,32 @@ namespace VoteServer.Logic
                             var hex2 = board.GetHexagon(model.X, model.Z);
                             var distance = HexUtils.Distance(hex1, hex2);
 
-                            if (distance <= 5)
+                            if (distance > 5)
                             {
-                                throw new ValidationException("Distance must be 1");
+                                throw new ValidationException("Distance must be less than 5");
                             }
-                            Console.WriteLine(distance);
-                            var vote = new MoveInfantryVote()
+                            MongoGameVote.GameVote gameVote = new MongoGameVote.GameVote()
                             {
-                                X = model.X,
-                                Z = model.Z,
-                                UnitId = model.UnitId,
-                                Generation = model.Generation
+                                Generated = DateTime.UtcNow,
+                                GenerationId = model.Generation,
+                                Details = new MongoGameVote.GameVoteDetails()
+                                {
+                                    UnitId = model.UnitId,
+                                    UserId = model.UserId,
+                                    Type = MongoGameVote.VoteActionType.Move,
+                                    Action = new MongoGameVote.MoveVoteAction()
+                                    {
+                                        X = model.X,
+                                        Z = model.Z
+                                    }
+                                }
                             };
+                            await gameVote.Insert();
+
+                            await Program.VoteServerLogic.GameListener.SendGameVote(new GameVoteMessage()
+                            {
+                                Vote = gameVote
+                            });
                             break;
                     }
                     break;

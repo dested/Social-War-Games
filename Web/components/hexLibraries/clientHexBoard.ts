@@ -1,9 +1,10 @@
 ﻿import {GridHexagonConstants} from "../hexLibraries/gridHexagonConstants";
 import {HexagonColor, DrawingUtils} from "../utils/drawingUtilities";
 import {HexBoard} from "../hexBoard";
-import {GameState, GameEntityType} from "../models/hexBoard";
+import {GameState} from "../models/hexBoard";
 import {ClientGridHexagon} from "./clientGridHexagon";
 import {ClientSpriteManager, ClientHeliSprite, ClientBaseSprite, ClientMainBaseSprite} from "../clientSpriteManager";
+import {GridHexagon} from "../gridHexagon";
 
 export class ClientHexBoard extends HexBoard {
     viewPort = {x: 0, y: 0, width: 400, height: 400, padding: GridHexagonConstants.width * 2};
@@ -15,19 +16,19 @@ export class ClientHexBoard extends HexBoard {
     }
 
 
-    resize(width, height) {
+    resize(width: number, height: number) {
         this.viewPort.width = width;
         this.viewPort.height = height;
     }
 
 
-    offsetView(x, y) {
+    offsetView(x: number, y: number) {
         this.viewPort.x += x;
         this.viewPort.y += y;
         this.constrainViewPort();
     }
 
-    setView(x, y) {
+    setView(x: number, y: number) {
         this.viewPort.x = x;
         this.viewPort.y = y;
         this.constrainViewPort();
@@ -58,16 +59,12 @@ export class ClientHexBoard extends HexBoard {
             const yItem = ys[y].split('');
             for (let x = 0; x < terrain.width; x++) {
                 const xItem = parseInt(yItem[x]);
-                if (isNaN(xItem)) {
-                    debugger
-                }
-
                 let gridHexagon = new ClientGridHexagon();
                 gridHexagon.x = x;
                 gridHexagon.y = 0;
                 gridHexagon.z = y;
-                gridHexagon.height = xItem == 0 ? 0 : xItem;
-                if (xItem == 0) {
+                gridHexagon.height = xItem === 0 ? 0 : xItem;
+                if (xItem === 0) {
                     gridHexagon.hexColor = baseColor;
 
                 } else {
@@ -95,18 +92,19 @@ export class ClientHexBoard extends HexBoard {
         }
         for (let i = 0; i < state.entities.length; i++) {
             let entity = state.entities[i];
-
+            let gridHexagon = this.getHexAtSpot(entity.x, 0, entity.z);
             switch (entity.entityType) {
                 case "MainBase": {
                     let sprite = new ClientMainBaseSprite(this.clientSpriteManager);
-                    sprite.setTile(this.getHexAtSpot(entity.x, 0, entity.z));
+                    sprite.setTile(gridHexagon);
                     sprite.setId(entity.id);
                     this.clientSpriteManager.addSprite(sprite);
+                    this.centerOnHex(gridHexagon);
                     break;
                 }
                 case "Plane": {
                     let sprite = new ClientHeliSprite(this.clientSpriteManager);
-                    sprite.setTile(this.getHexAtSpot(entity.x, 0, entity.z));
+                    sprite.setTile(gridHexagon);
                     sprite.setId(entity.id);
                     this.clientSpriteManager.addSprite(sprite);
                     break;
@@ -204,4 +202,9 @@ export class ClientHexBoard extends HexBoard {
 
     }
 
+    centerOnHex(gridHexagon: GridHexagon) {
+        const x = gridHexagon.getRealX();
+        const y = gridHexagon.getRealY();
+        this.setView(x - this.viewPort.width / 2, y - this.viewPort.height / 2);
+    }
 }

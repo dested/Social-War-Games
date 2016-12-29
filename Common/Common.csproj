@@ -83,7 +83,6 @@
     <Compile Include="Data\MongoGameVote.cs" />
     <Compile Include="Data\MongoGameState.cs" />
     <Compile Include="Data\MongoUser.cs" />
-    <Compile Include="GameLogic\Models\GameVoteMessage.cs" />
     <Compile Include="GameLogic\Models\NewRoundMessage.cs" />
     <Compile Include="GameLogic\Models\StopVoteMessage.cs" />
     <Compile Include="GameLogic\GridHexagon.cs" />
@@ -93,6 +92,8 @@
     <Compile Include="HexUtils\Noise.cs" />
     <Compile Include="HexUtils\Size.cs" />
     <Compile Include="HexUtils\Vector3.cs" />
+    <Compile Include="Utils\JsonUtils\Json.cs" />
+    <Compile Include="Utils\JsonUtils\ObjectIdConverter.cs" />
     <Compile Include="Utils\Mongo\MongoTools.cs" />
     <Compile Include="Utils\Nancy\BaseModule.cs" />
     <Compile Include="Utils\Nancy\Bootstrapper.cs" />

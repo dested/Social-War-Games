@@ -2,6 +2,7 @@
 using System;
 using System.Configuration;
 using System.Threading.Tasks;
+using Common.Utils.JsonUtils;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 
@@ -23,14 +24,14 @@ namespace Common.Utils.Redis
 
         public async Task Publish<T>(string channel, T message)
         {
-            await subscriber.PublishAsync(channel, JsonConvert.SerializeObject(message));
+            await subscriber.PublishAsync(channel, Json.Serialize(message));
         }
 
         public void Subscribe<T>(string channel, Action<T> callback)
         {
             subscriber.Subscribe(channel, (_channel, value) =>
             {
-                callback(JsonConvert.DeserializeObject<T>(value));
+                callback(Json.Deserialize<T>(value));
             });
         }
     }
