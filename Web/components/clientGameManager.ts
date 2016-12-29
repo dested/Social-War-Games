@@ -109,7 +109,6 @@ export class ClientGameManager {
             .then(response => {
                 response.json()
                     .then(data => {
-                        debugger;
                         this.hexBoard.initialize(data.data.state);
                     });
             })
@@ -214,7 +213,6 @@ export class ClientGameManager {
                 this.selectedHex = null;
                 return;
             }
-            debugger;
 
             fetch('http://localhost:3568/api/game/vote', {
                 method: "POST",

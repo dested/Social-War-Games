@@ -9,8 +9,9 @@ export class ClientGridHexagon extends GridHexagon {
 
     icon: Asset = null;
 
-    highlightColor: HexagonColor = null;
-    hexColor: HexagonColor = null;
+    private highlightColor: HexagonColor = null;
+    originalColor: HexagonColor = null;
+    private hexColor: HexagonColor = null;
     topPath: Path2D = null;
     leftDepthPath: Path2D = null;
     bottomDepthPath: Path2D = null;
@@ -26,16 +27,19 @@ export class ClientGridHexagon extends GridHexagon {
         this.invalidate();
     }
 
-    setColor(hexColor: HexagonColor) {
-        if (this.hexColor != hexColor) {
+    setColor(hexColor: HexagonColor, original: boolean) {
+        if (original) {
+            this.originalColor = hexColor;
+        }
+        if (this.hexColor !== hexColor) {
             this.hexColor = hexColor;
             this.invalidate();
         }
     }
 
-    setHighlight(hexColor: HexagonColor) {
-        if (this.highlightColor != hexColor) {
-            this.highlightColor = hexColor;
+    setHighlight(highlightColor: HexagonColor) {
+        if (this.highlightColor !== highlightColor) {
+            this.highlightColor = highlightColor;
             this.invalidate();
         }
     }
@@ -163,7 +167,7 @@ export class ClientGridHexagon extends GridHexagon {
     }
 
     envelope() {
-        const size = {width: 0, height: 0};
+        const size = { width: 0, height: 0 };
         size.width = GridHexagonConstants.width;
         size.height = GridHexagonConstants.height();
 
@@ -181,7 +185,7 @@ export class ClientGridHexagon extends GridHexagon {
     }
 
     hexCenter() {
-        const center = {x: 0, y: 0};
+        const center = { x: 0, y: 0 };
 
         center.y = GridHexagonConstants.height() / 2;
         if (this.icon) {
@@ -254,27 +258,27 @@ export class ClientGridHexagon extends GridHexagon {
         const neighbors = [];
 
         if ((this.x % 2 === 0)) {
-            neighbors.push({x: this.x - 1, y: this.z});
-            neighbors.push({x: this.x, y: this.z - 1});
-            neighbors.push({x: this.x + 1, y: this.z});
+            neighbors.push({ x: this.x - 1, y: this.z });
+            neighbors.push({ x: this.x, y: this.z - 1 });
+            neighbors.push({ x: this.x + 1, y: this.z });
 
-            neighbors.push({x: this.x - 1, y: this.z + 1});
-            neighbors.push({x: this.x, y: this.z + 1});
-            neighbors.push({x: this.x + 1, y: this.z + 1});
+            neighbors.push({ x: this.x - 1, y: this.z + 1 });
+            neighbors.push({ x: this.x, y: this.z + 1 });
+            neighbors.push({ x: this.x + 1, y: this.z + 1 });
         } else {
-            neighbors.push({x: this.x - 1, y: this.z - 1});
-            neighbors.push({x: this.x, y: this.z - 1});
-            neighbors.push({x: this.x + 1, y: this.z - 1});
+            neighbors.push({ x: this.x - 1, y: this.z - 1 });
+            neighbors.push({ x: this.x, y: this.z - 1 });
+            neighbors.push({ x: this.x + 1, y: this.z - 1 });
 
-            neighbors.push({x: this.x - 1, y: this.z});
-            neighbors.push({x: this.x, y: this.z + 1});
-            neighbors.push({x: this.x + 1, y: this.z});
+            neighbors.push({ x: this.x - 1, y: this.z });
+            neighbors.push({ x: this.x, y: this.z + 1 });
+            neighbors.push({ x: this.x + 1, y: this.z });
         }
         return neighbors;
     }
 
 
-    static caches: {[key: string]: HTMLCanvasElement} = {};
+    static caches: { [key: string]: HTMLCanvasElement } = {};
 
     static getCacheImage(height: number, icon: Asset, hexColor: HexagonColor, tint: string): HTMLCanvasElement {
         const c = `${icon ? icon.name : ''}-${height}-${hexColor.color}-${tint}`;
@@ -286,7 +290,7 @@ export class ClientGridHexagon extends GridHexagon {
         ClientGridHexagon.caches[c] = img;
     }
 
-    static  buildPath(path): Path2D {
+    static buildPath(path): Path2D {
         const p2d = new Path2D();
         for (let i = 0; i < path.length; i++) {
             const point = path[i];
@@ -295,9 +299,7 @@ export class ClientGridHexagon extends GridHexagon {
         return p2d;
     }
 
-
 }
 
 
 
- 

@@ -1,8 +1,11 @@
 import {GridHexagon} from "./gridHexagon";
+import {ClientGridHexagon} from "./hexLibraries/clientGridHexagon";
+import {HexagonColor} from "./utils/drawingUtilities";
+
 export class SpriteManager {
 
     sprites: Sprite[] = [];
-    spritesMap: {[tileKey: number]: Sprite[]} = {};
+    spritesMap: { [tileKey: number]: Sprite[] } = {};
 
     addSprite(sprite: Sprite) {
         this.sprites.push(sprite);
@@ -43,6 +46,8 @@ export class Sprite {
 
     setTile(tile: GridHexagon) {
         if (this.tile) {
+            (<ClientGridHexagon>this.tile).setColor((<ClientGridHexagon>this.tile).originalColor, false);
+
             var sprites = this.spriteManager.spritesMap[this.tile.x + this.tile.z * 5000];
             sprites = sprites || [];
             sprites.splice(sprites.indexOf(this), 1);
@@ -53,6 +58,7 @@ export class Sprite {
         this.tile = tile;
 
         if (tile) {
+            (<ClientGridHexagon>this.tile).setColor(new HexagonColor("#f0c2bc"), false);
             this.x = this.tile.getRealX();
             this.y = this.tile.getRealY();
             var sprites = this.spriteManager.spritesMap[tile.x + tile.z * 5000];

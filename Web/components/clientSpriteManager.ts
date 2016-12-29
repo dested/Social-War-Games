@@ -77,6 +77,7 @@ export class ClientSixDirectionSprite extends ClientBaseSprite {
         let assetName = this.key + '.' + this.currentDirectionToSpriteName();
         let asset = AssetManager.assets[assetName];
         let image = asset.images[this.animationFrame];
+        context.scale(1.4, 1.4);
         context.drawImage(image, -asset.base.x, -asset.base.y - this.hoverY() - GridHexagonConstants.depthHeight() / 2);
         context.restore();
     }

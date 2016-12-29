@@ -7,7 +7,7 @@ import {ClientSpriteManager, ClientHeliSprite, ClientBaseSprite, ClientMainBaseS
 import {GridHexagon} from "../gridHexagon";
 
 export class ClientHexBoard extends HexBoard {
-    viewPort = {x: 0, y: 0, width: 400, height: 400, padding: GridHexagonConstants.width * 2};
+    viewPort = { x: 0, y: 0, width: 400, height: 400, padding: GridHexagonConstants.width * 2 };
     clientSpriteManager: ClientSpriteManager;
 
     constructor() {
@@ -65,10 +65,10 @@ export class ClientHexBoard extends HexBoard {
                 gridHexagon.z = y;
                 gridHexagon.height = xItem === 0 ? 0 : xItem;
                 if (xItem === 0) {
-                    gridHexagon.hexColor = baseColor;
+                    gridHexagon.setColor(baseColor, true);
 
                 } else {
-                    gridHexagon.hexColor = otherColors[xItem - 1];
+                    gridHexagon.setColor(otherColors[xItem - 1], true);
                 }
                 gridHexagon.buildPaths();
                 this.addHexagon(gridHexagon);
@@ -86,7 +86,7 @@ export class ClientHexBoard extends HexBoard {
                 let hex = this.getHexAtSpot(x, 0, y);
                 hex.faction = faction;
                 if (faction > 0) {
-                    hex.hexColor = new HexagonColor(DrawingUtils.colorLuminance(factionColors[faction], (hex.height / 6)));
+                    hex.setColor(new HexagonColor(DrawingUtils.colorLuminance(factionColors[faction], (hex.height / 6))), true);
                 }
             }
         }
@@ -119,7 +119,7 @@ export class ClientHexBoard extends HexBoard {
 
     getHexAtSpot(x: number, y: number, z: number): ClientGridHexagon {
         for (let i = 0; i < this.hexList.length; i++) {
-            const gridHexagon = <ClientGridHexagon> this.hexList[i];
+            const gridHexagon = <ClientGridHexagon>this.hexList[i];
             if (gridHexagon.x === x && gridHexagon.y === y && gridHexagon.z === z) {
                 return gridHexagon;
             }
@@ -133,7 +133,7 @@ export class ClientHexBoard extends HexBoard {
         clickY += this.viewPort.y;
 
         for (let i = 0; i < this.hexList.length; i++) {
-            const gridHexagon = <ClientGridHexagon> this.hexList[i];
+            const gridHexagon = <ClientGridHexagon>this.hexList[i];
             const x = GridHexagonConstants.width * 3 / 4 * gridHexagon.x;
             let z = gridHexagon.z * GridHexagonConstants.height() + ((gridHexagon.x % 2 === 1) ? (-GridHexagonConstants.height() / 2) : 0);
             z -= gridHexagon.getDepthHeight();
@@ -161,13 +161,13 @@ export class ClientHexBoard extends HexBoard {
         context.translate(-this.viewPort.x, -this.viewPort.y);
         context.lineWidth = 1;
         for (let i = 0; i < this.hexList.length; i++) {
-            const gridHexagon = <ClientGridHexagon> this.hexList[i];
+            const gridHexagon = <ClientGridHexagon>this.hexList[i];
             if (this.shouldDraw(gridHexagon)) {
                 this.drawHexagon(context, gridHexagon);
                 var sprites = this.clientSpriteManager.spritesMap[gridHexagon.x + gridHexagon.z * 5000];
                 if (sprites) {
                     for (var j = 0; j < sprites.length; j++) {
-                        var sprite = <ClientBaseSprite> sprites[j];
+                        var sprite = <ClientBaseSprite>sprites[j];
                         sprite.draw(context);
                     }
                 }
