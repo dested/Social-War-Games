@@ -1,6 +1,6 @@
-using Hex;
+using Common.HexUtils;
 
-namespace DataServer.Modules
+namespace DataServer.Modules.Models
 {
     public class GetStateResponse
     {

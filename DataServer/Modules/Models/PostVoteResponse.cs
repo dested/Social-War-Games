@@ -1,6 +1,6 @@
 using Common.Data;
 
-namespace DataServer.Modules
+namespace DataServer.Modules.Models
 {
     public class PostVoteResponse
     {

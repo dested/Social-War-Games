@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Common.Data;
 using Common.Utils.Mongo;
 using Common.Utils.Nancy;
 using DataServer.Modules;
+using DataServer.Modules.Models;
 
 namespace DataServer.Logic
 {
     public class UserLogic
     {
-        public static UserLoginResponse Login(UserLoginRequest model)
+        public static async Task<UserLoginResponse> Login(UserLoginRequest model)
         {
-            var user = MongoUser.Collection.GetOne(a => a.Email == model.Email && a.Password == model.Password);
+            var user = await MongoUser.Collection.GetOne(a => a.Email == model.Email && a.Password == model.Password);
 
             if (user == null)
             {
@@ -22,9 +24,9 @@ namespace DataServer.Logic
                 UserId = user.Id.ToString()
             };
         }
-        public static UserRegisterResponse Register(UserRegisterRequest model)
+        public static async Task<UserRegisterResponse> Register(UserRegisterRequest model)
         {
-            var user = MongoUser.Collection.GetOne(a => a.Email == model.Email);
+            var user = await MongoUser.Collection.GetOne(a => a.Email == model.Email);
 
             if (user != null)
             {
@@ -34,7 +36,7 @@ namespace DataServer.Logic
             user = new MongoUser.User();
             user.Email = model.Email;
             user.Password = model.Password;
-            user.Insert();
+            await user.Insert();
 
             return new UserRegisterResponse()
             {

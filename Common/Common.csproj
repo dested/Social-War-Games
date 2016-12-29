@@ -34,6 +34,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JWT, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\JWT.1.3.4\lib\3.5\JWT.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="MongoDB.Bson, Version=2.3.0.157, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Bson.2.3.0\lib\net45\MongoDB.Bson.dll</HintPath>
@@ -76,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\GameUnitType.cs" />
+    <Compile Include="Data\MongoGameVote.cs" />
     <Compile Include="Data\MongoGameStateData.cs" />
     <Compile Include="Data\MongoUser.cs" />
     <Compile Include="GameLogic\Models\GameVoteMessage.cs" />
@@ -91,10 +96,14 @@
     <Compile Include="HexUtils\Vector3.cs" />
     <Compile Include="Utils\Mongo\MongoTools.cs" />
     <Compile Include="Utils\Nancy\BaseModule.cs" />
+    <Compile Include="Utils\Nancy\Bootstrapper.cs" />
     <Compile Include="Utils\Nancy\DefaultMetaData.cs" />
     <Compile Include="Utils\Nancy\ErrorMetaData.cs" />
+    <Compile Include="Utils\Nancy\JsonNetSerializer.cs" />
+    <Compile Include="Utils\Nancy\JwtToken.cs" />
     <Compile Include="Utils\Nancy\MetaData.cs" />
     <Compile Include="Utils\Nancy\MetaDataType.cs" />
+    <Compile Include="Utils\Nancy\ModuleSecurity.cs" />
     <Compile Include="Utils\Nancy\RequestException.cs" />
     <Compile Include="Utils\Nancy\RequestExceptionType.cs" />
     <Compile Include="Utils\Nancy\RequestUnauthorizedException.cs" />

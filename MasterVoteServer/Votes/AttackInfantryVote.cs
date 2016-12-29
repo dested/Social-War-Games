@@ -1,4 +1,4 @@
-using Common.Data;
+/*using Common.Data;
 
 namespace MasterVoteServer.Votes
 {
@@ -33,4 +33,4 @@ namespace MasterVoteServer.Votes
             }
         }
     }
-}
+}*/

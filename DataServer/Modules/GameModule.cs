@@ -1,5 +1,6 @@
 using Common.Utils.Nancy;
 using DataServer.Logic;
+using DataServer.Modules.Models;
 
 namespace DataServer.Modules
 {
@@ -7,18 +8,18 @@ namespace DataServer.Modules
     {
         public GameModule() : base("api/game")
         {
-            Get["/state"] = _ =>
+            Get["/state", true] = async (_, __) =>
             {
                 var model = ValidateRequest<GetStateRequest>();
-                var response = GameLogic.GetState(model);
+                var response =await GameLogic.GetState(model);
                 return this.Success(response);
             };
-            Post["/vote"] = _ =>
+      /*      Post["/vote", true] = async (_, __) =>
             {
                 var model = ValidateRequest<PostVoteRequest>();
-                var response = GameLogic.VoteAction(model);
+                var response = await GameLogic.VoteAction(model);
                 return this.Success(response);
-            };
+            };*/
         }
 
     }

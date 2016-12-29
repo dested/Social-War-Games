@@ -1,4 +1,5 @@
 ﻿using System;
+using Common.Utils.Nancy;
 using Common.Utils.Redis;
 using Nancy.Hosting.Self;
 

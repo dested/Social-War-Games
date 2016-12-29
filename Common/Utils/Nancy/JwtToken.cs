@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using JWT;
 
-namespace DataServer
+namespace Common.Utils.Nancy
 {
     public class JwtToken
     {
@@ -19,8 +19,8 @@ namespace DataServer
         public string Encode(Dictionary<string, object> payload)
         {
             //fixed payload values
-            payload.Add("iss", "http://acg.io");
-            payload.Add("aud", "http://acg.io");
+            payload.Add("iss", "https://socialwargames.com");
+            payload.Add("aud", "https://socialwargames.com");
             payload.Add("iat", issued);
             payload.Add("exp", exp);
             var token = JsonWebToken.Encode(payload, ConfigurationManager.AppSettings["jwt:cryptkey"], JwtHashAlgorithm.HS256);

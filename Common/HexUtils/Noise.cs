@@ -1,6 +1,6 @@
 using System;
 
-namespace Simplex
+namespace Common.HexUtils
 {
     /// <summary>
     /// Implementation of the Perlin simplex noise, an improved Perlin noise algorithm.
@@ -53,7 +53,7 @@ namespace Simplex
         static Noise()
         {
             perm = new byte[permOriginal.Length];
-            Simplex.Noise.permOriginal.CopyTo(perm, 0);
+            Noise.permOriginal.CopyTo(perm, 0);
         }
 
         public static int Seed
@@ -64,7 +64,7 @@ namespace Simplex
                 if (value == 0)
                 {
                     perm = new byte[permOriginal.Length];
-                    Simplex.Noise.permOriginal.CopyTo(perm, 0);
+                    Noise.permOriginal.CopyTo(perm, 0);
                 }
                 else
                 {

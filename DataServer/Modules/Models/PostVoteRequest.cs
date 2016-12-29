@@ -1,4 +1,4 @@
-namespace DataServer.Modules
+namespace DataServer.Modules.Models
 {
     public class PostVoteRequest
     {

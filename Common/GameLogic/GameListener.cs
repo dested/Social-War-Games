@@ -27,6 +27,11 @@ namespace Common.GameLogic
             PubSub.Subscribe("NewRound", callback);
         }
 
+        public void OnBootUser(Action<BootUserMessage> callback)
+        {
+            PubSub.Subscribe("BootUser", callback);
+        }
+
         public async Task SendGameVote(GameVoteMessage message)
         {
             await PubSub.Publish("GameVote", message);
@@ -38,6 +43,11 @@ namespace Common.GameLogic
         public async Task SendNewRound(NewRoundMessage message)
         {
             await PubSub.Publish("NewRound", message);
+        }
+
+        public async Task SendBootUser(BootUserMessage message)
+        {
+            await PubSub.Publish("BootUser", message);
         }
     }
 

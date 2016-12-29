@@ -1,4 +1,4 @@
-namespace Hex
+namespace Common.HexUtils
 {
     class Node
     {

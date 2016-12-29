@@ -1,6 +1,6 @@
 using System;
 
-namespace Hex
+namespace Common.HexUtils
 {
     public class HexUtils
     {

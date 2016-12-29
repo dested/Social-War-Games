@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Hex
+namespace Common.HexUtils
 {
     public class GridHexagon
     {

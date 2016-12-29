@@ -1,12 +1,11 @@
 ﻿using System;
-using Common.Utils.Nancy;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.Json;
 using Nancy.Responses.Negotiation;
 using Nancy.TinyIoc;
 
-namespace DataServer
+namespace Common.Utils.Nancy
 {
     public class Bootstrapper : DefaultNancyBootstrapper
     {

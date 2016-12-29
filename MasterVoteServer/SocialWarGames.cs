@@ -9,6 +9,7 @@ using MongoDB.Bson;
 
 namespace MasterVoteServer
 {
+/*
     public class SocialWarGames
     {
         private static SocialWarGames instance;
@@ -77,7 +78,7 @@ namespace MasterVoteServer
                 }
                 votes.Clear();
                 StateData.Generation += 1;
-                StateData.Update();
+               await  StateData.Update();
 
                 Console.WriteLine("Vote unlocked");
             }
@@ -210,5 +211,6 @@ namespace MasterVoteServer
         }
 
     }
+*/
 
 }

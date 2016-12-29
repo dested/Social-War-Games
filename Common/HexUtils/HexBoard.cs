@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Hex
+namespace Common.HexUtils
 {
     public class HexBoard
     {
@@ -10,15 +10,15 @@ namespace Hex
         {
             var board = new HexBoardModel();
             StringBuilder sb = new StringBuilder(board.Height * (board.Width + 1));
-            board.Width = 84 * 5;
-            board.Height = 84 * 5;
+            board.Width = 84 ;
+            board.Height = 84  ;
             var random = new Random();
-            Simplex.Noise.Seed = random.Next();
+            Noise.Seed = random.Next();
             for (var y = 0; y < board.Height; y++)
             {
                 for (var x = 0; x < board.Width; x++)
                 {
-                    var value = Math.Abs(Simplex.Noise.Generate(x / 90f, y / 90f)) * 90f;
+                    var value = Math.Abs(Noise.Generate(x / 90f, y / 90f)) * 90f;
                     sb.Append(Math.Round(value / 15f));
                 }
                 sb.Append("|");

@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using Common.Utils.Nancy;
 using JWT;
 using Nancy;
 using Nancy.Extensions;
 
-namespace VoteServer
+namespace Common.Utils.Nancy
 {
     public static class ModuleSecurity
     {

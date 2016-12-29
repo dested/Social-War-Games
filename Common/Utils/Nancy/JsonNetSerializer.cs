@@ -4,7 +4,7 @@ using Nancy;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace DataServer
+namespace Common.Utils.Nancy
 {
     public class JsonNetSerializer : ISerializer
     {

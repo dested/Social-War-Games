@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using Common.Data;
+using Common.HexUtils;
 using DataServer.Modules;
-using Hex;
+using DataServer.Modules.Models;
 using MasterVoteServer;
 using MasterVoteServer.Votes;
 
@@ -9,7 +11,7 @@ namespace DataServer.Logic
 {
     public class GameLogic
     {
-        public static GetStateResponse GetState(GetStateRequest model)
+        public static async Task<GetStateResponse> GetState(GetStateRequest model)
         {
             return new GetStateResponse()
             {
@@ -18,13 +20,14 @@ namespace DataServer.Logic
         }
 
 
+/*
         public static PostVoteResponse VoteAction(PostVoteRequest model)
         {
             var gameStateData = SocialWarGames.Instance.StateData;
 
             if (model.Generation != gameStateData.Generation)
             {
-                throw new ValidationException("Generation invalid");
+                throw new ValidationException("GenerationId invalid");
             }
 
             var unit = gameStateData.GetUnitById(model.UnitId);
@@ -73,5 +76,6 @@ namespace DataServer.Logic
 
             return new PostVoteResponse();
         }
+*/
     }
 }

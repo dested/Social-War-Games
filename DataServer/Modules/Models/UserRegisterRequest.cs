@@ -1,6 +1,6 @@
-namespace DataServer.Modules
+namespace DataServer.Modules.Models
 {
-    public class UserLoginRequest
+    public class UserRegisterRequest
     {
         public string Email { get; set; }
         public string Password { get; set; }

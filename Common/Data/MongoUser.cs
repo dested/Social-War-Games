@@ -19,6 +19,14 @@ namespace Common.Data
             public ObjectId Id { get; set; }
             public string Email { get; set; }
             public string Password { get; set; }
+            public List<UserGeneration> Generations { get; set; }
+        }
+
+        [BsonIgnoreExtraElements]
+        public class UserGeneration
+        {
+            public int GenerationId { get; set; }
+            public List<string> Votes { get; set; }
         }
     }
 }
