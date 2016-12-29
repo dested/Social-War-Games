@@ -130,4 +130,5 @@ export class ClientMainBaseSprite extends ClientStationarySprite {
         super(clientSpriteManager, 0, 0);
         this.key = 'MainBase';
     }
+
 }

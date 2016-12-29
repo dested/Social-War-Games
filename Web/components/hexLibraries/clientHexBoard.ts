@@ -93,7 +93,6 @@ export class ClientHexBoard extends HexBoard {
                 }
             }
         }
-
         for (let i = 0; i < state.entities.length; i++) {
             let entity = state.entities[i];
 
@@ -101,12 +100,14 @@ export class ClientHexBoard extends HexBoard {
                 case "MainBase": {
                     let sprite = new ClientMainBaseSprite(this.clientSpriteManager);
                     sprite.setTile(this.getHexAtSpot(entity.x, 0, entity.z));
+                    sprite.setId(entity.id);
                     this.clientSpriteManager.addSprite(sprite);
                     break;
                 }
                 case "Plane": {
                     let sprite = new ClientHeliSprite(this.clientSpriteManager);
                     sprite.setTile(this.getHexAtSpot(entity.x, 0, entity.z));
+                    sprite.setId(entity.id);
                     this.clientSpriteManager.addSprite(sprite);
                     break;
                 }

@@ -79,13 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Logic\GameLogic.cs" />
     <Compile Include="Logic\UserLogic.cs" />
-    <Compile Include="Modules\GameModule.cs" />
-    <Compile Include="Modules\Models\GetStateRequest.cs" />
-    <Compile Include="Modules\Models\GetStateResponse.cs" />
-    <Compile Include="Modules\Models\PostVoteRequest.cs" />
-    <Compile Include="Modules\Models\PostVoteResponse.cs" />
     <Compile Include="Modules\Models\UserLoginRequest.cs" />
     <Compile Include="Modules\Models\UserLoginResponse.cs" />
     <Compile Include="Modules\UserModule.cs" />

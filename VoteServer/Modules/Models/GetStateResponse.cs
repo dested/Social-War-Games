@@ -1,9 +1,6 @@
-using System.Collections.Generic;
 using Common.Data;
-using Common.GameLogic;
-using Common.HexUtils;
 
-namespace DataServer.Modules.Models
+namespace VoteServer.Modules.Models
 {
     public class GetStateResponse
     {

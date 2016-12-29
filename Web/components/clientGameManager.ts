@@ -44,13 +44,13 @@ export class ClientGameManager {
         mc.add(new Hammer.Pan({threshold: 0, pointers: 0}));
         mc.add(new Hammer.Swipe()).recognizeWith(mc.get('pan'));
         mc.add(new Hammer.Tap());
-        overlay.onmousemove = (ev)=> {
+        overlay.onmousemove = (ev) => {
             var x = <number> ev.pageX;
             var y = <number> ev.pageY;
             // this.tapHex(x, y);
         };
 
-        window.onresize = ()=> {
+        window.onresize = () => {
             this.canvas.width = document.body.clientWidth;
             this.canvas.height = document.body.clientHeight;
         };
@@ -62,7 +62,7 @@ export class ClientGameManager {
         this.hexBoard.resize(this.canvas.width, this.canvas.height);
 
 
-        mc.on('panstart', (ev)=> {
+        mc.on('panstart', (ev) => {
             if (this.menuManager.isOpen) {
                 return false;
             }
@@ -72,14 +72,14 @@ export class ClientGameManager {
             this.tapStart.y = this.hexBoard.viewPort.y;
             this.hexBoard.setView(this.tapStart.x - ev.deltaX, this.tapStart.y - ev.deltaY);
         });
-        mc.on('panmove', (ev)=> {
+        mc.on('panmove', (ev) => {
             if (this.menuManager.isOpen) {
                 return false;
             }
             this.hexBoard.setView(this.tapStart.x - ev.deltaX, this.tapStart.y - ev.deltaY);
         });
 
-        mc.on('swipe', (ev)=> {
+        mc.on('swipe', (ev) => {
             if (this.menuManager.isOpen) {
                 return false;
             }
@@ -100,11 +100,17 @@ export class ClientGameManager {
         this.draw();
 
 
-        fetch('http://localhost:3569/api/game/state', {})
+        fetch('http://localhost:3568/api/game/state', {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        })
             .then(response => {
-                response.text()
+                response.json()
                     .then(data => {
-                        this.hexBoard.initialize(JSON.parse(data).data.state);
+                        debugger;
+                        this.hexBoard.initialize(data.data.state);
                     });
             })
             .catch((err) => {
@@ -145,7 +151,7 @@ export class ClientGameManager {
     drawIndex = 0;
 
     draw() {
-        requestAnimationFrame(()=> {
+        requestAnimationFrame(() => {
             this.draw();
         });
         this.tick();
@@ -208,6 +214,32 @@ export class ClientGameManager {
                 this.selectedHex = null;
                 return;
             }
+            debugger;
+
+            fetch('http://localhost:3568/api/game/vote', {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    unitId: sprite.id,
+                    action: 'Move',
+                    generation: 0,
+                    x: item.x,
+                    z: item.z
+                })
+            })
+                .then(response => {
+                    response.text()
+                        .then(data => {
+                            console.log(JSON.parse(data));
+                        });
+                })
+                .catch((err) => {
+                    console.log('Fetch Error :-S', err);
+                });
+
 
             let path = this.hexBoard.pathFind(this.selectedHex, item);
             for (let i = 1; i < path.length; i++) {
@@ -215,7 +247,7 @@ export class ClientGameManager {
                 let oldP = path[i - 1];
                 // var direction = HexUtils.getDirection(oldP,p);
                 // sprite.currentDirection = direction;
-                setTimeout(()=> {
+                setTimeout(() => {
                     sprite.currentDirection = HexUtils.getDirection(oldP, p);
                     sprite.setTile(this.hexBoard.getHexAtSpot(p.x, p.y, p.z));
                 }, i * 500);

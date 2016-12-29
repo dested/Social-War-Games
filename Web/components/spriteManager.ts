@@ -16,7 +16,7 @@ export class SpriteManager {
     }
 
     getSpritesAtTile(item: GridHexagon): Sprite[] {
-        return this.spritesMap[item.x + item.z * 5000]||[];
+        return this.spritesMap[item.x + item.z * 5000] || [];
     }
 
 }
@@ -27,11 +27,15 @@ export class Sprite {
     tile: GridHexagon;
     public key: string;
     public spriteManager: SpriteManager;
+    id: string;
 
     constructor(spriteManager: SpriteManager) {
         this.spriteManager = spriteManager;
     }
 
+    setId(id: string) {
+        this.id = id;
+    }
 
     public tick() {
 
@@ -41,7 +45,7 @@ export class Sprite {
         if (this.tile) {
             var sprites = this.spriteManager.spritesMap[this.tile.x + this.tile.z * 5000];
             sprites = sprites || [];
-            sprites.splice(sprites.indexOf(this),1);
+            sprites.splice(sprites.indexOf(this), 1);
             this.spriteManager.spritesMap[this.tile.x + this.tile.z * 5000] = sprites;
         }
 

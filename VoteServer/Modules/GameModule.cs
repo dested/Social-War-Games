@@ -1,5 +1,6 @@
 using Common.Utils.Nancy;
 using VoteServer.Logic;
+using VoteServer.Modules.Models;
 
 namespace VoteServer.Modules
 {
@@ -7,7 +8,21 @@ namespace VoteServer.Modules
     {
         public GameModule() : base("api/game")
         {
+            Get["/state", true] = async (_, __) =>
+            {
+                var model = ValidateRequest<GetStateRequest>();
+                var response = await GameLogic.GetState(model);
+                return this.Success(response);
+            };
+            Post["/vote", true] = async (_, __) =>
+            {
+                var model = ValidateRequest<PostVoteRequest>();
+                var response = await GameLogic.VoteAction(model);
+                return this.Success(response);
+            };
+         
         }
+
 
     }
 

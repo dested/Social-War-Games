@@ -1,4 +1,4 @@
-namespace DataServer.Modules.Models
+namespace VoteServer.Modules.Models
 {
     public class PostVoteRequest
     {
@@ -6,6 +6,6 @@ namespace DataServer.Modules.Models
         public string Action { get; set; }
         public int Generation { get; set; }
         public int X { get; set; }
-        public int Y { get; set; }
+        public int Z { get; set; }
     }
 }
