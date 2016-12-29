@@ -79,16 +79,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\GameUnitType.cs" />
+    <Compile Include="Data\GameEntityType.cs" />
     <Compile Include="Data\MongoGameVote.cs" />
-    <Compile Include="Data\MongoGameStateData.cs" />
+    <Compile Include="Data\MongoGameState.cs" />
     <Compile Include="Data\MongoUser.cs" />
     <Compile Include="GameLogic\Models\GameVoteMessage.cs" />
     <Compile Include="GameLogic\Models\NewRoundMessage.cs" />
     <Compile Include="GameLogic\Models\StopVoteMessage.cs" />
-    <Compile Include="HexUtils\GridHexagon.cs" />
-    <Compile Include="HexUtils\HexBoard.cs" />
-    <Compile Include="HexUtils\HexBoardModel.cs" />
+    <Compile Include="GameLogic\GridHexagon.cs" />
+    <Compile Include="GameLogic\GameBoard.cs" />
     <Compile Include="HexUtils\HexUtils.cs" />
     <Compile Include="HexUtils\Node.cs" />
     <Compile Include="HexUtils\Noise.cs" />

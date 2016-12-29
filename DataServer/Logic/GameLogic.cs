@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Common.Data;
+using Common.GameLogic;
 using Common.HexUtils;
+using Common.Utils.Mongo;
 using DataServer.Modules;
 using DataServer.Modules.Models;
 using MasterVoteServer;
@@ -15,7 +17,7 @@ namespace DataServer.Logic
         {
             return new GetStateResponse()
             {
-                State=HexBoard.GenerateBoard()
+                State=(await MongoGameState.Collection.GetOne(a=>true))
             };
         }
 
@@ -23,7 +25,7 @@ namespace DataServer.Logic
 /*
         public static PostVoteResponse VoteAction(PostVoteRequest model)
         {
-            var gameStateData = SocialWarGames.Instance.StateData;
+            var gameStateData = SocialWarGames.Instance.State;
 
             if (model.Generation != gameStateData.Generation)
             {
@@ -34,9 +36,9 @@ namespace DataServer.Logic
             if (unit == null) throw new ValidationException("Unit not found");
 
             var distance = 12;
-            switch (unit.UnitType)
+            switch (unit.EntityType)
             {
-                case GameUnitType.Infantry:
+                case GameEntityType.Infantry:
                     switch (model.Action)
                     {
                         case "Move":

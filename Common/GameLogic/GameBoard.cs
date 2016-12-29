@@ -1,46 +1,27 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+using Common.Data;
+using Common.HexUtils;
 
-namespace Common.HexUtils
+namespace Common.GameLogic
 {
-    public class HexBoard
+    public class GameBoard
     {
-        public static HexBoardModel GenerateBoard()
+        public List<GridHexagon> HexList { get; }
+        private Dictionary<int, GridHexagon> HexBoard { get; }
+        public Size BoardSize { get; set; }
+        public GameBoard(MongoGameState.Terrain board)
         {
-            var board = new HexBoardModel();
-            StringBuilder sb = new StringBuilder(board.Height * (board.Width + 1));
-            board.Width = 84 ;
-            board.Height = 84  ;
-            var random = new Random();
-            Noise.Seed = random.Next();
-            for (var y = 0; y < board.Height; y++)
-            {
-                for (var x = 0; x < board.Width; x++)
-                {
-                    var value = Math.Abs(Noise.Generate(x / 90f, y / 90f)) * 90f;
-                    sb.Append(Math.Round(value / 15f));
-                }
-                sb.Append("|");
-            }
-            board.BoardStr = sb.ToString();
-            return board;
-        }
-
-        List<GridHexagon> hexList { get; set; } = new List<GridHexagon>();
-        private Dictionary<int, GridHexagon> hexBlock { get; set; } = new Dictionary<int, GridHexagon>();
-        public Size boardSize { get; set; }
-        public HexBoard(HexBoardModel board)
-        {
+            BoardSize = new Size();
+            HexList = new List<GridHexagon>();
+            HexBoard = new Dictionary<int, GridHexagon>();
             var str = board.BoardStr;
             this.SetSize(board.Width, board.Height);
 
-
-
-            var ys = str.Split('|');
-            for (var y = 0; y < board.Height; y++)
+            var zs = str.Split('|');
+            for (var z = 0; z < board.Height; z++)
             {
-                var yItem = ys[y].ToCharArray();
+                var yItem = zs[z].ToCharArray();
                 for (var x = 0; x < board.Width; x++)
                 {
                     var xItem = int.Parse(yItem[x].ToString());
@@ -48,32 +29,31 @@ namespace Common.HexUtils
                     var gridHexagon = new GridHexagon();
                     gridHexagon.X = x;
                     gridHexagon.Y = 0;
-                    gridHexagon.Z = y;
+                    gridHexagon.Z = z;
                     gridHexagon.Height = xItem == 0 ? 0 : xItem;
-                    if (xItem == 0)
-                        this.addHexagon(gridHexagon);
+                    this.Add(gridHexagon);
                 }
             }
         }
 
-        GridHexagon XYToHexIndex(int x, int y)
+        public GridHexagon GetHexagon(int x, int z)
         {
-            return this.hexBlock[x + y * 5000];
+            return this.HexBoard[x + z * 5000];
         }
         public void SetSize(int width, int height)
         {
-            this.boardSize.Width = width;
-            this.boardSize.Height = height;
+            this.BoardSize.Width = width;
+            this.BoardSize.Height = height;
         }
 
         public List<GridHexagon> FindAvailableSpots(int radius, GridHexagon center)
         {
             var items = new List<GridHexagon>();
-            for (var q = 0; q < this.hexList.Count; q++)
+            for (var q = 0; q < this.HexList.Count; q++)
             {
-                var item = this.hexList[q];
+                var item = this.HexList[q];
 
-                if (HexUtils.Distance(center, item) <= radius)
+                if (HexUtils.HexUtils.Distance(center, item) <= radius)
                 {
                     items.Add(item);
                 }
@@ -103,7 +83,6 @@ namespace Common.HexUtils
             List<Node> open = new List<Node>() { myPathStart };
             List<Node> closed = new List<Node>();
             var result = new List<GridHexagon>();
-            List<GridHexagon> neighbours;
             Node node;
             Node path;
             int length, max, min, i, j;
@@ -138,18 +117,18 @@ namespace Common.HexUtils
                 }
                 else
                 {
-                    neighbours = node.Item.GetNeighbors();
+                    List<Vector2> neighbours = node.Item.GetNeighbors();
                     for (i = 0, j = neighbours.Count; i < j; i++)
                     {
-                        var n = this.XYToHexIndex(neighbours[i].X, neighbours[i].Y);
+                        var n = GetHexagon(neighbours[i].X, neighbours[i].Y);
                         if (n == null) continue;
                         if (Math.Abs((node.Item.Y + node.Item.Height) - (n.Y + n.Height)) >= 2)
                             continue;
                         path = new Node(node, n);
                         if (!aStar.Contains(path.Value()))
                         {
-                            path.G = node.G + HexUtils.Distance(n, node.Item) + (Math.Abs((node.Item.Y + node.Item.Height) - (n.Y + n.Height)) * 2);
-                            path.F = path.G + HexUtils.Distance(n, finish);
+                            path.G = node.G + HexUtils.HexUtils.Distance(n, node.Item) + (Math.Abs((node.Item.Y + node.Item.Height) - (n.Y + n.Height)) * 2);
+                            path.F = path.G + HexUtils.HexUtils.Distance(n, finish);
                             open.Add(path);
                             aStar.Add(path.Value());
                         }
@@ -160,10 +139,10 @@ namespace Common.HexUtils
             return result;
         }
 
-        public void addHexagon(GridHexagon hexagon)
+        public void Add(GridHexagon hexagon)
         {
-            this.hexList.Add(hexagon);
-            this.hexBlock[hexagon.X + hexagon.Z * 5000] = hexagon;
+            this.HexList.Add(hexagon);
+            this.HexBoard[hexagon.X + hexagon.Z * 5000] = hexagon;
         }
     }
 }

@@ -20,12 +20,12 @@ namespace MasterVoteServer.Votes
                     infantryVote.Y == Y);
         }
 
-        public override void Complete(MongoGameStateData.GameStateData stateData)
+        public override void Complete(MongoGameState.GameState stateData)
         {
             var unit = stateData.GetUnitById(UnitId);
             if (unit != null)
             {
-                var enemy = stateData.GetUnitByLocation(X, Y);
+                var enemy = stateData.GetEntityByLocation(X, Y);
                 if (enemy != null)
                 {
                     enemy.Hurt(1, stateData);

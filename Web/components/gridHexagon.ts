@@ -7,6 +7,8 @@ export class GridHexagon {
     z = 0;
     height = 0;
     heightOffset = 0;
+    faction: number=0;
+
 
     getRealX(){
         return  GridHexagonConstants.width * 3 / 4 * this.x;

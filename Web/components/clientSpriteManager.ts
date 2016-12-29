@@ -14,8 +14,8 @@ export class ClientSpriteManager extends SpriteManager {
     }
 
     draw(context: CanvasRenderingContext2D) {
-        for (var i = 0; i < this.sprites.length; i++) {
-            var sprite = <ClientBaseSprite> this.sprites[i];
+        for (let i = 0; i < this.sprites.length; i++) {
+            let sprite = <ClientBaseSprite> this.sprites[i];
             if (sprite.tile == null && sprite.shouldDraw()) {
                 sprite.draw(context);
             }
@@ -33,9 +33,9 @@ export abstract class ClientBaseSprite extends Sprite {
     animationSpeed: number;
 
     animationFrame: number = 0;
-    _drawTickNumber: number = (Math.random()*1000)|0;
+    _drawTickNumber: number = (Math.random() * 1000) | 0;
 
-    constructor(clientSpriteManager:ClientSpriteManager,totalFrames: number, animationSpeed: number) {
+    constructor(clientSpriteManager: ClientSpriteManager, totalFrames: number, animationSpeed: number) {
         super(clientSpriteManager);
         this.animationSpeed = animationSpeed;
         this.totalFrames = totalFrames;
@@ -56,7 +56,7 @@ export abstract class ClientBaseSprite extends Sprite {
     shouldDraw(): boolean {
         const x = this.x;
         const y = this.y;
-        var viewPort = this.clientHexBoard.viewPort;
+        let viewPort = this.clientHexBoard.viewPort;
 
         return x > viewPort.x - viewPort.padding &&
             x < viewPort.x + viewPort.width + viewPort.padding &&
@@ -74,9 +74,9 @@ export class ClientSixDirectionSprite extends ClientBaseSprite {
         context.save();
         context.translate(this.x, this.y);
 
-        var assetName = this.key + '.' + this.currentDirectionToSpriteName();
-        var asset = AssetManager.assets[assetName];
-        var image = asset.images[this.animationFrame];
+        let assetName = this.key + '.' + this.currentDirectionToSpriteName();
+        let asset = AssetManager.assets[assetName];
+        let image = asset.images[this.animationFrame];
         context.drawImage(image, -asset.base.x, -asset.base.y - this.hoverY() - GridHexagonConstants.depthHeight() / 2);
         context.restore();
     }
@@ -105,8 +105,29 @@ export class ClientSixDirectionSprite extends ClientBaseSprite {
     }
 }
 
+export class ClientStationarySprite extends ClientBaseSprite {
+    draw(context: CanvasRenderingContext2D) {
+        super.draw(context);
+        context.save();
+        context.translate(this.x, this.y);
+
+        let assetName = this.key;
+        let asset = AssetManager.assets[assetName];
+        let image = asset.image || asset.images[this.animationFrame];
+        context.drawImage(image, -asset.base.x, -asset.base.y - GridHexagonConstants.depthHeight() / 2);
+        context.restore();
+    }
+}
+
 export class ClientHeliSprite extends ClientSixDirectionSprite {
-    constructor(clientSpriteManager:ClientSpriteManager) {
-        super(clientSpriteManager,2, 10)
+    constructor(clientSpriteManager: ClientSpriteManager) {
+        super(clientSpriteManager, 2, 10);
+        this.key = 'Heli';
+    }
+}
+export class ClientMainBaseSprite extends ClientStationarySprite {
+    constructor(clientSpriteManager: ClientSpriteManager) {
+        super(clientSpriteManager, 0, 0);
+        this.key = 'MainBase';
     }
 }

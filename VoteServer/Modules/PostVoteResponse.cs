@@ -4,6 +4,6 @@ namespace VoteServer.Modules
 {
     public class PostVoteResponse
     {
-        public MongoGameStateData.GameStateData StateData { get; set; }
+        public MongoGameState.GameState State { get; set; }
     }
 }

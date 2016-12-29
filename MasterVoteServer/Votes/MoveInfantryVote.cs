@@ -5,7 +5,7 @@ namespace MasterVoteServer.Votes
     public class MoveInfantryVote : Vote
     {
         public int X { get; set; }
-        public int Y { get; set; }
+        public int Z { get; set; }
 
         public override bool Equivalent(Vote vote)
         {
@@ -17,16 +17,16 @@ namespace MasterVoteServer.Votes
 
             return (infantryVote.UnitId == UnitId &&
                     infantryVote.X == X &&
-                    infantryVote.Y == Y);
+                    infantryVote.Z == Z);
         }
 
-        public override void Complete(MongoGameStateData.GameStateData stateData)
+        public override void Complete(MongoGameState.GameState state)
         {
-            var unit = stateData.GetUnitById(UnitId);
+            var unit = state.GetUnitById(UnitId);
             if (unit != null)
             {
                 unit.X = this.X;
-                unit.Y = this.Y;
+                unit.Z = this.Z;
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define local
+using System;
 using System.Configuration;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -12,8 +13,10 @@ namespace Common.Utils.Redis
 
         public PubSub()
         {
-            var redisStr = ConfigurationManager.AppSettings["redis"];
-
+            var redisStr = "localhost";
+#if !local
+            redisStr=ConfigurationManager.AppSettings["redis"];
+#endif
             ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(redisStr);
             this.subscriber = redis.GetSubscriber();
         }

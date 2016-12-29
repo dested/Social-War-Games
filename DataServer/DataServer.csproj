@@ -79,7 +79,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataGameLogic.cs" />
     <Compile Include="Logic\GameLogic.cs" />
     <Compile Include="Logic\UserLogic.cs" />
     <Compile Include="Modules\GameModule.cs" />

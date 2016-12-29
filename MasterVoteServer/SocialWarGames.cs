@@ -17,7 +17,7 @@ namespace MasterVoteServer
         private Random random = new Random();
 
 
-        public MongoGameStateData.GameStateData StateData { get; set; }
+        public MongoGameState.GameState StateData { get; set; }
         public SocialWarGames()
         {
             loadGameState();
@@ -53,8 +53,8 @@ namespace MasterVoteServer
 
         private void loadGameState()
         {
-            var states = MongoGameStateData.Collection.GetAll();
-            MongoGameStateData.GameStateData stateData;
+            var states = MongoGameState.Collection.GetAll();
+            MongoGameState.GameState stateData;
             if (!states.Any())
             {
                 stateData = initializeGameState();
@@ -95,10 +95,10 @@ namespace MasterVoteServer
 
 
 
-        private MongoGameStateData.GameStateData initializeGameState()
+        private MongoGameState.GameState initializeGameState()
         {
-            MongoGameStateData.GameStateData stateData = new MongoGameStateData.GameStateData();
-            stateData.Board = new MongoGameStateData.HexBoard();
+            MongoGameState.GameState stateData = new MongoGameState.GameState();
+            stateData.Board = new MongoGameState.HexBoard();
             string boardStr = "";
             stateData.Board.Width = 84;
             stateData.Board.Height = 84;
@@ -127,11 +127,11 @@ namespace MasterVoteServer
             stateData.Board.BoardStr = boardStr;
 
             stateData.LastGeneration = DateTime.UtcNow.AddMinutes(1);
-            stateData.Factions = new List<MongoGameStateData.GameFaction>();
+            stateData.Factions = new List<MongoGameState.GameFaction>();
             for (int f = 0; f < 3; f++)
             {
-                var gameFaction = new MongoGameStateData.GameFaction();
-                gameFaction.Units = new List<MongoGameStateData.GameUnit>();
+                var gameFaction = new MongoGameState.GameFaction();
+                gameFaction.Units = new List<MongoGameState.GameUnit>();
                 gameFaction.Id = ObjectId.GenerateNewId().ToString();
 
                 switch (f)
@@ -165,37 +165,37 @@ namespace MasterVoteServer
                         }
                     }
 
-                    MongoGameStateData.GameUnit gameUnit;
+                    MongoGameState.GameUnit gameUnit;
 
                     if (unitType < 60)
                     {
-                        gameUnit = new MongoGameStateData.GameUnit()
+                        gameUnit = new MongoGameState.GameUnit()
                         {
                             Id = ObjectId.GenerateNewId().ToString(),
                             Health = 2,
-                            UnitType = GameUnitType.Infantry,
+                            EntityType = GameEntityType.Infantry,
                             X = x,
                             Y = y
                         };
                     }
                     else if (unitType < 90)
                     {
-                        gameUnit = new MongoGameStateData.GameUnit()
+                        gameUnit = new MongoGameState.GameUnit()
                         {
                             Id = ObjectId.GenerateNewId().ToString(),
                             Health = 6,
-                            UnitType = GameUnitType.Tank,
+                            EntityType = GameEntityType.Tank,
                             X = x,
                             Y = y
                         };
                     }
                     else
                     {
-                        gameUnit = new MongoGameStateData.GameUnit()
+                        gameUnit = new MongoGameState.GameUnit()
                         {
                             Id = ObjectId.GenerateNewId().ToString(),
                             Health = 16,
-                            UnitType = GameUnitType.Base,
+                            EntityType = GameEntityType.Base,
                             X = x,
                             Y = y
                         };

@@ -12,6 +12,7 @@ namespace Common.Utils.Nancy
         public Bootstrapper()
         {
             JsonSettings.MaxJsonLength = Int32.MaxValue;
+            JsonSettings.RetainCasing = false;
         }
 
         protected override void RequestStartup(TinyIoCContainer container, IPipelines pipelines, NancyContext requestContext)

@@ -8,6 +8,6 @@ namespace MasterVoteServer.Votes
         public abstract bool Equivalent(Vote vote);
         public int Count { get; set; }
         public int Generation { get; set; }
-        public abstract void Complete(MongoGameStateData.GameStateData stateData);
+        public abstract void Complete(MongoGameState.GameState state);
     }
 }

@@ -20,6 +20,7 @@ export class ClientMain {
         AssetManager.addAsset('Infantry', 'images/tower_10.png', size, base);
         AssetManager.addAsset('Tank', 'images/tower_40.png', size, base);
         AssetManager.addAsset('Base', 'images/tower_42.png', size, base);
+        AssetManager.addAsset('MainBase', 'images/tower_42.png', size, base);
 
 
         AssetManager.addAsset('Icon.Move', 'images/icons/move.png', size, base);

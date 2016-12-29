@@ -11,15 +11,21 @@ namespace DataServer.Modules
             Get["/state", true] = async (_, __) =>
             {
                 var model = ValidateRequest<GetStateRequest>();
-                var response =await GameLogic.GetState(model);
+                var response = await GameLogic.GetState(model);
                 return this.Success(response);
             };
-      /*      Post["/vote", true] = async (_, __) =>
+            Get["/state", true] = async (_, __) =>
             {
-                var model = ValidateRequest<PostVoteRequest>();
-                var response = await GameLogic.VoteAction(model);
+                var model = ValidateRequest<GetStateRequest>();
+                var response = await GameLogic.GetState(model);
                 return this.Success(response);
-            };*/
+            };
+            /*      Post["/vote", true] = async (_, __) =>
+                  {
+                      var model = ValidateRequest<PostVoteRequest>();
+                      var response = await GameLogic.VoteAction(model);
+                      return this.Success(response);
+                  };*/
         }
 
     }

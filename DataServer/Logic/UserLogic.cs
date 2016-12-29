@@ -21,7 +21,7 @@ namespace DataServer.Logic
 
             return new UserLoginResponse()
             {
-                UserId = user.Id.ToString()
+                UserId = user.Id.ToString(),
             };
         }
         public static async Task<UserRegisterResponse> Register(UserRegisterRequest model)

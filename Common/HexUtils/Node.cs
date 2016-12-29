@@ -1,3 +1,5 @@
+using Common.GameLogic;
+
 namespace Common.HexUtils
 {
     class Node

@@ -79,13 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HexUtils\FractionalHex.cs" />
-    <Compile Include="HexUtils\Hex.cs" />
-    <Compile Include="HexUtils\Layout.cs" />
-    <Compile Include="HexUtils\OffsetCoord.cs" />
-    <Compile Include="HexUtils\Orientation.cs" />
-    <Compile Include="HexUtils\Point.cs" />
-    <Compile Include="HexUtils\Tests.cs" />
+    <Compile Include="VoteServerLogic.cs" />
     <Compile Include="Logic\GameLogic.cs" />
     <Compile Include="Modules\GameModule.cs" />
     <Compile Include="Modules\GetStateRequest.cs" />

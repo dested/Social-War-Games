@@ -2,8 +2,8 @@
 
 import {AssetManager, Asset} from "./AssetManager";
 import {HexagonColor, DrawingUtils} from "../utils/drawingUtilities";
-import {GridHexagon} from "..//gridHexagon";
-import {GridHexagonConstants} from "../hexLibraries/gridHexagonConstants";
+import {GridHexagon} from "../gridHexagon";
+import {GridHexagonConstants} from "./gridHexagonConstants";
 
 export class ClientGridHexagon extends GridHexagon {
 
@@ -79,6 +79,7 @@ export class ClientGridHexagon extends GridHexagon {
         context.stroke(this.leftDepthPath);
         context.restore();
     }
+
 
     drawBottomDepth(context: CanvasRenderingContext2D) {
         context.save();
@@ -198,13 +199,15 @@ export class ClientGridHexagon extends GridHexagon {
         return center;
     }
 
+    factionColors = ["#FFFFFF", "#4953FF", "#FF4F66", "#3DFF53"];
+
     draw(context: CanvasRenderingContext2D) {
 
         const center = this.hexCenter();
         if (this.drawCache) {
             context.drawImage(this.drawCache, -center.x, -center.y);
         } else {
-            const c = ClientGridHexagon.getCacheImage(this.getDepthHeight(), this.icon, this.highlightColor || this.hexColor);
+            const c = ClientGridHexagon.getCacheImage(this.getDepthHeight(), this.icon, this.highlightColor || this.hexColor, this.factionColors[this.faction]);
             if (!c) {
                 const can = document.createElement('canvas');
                 const ctx = can.getContext('2d');
@@ -233,7 +236,7 @@ export class ClientGridHexagon extends GridHexagon {
                 this.drawIcon(ctx);
                 ctx.restore();
 
-                ClientGridHexagon.setCacheImage(this.getDepthHeight(), this.icon, this.highlightColor || this.hexColor, can);
+                ClientGridHexagon.setCacheImage(this.getDepthHeight(), this.icon, this.highlightColor || this.hexColor, this.factionColors[this.faction], can);
                 /*       ctx.strokeStyle='black';
                  ctx.lineWidth=1;
                  ctx.strokeRect(0,0,can.width,can.height);*/
@@ -273,13 +276,13 @@ export class ClientGridHexagon extends GridHexagon {
 
     static caches: {[key: string]: HTMLCanvasElement} = {};
 
-    static getCacheImage(height: number, icon: Asset, hexColor: HexagonColor): HTMLCanvasElement {
-        const c = `${icon ? icon.name : ''}-${height}-${hexColor.color}`;
+    static getCacheImage(height: number, icon: Asset, hexColor: HexagonColor, tint: string): HTMLCanvasElement {
+        const c = `${icon ? icon.name : ''}-${height}-${hexColor.color}-${tint}`;
         return ClientGridHexagon.caches[c]
     }
 
-    static setCacheImage(height: number, icon: Asset, hexColor: HexagonColor, img: HTMLCanvasElement) {
-        const c = `${icon ? icon.name : ''}-${height}-${hexColor.color}`;
+    static setCacheImage(height: number, icon: Asset, hexColor: HexagonColor, tint: string, img: HTMLCanvasElement) {
+        const c = `${icon ? icon.name : ''}-${height}-${hexColor.color}-${tint}`;
         ClientGridHexagon.caches[c] = img;
     }
 

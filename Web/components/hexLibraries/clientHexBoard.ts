@@ -1,9 +1,9 @@
 ﻿import {GridHexagonConstants} from "../hexLibraries/gridHexagonConstants";
 import {HexagonColor, DrawingUtils} from "../utils/drawingUtilities";
 import {HexBoard} from "../hexBoard";
-import {HexBoardModel} from "../models/hexBoard";
+import {GameState, GameEntityType} from "../models/hexBoard";
 import {ClientGridHexagon} from "./clientGridHexagon";
-import {ClientSpriteManager, ClientHeliSprite, ClientBaseSprite} from "../clientSpriteManager";
+import {ClientSpriteManager, ClientHeliSprite, ClientBaseSprite, ClientMainBaseSprite} from "../clientSpriteManager";
 
 export class ClientHexBoard extends HexBoard {
     viewPort = {x: 0, y: 0, width: 400, height: 400, padding: GridHexagonConstants.width * 2};
@@ -19,7 +19,6 @@ export class ClientHexBoard extends HexBoard {
         this.viewPort.width = width;
         this.viewPort.height = height;
     }
-
 
 
     offsetView(x, y) {
@@ -42,9 +41,10 @@ export class ClientHexBoard extends HexBoard {
         this.viewPort.y = Math.min(this.viewPort.y, size.height + this.viewPort.padding - this.viewPort.height)
     }
 
-    initialize(board: HexBoardModel) {
-        const str = board.boardStr;
-        this.setSize(board.width, board.height);
+    initialize(state: GameState) {
+        var terrain = state.terrain;
+        const str = terrain.boardStr;
+        this.setSize(terrain.width, terrain.height);
         var baseColor = new HexagonColor('#AFFFFF');
 
         var otherColors = [];
@@ -53,11 +53,14 @@ export class ClientHexBoard extends HexBoard {
             otherColors[i] = new HexagonColor(DrawingUtils.colorLuminance('#AFF000', (i / 6)));
         }
 
-        const ys = str.split('|');
-        for (let y = 0; y < board.height; y++) {
+        let ys = str.split('|');
+        for (let y = 0; y < terrain.height; y++) {
             const yItem = ys[y].split('');
-            for (let x = 0; x < board.width; x++) {
+            for (let x = 0; x < terrain.width; x++) {
                 const xItem = parseInt(yItem[x]);
+                if (isNaN(xItem)) {
+                    debugger
+                }
 
                 let gridHexagon = new ClientGridHexagon();
                 gridHexagon.x = x;
@@ -72,18 +75,45 @@ export class ClientHexBoard extends HexBoard {
                 }
                 gridHexagon.buildPaths();
                 this.addHexagon(gridHexagon);
-
-                if (Math.random() * 100 < 5) {
-
-                    var sprite = new ClientHeliSprite(this.clientSpriteManager);
-                    sprite.setTile(gridHexagon);
-                    sprite.key = 'Heli';
-
-                    this.clientSpriteManager.addSprite(sprite);
-                }
-
             }
         }
+
+        let factionData = state.factionData;
+        var factionColors = ["#FFFFFF", "#4953FF", "#FF4F66", "#3DFF53"];
+
+        ys = factionData.split('|');
+        for (let y = 0; y < terrain.height; y++) {
+            const yItem = ys[y].split('');
+            for (let x = 0; x < terrain.width; x++) {
+                const faction = parseInt(yItem[x]);
+                let hex = this.getHexAtSpot(x, 0, y);
+                hex.faction = faction;
+                if (faction > 0) {
+                    hex.hexColor = new HexagonColor(DrawingUtils.colorLuminance(factionColors[faction], (hex.height / 6)));
+                }
+            }
+        }
+
+        for (let i = 0; i < state.entities.length; i++) {
+            let entity = state.entities[i];
+
+            switch (entity.entityType) {
+                case "MainBase": {
+                    let sprite = new ClientMainBaseSprite(this.clientSpriteManager);
+                    sprite.setTile(this.getHexAtSpot(entity.x, 0, entity.z));
+                    this.clientSpriteManager.addSprite(sprite);
+                    break;
+                }
+                case "Plane": {
+                    let sprite = new ClientHeliSprite(this.clientSpriteManager);
+                    sprite.setTile(this.getHexAtSpot(entity.x, 0, entity.z));
+                    this.clientSpriteManager.addSprite(sprite);
+                    break;
+                }
+            }
+        }
+
+
         this.reorderHexList();
     }
 

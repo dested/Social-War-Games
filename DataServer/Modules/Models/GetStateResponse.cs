@@ -1,9 +1,12 @@
+using System.Collections.Generic;
+using Common.Data;
+using Common.GameLogic;
 using Common.HexUtils;
 
 namespace DataServer.Modules.Models
 {
     public class GetStateResponse
     {
-        public HexBoardModel State { get; set; }
+        public MongoGameState.GameState State { get; set; }
     }
 }

@@ -7,8 +7,11 @@ namespace VoteServer
 {
     class Program
     {
+        public static VoteServerLogic VoteServerLogic { get; set; }
+
         static void Main(string[] args)
         {
+        VoteServerLogic = new VoteServerLogic();
             var uri = new Uri("http://localhost:3568");
             HostConfiguration hostConfigs = new HostConfiguration();
             hostConfigs.UrlReservations.CreateAutomatically = true;
