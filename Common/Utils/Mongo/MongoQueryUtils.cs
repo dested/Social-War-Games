@@ -34,6 +34,11 @@ namespace Common.Utils.Mongo
             return await (await collection.FindAsync<T>(expression)).FirstOrDefaultAsync();
         }
 
+        public static T GetOneSync<T>(this IMongoCollection<T> collection, Expression<Func<T, bool>> expression)
+        {
+            return collection.Find<T>(expression).FirstOrDefault();
+        }
+
 
         public static async Task<List<T>> GetAll<T>(this IMongoCollection<T> collection, Expression<Func<T, bool>> expression)
         {
@@ -63,7 +68,13 @@ namespace Common.Utils.Mongo
             var collection = MongoTools.GetCollection<T>();
             await collection.ReplaceOneAsync(a => a.Id == item.Id, item);
             return item;
-        } 
+        }
+        public static T UpdateSync<T>(this T item) where T : IMongoModel
+        {
+            var collection = MongoTools.GetCollection<T>();
+            collection.ReplaceOne(a => a.Id == item.Id, item);
+            return item;
+        }
 
         public static async Task Delete<T>(this string id) where T : IMongoModel
         {

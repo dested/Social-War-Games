@@ -97,6 +97,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bootstrapper.cs" />
     <Compile Include="Modules\Models\GetStateRequest.cs" />
     <Compile Include="Modules\Models\GetStateResponse.cs" />
     <Compile Include="Modules\Models\PostVoteRequest.cs" />

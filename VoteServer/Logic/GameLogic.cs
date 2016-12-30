@@ -1,35 +1,39 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Common.Data;
 using Common.GameLogic;
 using Common.GameLogic.Models;
 using Common.HexUtils;
 using Common.Utils.Mongo;
+using Common.Utils.Nancy;
 using VoteServer.Modules.Models;
 
 namespace VoteServer.Logic
 {
     public class GameLogic
     {
-        public static async Task<GetStateResponse> GetState(GetStateRequest model)
+        public static async Task<GetStateResponse> GetState(VoteServerLogic logic, GetStateRequest model)
         {
             return new GetStateResponse()
             {
-                State = (await MongoGameState.Collection.GetOne(a => true))
+                State = logic.GameManager.GameState
             };
         }
-        public static async Task<PostVoteResponse> VoteAction(PostVoteRequest model)
+        public static async Task<PostVoteResponse> VoteAction(VoteServerLogic logic, PostVoteRequest model)
         {
             var gameStateData = (await MongoGameState.Collection.GetOne(a => true));
 
             if (model.Generation != gameStateData.Generation)
             {
-                throw new ValidationException("GenerationId invalid");
+                throw new ValidationException("Generation invalid");
             }
             var board = new GameBoard(gameStateData.Terrain);
 
-            var unit = gameStateData.GetUnitById(model.UnitId);
+            var unit = gameStateData.GetUnitById(model.EntityId);
             if (unit == null) throw new ValidationException("Unit not found");
 
             switch (unit.EntityType)
@@ -49,28 +53,28 @@ namespace VoteServer.Logic
                             MongoGameVote.GameVote gameVote = new MongoGameVote.GameVote()
                             {
                                 Generated = DateTime.UtcNow,
-                                GenerationId = model.Generation,
-                                Details = new MongoGameVote.GameVoteDetails()
+                                Generation = model.Generation,
+                                Action= new MongoGameVote.MoveVoteAction()
                                 {
-                                    UnitId = model.UnitId,
+                                    EntityId = model.EntityId,
                                     UserId = model.UserId,
-                                    Type = MongoGameVote.VoteActionType.Move,
-                                    Action = new MongoGameVote.MoveVoteAction()
-                                    {
-                                        X = model.X,
-                                        Z = model.Z
-                                    }
+                                    X = model.X,
+                                    Z = model.Z
                                 }
                             };
                             await gameVote.Insert();
 
-                            await VoteServerLogic.Logic.GameListener.SendGameVote(new GameVoteMessage()
+                            await logic.GameListener.SendGameVote(new GameVoteMessage()
                             {
                                 Vote = gameVote
                             });
                             break;
+                        default:
+                            throw new RequestValidationException("Action not found");
                     }
                     break;
+                default:
+                    throw new RequestValidationException("Action not found");
             }
 
 
@@ -78,4 +82,7 @@ namespace VoteServer.Logic
             return new PostVoteResponse();
         }
     }
+
+
+
 }

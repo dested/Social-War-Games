@@ -7,15 +7,15 @@ using Nancy.TinyIoc;
 
 namespace Common.Utils.Nancy
 {
-    public class Bootstrapper : DefaultNancyBootstrapper
+    public class BaseBootstrapper  
     {
-        public Bootstrapper()
+        public BaseBootstrapper()
         {
             JsonSettings.MaxJsonLength = Int32.MaxValue;
             JsonSettings.RetainCasing = false;
         }
-
-        protected override void RequestStartup(TinyIoCContainer container, IPipelines pipelines, NancyContext requestContext)
+        
+        public  void RequestStartup(TinyIoCContainer container, IPipelines pipelines, NancyContext requestContext)
         {
             pipelines.AfterRequest.AddItemToEndOfPipeline((ctx) =>
             {
@@ -58,8 +58,6 @@ namespace Common.Utils.Nancy
                     return container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
                 }
             });
-
-            base.RequestStartup(container, pipelines, requestContext);
         }
 
 

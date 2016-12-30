@@ -213,14 +213,14 @@ export class GameManager {
                 return;
             }
 
-            fetch('https://vote.socialwargames.com/api/game/vote', {
+            fetch('http://localhost:60607/api/game/vote', {
                 method: "POST",
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    unitId: sprite.id,
+                    entityId: sprite.id,
                     action: 'Move',
                     generation: 0,
                     x: item.x,

@@ -96,7 +96,7 @@
     <Compile Include="Utils\JsonUtils\ObjectIdConverter.cs" />
     <Compile Include="Utils\Mongo\MongoTools.cs" />
     <Compile Include="Utils\Nancy\BaseModule.cs" />
-    <Compile Include="Utils\Nancy\Bootstrapper.cs" />
+    <Compile Include="Utils\Nancy\BaseBootstrapper.cs" />
     <Compile Include="Utils\Nancy\DefaultMetaData.cs" />
     <Compile Include="Utils\Nancy\ErrorMetaData.cs" />
     <Compile Include="Utils\Nancy\JsonNetSerializer.cs" />
@@ -119,6 +119,7 @@
     <Compile Include="GameLogic\GameListener.cs" />
     <Compile Include="Utils\Redis\PubSub.cs" />
     <Compile Include="Utils\Utils.cs" />
+    <Compile Include="Game\GameManager.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

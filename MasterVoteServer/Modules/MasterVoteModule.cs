@@ -25,16 +25,7 @@ namespace MasterVoteServer.Modules
                 return this.Success(1);
             };
 
-            Get["/ping"] = (_) =>
-            {
-                if (ServerLogic != null)
-                {
-                    ServerLogic = new MasterVoteServerLogic();
-                }
-                return this.Success(1);
-            };
-
-
+            Get["/ping"] = (_) => this.Success(1);
         }
 
         public static MasterVoteServerLogic ServerLogic { get; set; }

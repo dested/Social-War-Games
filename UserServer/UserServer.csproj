@@ -97,6 +97,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bootstrapper.cs" />
     <Compile Include="Logic\UserLogic.cs" />
     <Compile Include="Modules\Models\UserLoginRequest.cs" />
     <Compile Include="Modules\Models\UserLoginResponse.cs" />

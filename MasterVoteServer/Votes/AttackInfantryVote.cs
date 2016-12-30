@@ -15,14 +15,14 @@ namespace MasterVoteServer.Votes
                 return false;
             }
 
-            return (infantryVote.UnitId == UnitId &&
+            return (infantryVote.EntityId == EntityId &&
                     infantryVote.X == X &&
                     infantryVote.Y == Y);
         }
 
         public override void Complete(MongoGameState.GameState stateData)
         {
-            var unit = stateData.GetUnitById(UnitId);
+            var unit = stateData.GetUnitById(EntityId);
             if (unit != null)
             {
                 var enemy = stateData.GetEntityByLocation(X, Y);
