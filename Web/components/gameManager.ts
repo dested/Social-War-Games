@@ -1,15 +1,14 @@
-import {ClientHeliSprite} from "./clientSpriteManager";
+import {HeliSprite} from "./sprites/spriteManager";
 import {HexagonColor} from "./utils/drawingUtilities";
 import {MenuManager} from "./hexLibraries/menuManager";
 import {HexUtils} from "./hexLibraries/hexUtils";
-import {ClientGridHexagon} from "./hexLibraries/clientGridHexagon";
-import {ClientHexBoard} from "./hexLibraries/clientHexBoard";
-import {GridHexagon} from "./gridHexagon";
-declare var Hammer;
-declare var fetch;
-export class ClientGameManager {
+import {GridHexagon} from "./hexLibraries/gridHexagon";
+import {HexBoard} from "./hexLibraries/hexBoard";
+declare let Hammer;
+declare let fetch;
+export class GameManager {
     private menuManager: MenuManager;
-    private hexBoard: ClientHexBoard;
+    private hexBoard: HexBoard;
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
 
@@ -31,22 +30,22 @@ export class ClientGameManager {
             heat: 1
         });
 
-        this.hexBoard = new ClientHexBoard();
+        this.hexBoard = new HexBoard();
 
         this.canvas = <HTMLCanvasElement>document.getElementById("hex");
         this.context = this.canvas.getContext("2d");
-        var menu = document.getElementById("menu");
+        let menu = document.getElementById("menu");
         this.menuManager = new MenuManager(menu);
 
-        var overlay = document.getElementById("overlay");
+        let overlay = document.getElementById("overlay");
 
-        var mc = new Hammer.Manager(overlay);
+        let mc = new Hammer.Manager(overlay);
         mc.add(new Hammer.Pan({threshold: 0, pointers: 0}));
         mc.add(new Hammer.Swipe()).recognizeWith(mc.get('pan'));
         mc.add(new Hammer.Tap());
         overlay.onmousemove = (ev) => {
-            var x = <number> ev.pageX;
-            var y = <number> ev.pageY;
+            let x = <number> ev.pageX;
+            let y = <number> ev.pageY;
             // this.tapHex(x, y);
         };
 
@@ -89,8 +88,8 @@ export class ClientGameManager {
         });
 
         mc.on('tap', (ev) => {
-            var x = <number> ev.center.x;
-            var y = <number> ev.center.y;
+            let x = <number> ev.center.x;
+            let y = <number> ev.center.y;
 
             this.tapHex(x, y)
 
@@ -117,16 +116,16 @@ export class ClientGameManager {
             });
     }
 
-    startAction(item: ClientGridHexagon) {
-        var radius = 5;
-        var spots = this.findAvailableSpots(radius, item);
-        for (var i = 0; i < spots.length; i++) {
-            var spot = <ClientGridHexagon> spots[i];
-            var sprites = this.hexBoard.clientSpriteManager.spritesMap[spot.x + spot.z * 5000];
+    startAction(item: GridHexagon) {
+        let radius = 5;
+        let spots = this.findAvailableSpots(radius, item);
+        for (let i = 0; i < spots.length; i++) {
+            let spot =  spots[i];
+            let sprites = this.hexBoard.spriteManager.spritesMap[spot.x + spot.z * 5000];
             if (spot == item || (sprites && sprites.length > 0)) continue;
-            var path = this.hexBoard.pathFind(item, spot);
+            let path = this.hexBoard.pathFind(item, spot);
             if (path.length > 1 && path.length <= radius + 1) {
-                spot.setHighlight(ClientGameManager.moveHighlightColor);
+                spot.setHighlight(GameManager.moveHighlightColor);
                 spot.setHeightOffset(.25);
             }
         }
@@ -134,9 +133,9 @@ export class ClientGameManager {
 
 
     findAvailableSpots(radius, center): GridHexagon[] {
-        var items = [];
-        for (var q = 0; q < this.hexBoard.hexList.length; q++) {
-            var item = this.hexBoard.hexList[q];
+        let items = [];
+        for (let q = 0; q < this.hexBoard.hexList.length; q++) {
+            let item = this.hexBoard.hexList[q];
 
             if (HexUtils.distance(center, item) <= radius) {
                 items.push(item);
@@ -163,7 +162,7 @@ export class ClientGameManager {
 
     tick() {
         if (Math.abs(this.swipeVelocity.x) > 0) {
-            var sign = HexUtils.mathSign(this.swipeVelocity.x);
+            let sign = HexUtils.mathSign(this.swipeVelocity.x);
             this.swipeVelocity.x += 0.7 * -sign;
             if (HexUtils.mathSign(this.swipeVelocity.x) != sign) {
                 this.swipeVelocity.x = 0;
@@ -171,7 +170,7 @@ export class ClientGameManager {
         }
 
         if (Math.abs(this.swipeVelocity.y) > 0) {
-            var sign = HexUtils.mathSign(this.swipeVelocity.y);
+            let sign = HexUtils.mathSign(this.swipeVelocity.y);
             this.swipeVelocity.y += 0.7 * -sign;
             if (HexUtils.mathSign(this.swipeVelocity.y) != sign) {
                 this.swipeVelocity.y = 0;
@@ -181,7 +180,7 @@ export class ClientGameManager {
         {
             this.hexBoard.offsetView(this.swipeVelocity.x, this.swipeVelocity.y);
         }
-        this.hexBoard.clientSpriteManager.tick();
+        this.hexBoard.spriteManager.tick();
 
     }
 
@@ -198,7 +197,7 @@ export class ClientGameManager {
 
 
         for (let i = 0; i < this.hexBoard.hexList.length; i++) {
-            let h = <ClientGridHexagon> this.hexBoard.hexList[i];
+            let h =  this.hexBoard.hexList[i];
             h.setHighlight(null);
             h.setHeightOffset(0);
         }
@@ -208,7 +207,7 @@ export class ClientGameManager {
 
 
         if (this.selectedHex) {
-            let sprite = <ClientHeliSprite> this.hexBoard.clientSpriteManager.getSpritesAtTile(this.selectedHex)[0];
+            let sprite = <HeliSprite> this.hexBoard.spriteManager.getSpritesAtTile(this.selectedHex)[0];
             if (!sprite) {
                 this.selectedHex = null;
                 return;
@@ -243,7 +242,7 @@ export class ClientGameManager {
             for (let i = 1; i < path.length; i++) {
                 let p = path[i];
                 let oldP = path[i - 1];
-                // var direction = HexUtils.getDirection(oldP,p);
+                // let direction = HexUtils.getDirection(oldP,p);
                 // sprite.currentDirection = direction;
                 setTimeout(() => {
                     sprite.currentDirection = HexUtils.getDirection(oldP, p);
@@ -256,10 +255,10 @@ export class ClientGameManager {
 
         this.selectedHex = item;
 
-        var sprites = this.hexBoard.clientSpriteManager.getSpritesAtTile(item);
+        let sprites = this.hexBoard.spriteManager.getSpritesAtTile(item);
         if (sprites && sprites.length > 0) {
-            var sprite = sprites[0];
-            item.setHighlight(ClientGameManager.selectedHighlightColor);
+            let sprite = sprites[0];
+            item.setHighlight(GameManager.selectedHighlightColor);
             item.setHeightOffset(.25);
             this.startAction(item);
         }

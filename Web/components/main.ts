@@ -3,12 +3,12 @@
 /// <reference path="./node_modules/@types/whatwg-fetch/index.d.ts" />
 
 import {AssetManager } from "./hexLibraries/AssetManager";
-import {ClientGameManager} from "./clientGameManager";
+import {GameManager} from "./gameManager";
 
-export class ClientMain {
+export class Main {
     static run() {
        this.loadAssets(()=>{
-           new ClientGameManager();
+           new GameManager();
        });
 
     }
@@ -55,6 +55,6 @@ export class ClientMain {
     //Arpegglatura <3
 }
 
-ClientMain.run();
+Main.run();
 
 

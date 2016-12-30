@@ -25,7 +25,7 @@ namespace MasterVoteServer.Modules
                 return this.Success(1);
             };
 
-            Post["/ping"] = (_) =>
+            Get["/ping"] = (_) =>
             {
                 if (ServerLogic != null)
                 {
