@@ -8,12 +8,15 @@ namespace VoteServer.Modules
     {
         public GameModule() : base("api/game")
         {
+            Get["/check"] = (_) => this.Success(1);
+
             Get["/state", true] = async (_, __) =>
             {
                 var model = ValidateRequest<GetStateRequest>();
                 var response = await GameLogic.GetState(model);
                 return this.Success(response);
             };
+
             Post["/vote", true] = async (_, __) =>
             {
                 var model = ValidateRequest<PostVoteRequest>();

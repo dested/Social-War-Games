@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Common.GameLogic;
 using Common.GameLogic.Models;
@@ -13,10 +14,18 @@ namespace MasterVoteServer
         {
             GameListener = new GameListener();
 
+            new Timer(gameTick, null, new TimeSpan(0, 5, 0), new TimeSpan(0, 5, 0));
+
             GameListener.OnGameVote(async (message) =>
             {
                 await OnGameVote(message);
             });
+
+        }
+
+        private void gameTick(object state)
+        {
+            
 
         }
 

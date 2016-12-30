@@ -100,7 +100,7 @@ export class ClientGameManager {
         this.draw();
 
 
-        fetch('http://localhost:3568/api/game/state', {
+        fetch('https://vote.socialwargames.com/api/game/state', {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
@@ -214,7 +214,7 @@ export class ClientGameManager {
                 return;
             }
 
-            fetch('http://localhost:3568/api/game/vote', {
+            fetch('https://vote.socialwargames.com/api/game/vote', {
                 method: "POST",
                 headers: {
                     'Accept': 'application/json',

@@ -8,6 +8,9 @@ namespace UserServer.Modules
     {
         public UserModule() : base("api/user")
         {
+            Get["/check"] = (_) => this.Success(1);
+
+
             Post["/login", true] = async (_, __) =>
             {
                 var ip = Request.UserHostAddress;
