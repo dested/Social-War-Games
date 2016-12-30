@@ -1,12 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Common.Data;
 using Common.Utils.Mongo;
 using Common.Utils.Nancy;
-using DataServer.Modules;
-using DataServer.Modules.Models;
+using UserServer.Modules.Models;
 
-namespace DataServer.Logic
+namespace UserServer.Logic
 {
     public class UserLogic
     {

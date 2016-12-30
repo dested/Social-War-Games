@@ -7,12 +7,12 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{55C8F774-C510-40E5-BCE1-0BA9484647FA}</ProjectGuid>
+    <ProjectGuid>{F8A5A9AD-F680-46F4-806F-653E7E51A030}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MasterVoteServer</RootNamespace>
-    <AssemblyName>MasterVoteServer</AssemblyName>
+    <RootNamespace>UserServer</RootNamespace>
+    <AssemblyName>UserServer</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -97,14 +97,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Modules\MasterVoteModule.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="SocialWarGames.cs" />
+    <Compile Include="Logic\UserLogic.cs" />
+    <Compile Include="Modules\Models\UserLoginRequest.cs" />
+    <Compile Include="Modules\Models\UserLoginResponse.cs" />
+    <Compile Include="Modules\UserModule.cs" />
+    <Compile Include="Modules\Models\UserRegisterRequest.cs" />
+    <Compile Include="Modules\Models\UserRegisterResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MasterVoteServerLogic.cs" />
-    <Compile Include="Votes\AttackInfantryVote.cs" />
-    <Compile Include="Votes\Vote.cs" />
-    <Compile Include="Votes\MoveInfantryVote.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.config" />
@@ -138,7 +137,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>56699</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:60605</IISUrl>
+          <IISUrl>http://localhost:60604</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

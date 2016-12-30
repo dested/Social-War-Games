@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataServer", "DataServer\DataServer.csproj", "{F8A5A9AD-F680-46F4-806F-653E7E51A030}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserServer", "UserServer\UserServer.csproj", "{F8A5A9AD-F680-46F4-806F-653E7E51A030}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{8DDA742A-8276-4EB9-BDF7-6DD8C7EA6375}"
 EndProject
@@ -29,6 +29,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Web", "Web\", "{53286DB0-5D
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "56854"
+		SlnRelativePath = "Web\"
 	EndProjectSection
 EndProject
 Global

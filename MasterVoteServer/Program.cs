@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 
 namespace MasterVoteServer
 {
+/*
     public class Program
     {
         static void Main(string[] args)
@@ -111,4 +112,5 @@ namespace MasterVoteServer
         }
 
     }
+*/
 }

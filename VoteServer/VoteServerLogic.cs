@@ -11,6 +11,9 @@ namespace VoteServer
 {
     public class VoteServerLogic
     {
+        public static VoteServerLogic Logic { get; set; } = new VoteServerLogic();
+
+
         public GameListener GameListener;
         public string VoteServerId = Guid.NewGuid().ToString();
         public VoteServerLogic()

@@ -1,8 +1,8 @@
 using Common.Utils.Nancy;
-using DataServer.Logic;
-using DataServer.Modules.Models;
+using UserServer.Logic;
+using UserServer.Modules.Models;
 
-namespace DataServer.Modules
+namespace UserServer.Modules
 {
     public class UserModule : BaseModule
     {

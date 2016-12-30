@@ -6,7 +6,6 @@ using Common.GameLogic;
 using Common.GameLogic.Models;
 using Common.HexUtils;
 using Common.Utils.Mongo;
-using MasterVoteServer.Votes;
 using VoteServer.Modules.Models;
 
 namespace VoteServer.Logic
@@ -65,7 +64,7 @@ namespace VoteServer.Logic
                             };
                             await gameVote.Insert();
 
-                            await Program.VoteServerLogic.GameListener.SendGameVote(new GameVoteMessage()
+                            await VoteServerLogic.Logic.GameListener.SendGameVote(new GameVoteMessage()
                             {
                                 Vote = gameVote
                             });

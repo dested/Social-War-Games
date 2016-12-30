@@ -1,4 +1,4 @@
-namespace DataServer.Modules.Models
+namespace UserServer.Modules.Models
 {
     public class UserLoginResponse
     {

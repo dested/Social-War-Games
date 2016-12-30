@@ -55,4 +55,7 @@ workspace.xml
 
 .idea
 app.config
+Web.config
+Web.Release.config
+Web.Debug.config
 .vs
