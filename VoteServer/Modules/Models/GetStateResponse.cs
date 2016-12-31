@@ -6,4 +6,8 @@ namespace VoteServer.Modules.Models
     {
         public MongoGameState.GameState State { get; set; }
     }
+    public class GetGenerationResponse
+    {
+        public int Generation { get; set; }
+    }
 }

@@ -17,6 +17,7 @@ export class HexBoard {
     hexBlock: {[key: number]: GridHexagon} = {};
     boardSize = {width: 0, height: 0};
     spriteManager: SpriteManager;
+    state: GameState;
 
     constructor() {
         this.spriteManager = new SpriteManager(this);
@@ -127,15 +128,14 @@ export class HexBoard {
     }
 
     initialize(state: GameState) {
+        this.state = state;
         let terrain = state.terrain;
         const str = terrain.boardStr;
         this.setSize(terrain.width, terrain.height);
-        let baseColor = new HexagonColor('#AFFFFF');
-
-        let otherColors = [];
+        let otherColors = [new HexagonColor('#AFFFFF')];
 
         for (let i = 0; i < 6; i++) {
-            otherColors[i] = new HexagonColor(DrawingUtils.colorLuminance('#AFF000', (i / 6)));
+            otherColors.push(new HexagonColor(DrawingUtils.colorLuminance('#AFF000', (i / 6))));
         }
 
         let ys = str.split('|');
@@ -147,37 +147,50 @@ export class HexBoard {
                 gridHexagon.x = x;
                 gridHexagon.y = 0;
                 gridHexagon.z = y;
-                gridHexagon.height = xItem === 0 ? 0 : xItem;
-                if (xItem === 0) {
-                    gridHexagon.setColor(baseColor, true);
-
-                } else {
-                    gridHexagon.setColor(otherColors[xItem - 1], true);
-                }
+                gridHexagon.height = xItem;
+                gridHexagon.setColor(otherColors[xItem], true);
                 gridHexagon.buildPaths();
                 this.addHexagon(gridHexagon);
             }
         }
 
-        let factionData = state.factionData;
-        let factionColors = ["#FFFFFF", "#4953FF", "#FF4F66", "#3DFF53"];
+        this.updateFactionEntities(this.state);
+    }
 
-        ys = factionData.split('|');
-        for (let y = 0; y < terrain.height; y++) {
+    public updateFactionEntities(state: GameState) {
+        this.state = state;
+        let otherColors = [new HexagonColor('#AFFFFF')];
+        for (let i = 0; i < 6; i++) {
+            otherColors.push(new HexagonColor(DrawingUtils.colorLuminance('#AFF000', (i / 6))));
+        }
+        let factionData = state.factionData;
+        let factionColors = ["#4953FF", "#FF4F66", "#3DFF53"];
+        let factionHexColors: HexagonColor[][] = [];
+
+        for (let f = 0; f < factionColors.length; f++) {
+            factionHexColors[f] = [];
+            factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(otherColors[0].color, factionColors[f], 0.9)));
+            for (let i = 0; i < 6; i++) {
+                factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(otherColors[i + 1].color, DrawingUtils.colorLuminance(factionColors[f], (i / 6)), 0.9)));
+            }
+        }
+
+
+        let ys = factionData.split('|');
+        for (let y = 0; y < state.terrain.height; y++) {
             const yItem = ys[y].split('');
-            for (let x = 0; x < terrain.width; x++) {
+            for (let x = 0; x < state.terrain.width; x++) {
                 const faction = parseInt(yItem[x]);
                 let hex = this.getHexAtSpot(x, 0, y);
                 hex.faction = faction;
                 if (faction > 0) {
-                    if (hex.height == 0) {
-                        hex.setColor(new HexagonColor(ColorUtils.blend_colors('#AFFFFF', DrawingUtils.colorLuminance(factionColors[faction], (hex.height / 6)), 0.6)), true);
-                    } else {
-                        hex.setColor(new HexagonColor(ColorUtils.blend_colors(otherColors[hex.height - 1].color, DrawingUtils.colorLuminance(factionColors[faction], (hex.height / 6)), 0.6)), true);
-                    }
+                    hex.setColor(factionHexColors[hex.faction - 1][hex.height], false);
                 }
             }
         }
+        this.spriteManager.sprites.length = 0;
+        this.spriteManager.spritesMap = {};
+
         for (let i = 0; i < state.entities.length; i++) {
             let entity = state.entities[i];
             let gridHexagon = this.getHexAtSpot(entity.x, 0, entity.z);
@@ -295,4 +308,5 @@ export class HexBoard {
         const y = gridHexagon.getRealY();
         this.setView(x - this.viewPort.width / 2, y - this.viewPort.height / 2);
     }
+
 }

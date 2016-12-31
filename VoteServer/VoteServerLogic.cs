@@ -20,16 +20,21 @@ namespace VoteServer
             GameManager = new GameManager();
             GameListener = new GameListener();
 
-            GameListener.OnGameVote(async (message) =>
+            GameListener.OnGameVote((message) =>
             {
-                await OnGameVote(message);
+                GameManager.AddVote(message.Vote);
+            });
+            GameListener.OnStopVote((message) =>
+            {
+                GameManager.Locked = true;
+            });
+            GameListener.OnNewRound((message) =>
+            {
+                GameManager.UpdateGameState();
+                GameManager.Locked = false;
             });
 
         }
 
-        private async Task OnGameVote(GameVoteMessage message)
-        {
-            GameManager.AddVote(message.Vote);
-        }
     }
 }

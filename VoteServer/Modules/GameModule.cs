@@ -13,7 +13,12 @@ namespace VoteServer.Modules
             Get["/state", true] = async (_, __) =>
             {
                 var model = ValidateRequest<GetStateRequest>();
-                var response = await GameLogic.GetState(logic,model);
+                var response = await GameLogic.GetState(logic, model);
+                return this.Success(response);
+            };
+            Get["/generation", true] = async (_, __) =>
+            {
+                var response = await GameLogic.GetGeneration(logic);
                 return this.Success(response);
             };
 

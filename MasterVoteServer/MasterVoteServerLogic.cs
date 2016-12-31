@@ -14,7 +14,7 @@ namespace MasterVoteServer
         {
             if (instance == null)
             {
-                instance=new MasterVoteServerLogic();
+                instance = new MasterVoteServerLogic();
             }
             return instance;
         }
@@ -27,21 +27,20 @@ namespace MasterVoteServer
             GameListener = new GameListener();
             GameManager = new GameManager();
 
-            new Timer(gameTick, null, new TimeSpan(0, 5, 0), new TimeSpan(0, 5, 0));
-            GameListener.OnGameVote(async (message) =>
+            new Timer(gameTick, null, new TimeSpan(0, 1, 0), new TimeSpan(0, 1, 0));
+            GameListener.OnGameVote((message) =>
             {
-                await OnGameVote(message);
+                GameManager.AddVote(message.Vote);
             });
         }
 
         private void gameTick(object state)
         {
+            Task.WaitAll(GameListener.SendStopVote(new StopVoteMessage()));
             GameManager.Tick();
+            GameManager.Reset();
+            Task.WaitAll(GameListener.SendNewRound(new NewRoundMessage()));
         }
 
-        private async Task OnGameVote(GameVoteMessage message)
-        {
-            GameManager.AddVote(message.Vote);
-        }
     }
 }

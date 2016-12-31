@@ -23,6 +23,13 @@ namespace VoteServer.Logic
                 State = logic.GameManager.GameState
             };
         }
+        public static async Task<GetGenerationResponse> GetGeneration(VoteServerLogic logic)
+        {
+            return new GetGenerationResponse()
+            {
+                Generation = logic.GameManager.GameState.Generation
+            };
+        }
         public static async Task<PostVoteResponse> VoteAction(VoteServerLogic logic, PostVoteRequest model)
         {
             var gameStateData = (await MongoGameState.Collection.GetOne(a => true));

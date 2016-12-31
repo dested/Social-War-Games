@@ -12,15 +12,22 @@ namespace Common.Game
         private Dictionary<string, int> UserVotes = new Dictionary<string, int>();
         private List<TrackedVote> TrackedVotes = new List<TrackedVote>();
         public MongoGameState.GameState GameState { get; set; }
+        public bool Locked { get; set; }
+
         private object locker = new object();
 
         public GameManager()
+        {
+            UpdateGameState();
+        }
+        public void UpdateGameState()
         {
             GameState = MongoGameState.Collection.GetOneSync(a => true);
         }
 
         public bool AddVote(MongoGameVote.GameVote vote)
         {
+            if (Locked) return false;
             lock (locker)
             {
                 var details = vote.Action;
@@ -59,15 +66,24 @@ namespace Common.Game
         {
             lock (locker)
             {
+                if (TrackedVotes.Count == 0) return;
                 foreach (var unitVotes in TrackedVotes.GroupBy(a => a.Action.EntityId))
                 {
                     var vote = unitVotes.OrderByDescending(a => a.Votes).First();
                     vote.Action.Complete(GameState);
                 }
-                TrackedVotes.Clear();
-                UserVotes.Clear();
                 GameState.Generation += 1;
                 GameState.UpdateSync();
+                Reset();
+            }
+        }
+
+        public void Reset()
+        {
+            lock (locker)
+            {
+                TrackedVotes.Clear();
+                UserVotes.Clear();
             }
         }
 
