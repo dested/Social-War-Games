@@ -30,7 +30,7 @@ namespace MasterVoteServer.Modules
 
         public static MasterVoteServerLogic ServerLogic { get; set; }
 
-        private static async Task startNewGame()
+        public static async Task startNewGame()
         {
             var terrain = GenerateTerrain(84 * 2, 84 * 2);
             var board = new GameBoard(terrain);

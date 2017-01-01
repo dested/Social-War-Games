@@ -82,6 +82,7 @@
     <Compile Include="Data\GameEntityType.cs" />
     <Compile Include="Data\MongoGameVote.cs" />
     <Compile Include="Data\MongoGameState.cs" />
+    <Compile Include="Data\MongoServerLog.cs" />
     <Compile Include="Data\MongoUser.cs" />
     <Compile Include="GameLogic\Models\NewRoundMessage.cs" />
     <Compile Include="GameLogic\Models\StopVoteMessage.cs" />

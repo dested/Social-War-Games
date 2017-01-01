@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Common.Data;
 using Common.Utils.Mongo;
+using Newtonsoft.Json;
 
 namespace Common.Game
 {
@@ -66,7 +67,10 @@ namespace Common.Game
         {
             lock (locker)
             {
+                MongoServerLog.AddServerLog("Master.vote", JsonConvert.SerializeObject(TrackedVotes), null);
+
                 if (TrackedVotes.Count == 0) return;
+
                 foreach (var unitVotes in TrackedVotes.GroupBy(a => a.Action.EntityId))
                 {
                     var vote = unitVotes.OrderByDescending(a => a.Votes).First();

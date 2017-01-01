@@ -7,16 +7,16 @@ namespace UserServer
 {
     public class Bootstrapper : DefaultNancyBootstrapper
     {
-        private readonly BaseBootstrapper bootstrap;
+        private readonly BaseBootstrapper _bootstrap;
 
         public Bootstrapper()
         {
-            bootstrap = new BaseBootstrapper();
+            _bootstrap = new BaseBootstrapper();
         }
 
         protected override void RequestStartup(TinyIoCContainer container, IPipelines pipelines, NancyContext requestContext)
         {
-            bootstrap.RequestStartup(container, pipelines, requestContext);
+            _bootstrap.RequestStartup(container, pipelines, requestContext);
             base.RequestStartup(container, pipelines, requestContext);
         }
     }

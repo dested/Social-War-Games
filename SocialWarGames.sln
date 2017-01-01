@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoteServer", "VoteServer\Vo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{8DDA742A-8276-4EB9-BDF7-6DD8C7EA6375}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deploy", "Deploy\Deploy.csproj", "{27E8DFEF-9C6B-4C05-8152-91EAE6AB119A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{8DDA742A-8276-4EB9-BDF7-6DD8C7EA6375}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DDA742A-8276-4EB9-BDF7-6DD8C7EA6375}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DDA742A-8276-4EB9-BDF7-6DD8C7EA6375}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27E8DFEF-9C6B-4C05-8152-91EAE6AB119A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27E8DFEF-9C6B-4C05-8152-91EAE6AB119A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27E8DFEF-9C6B-4C05-8152-91EAE6AB119A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27E8DFEF-9C6B-4C05-8152-91EAE6AB119A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

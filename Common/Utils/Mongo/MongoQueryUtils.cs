@@ -26,7 +26,7 @@ namespace Common.Utils.Mongo
         }
         public static async Task<T> GetById<T>(this IMongoCollection<T> collection, ObjectId id) where T : IMongoModel
         {
-            return await (await collection.FindAsync<T>(a=>a.Id==id)).FirstOrDefaultAsync();
+            return await (await collection.FindAsync<T>(a => a.Id == id)).FirstOrDefaultAsync();
         }
 
         public static async Task<T> GetOne<T>(this IMongoCollection<T> collection, Expression<Func<T, bool>> expression)
@@ -62,6 +62,14 @@ namespace Common.Utils.Mongo
             await collection.InsertOneAsync(item);
             return item;
         }
+        public static T InsertSync<T>(this T item) where T : IMongoModel
+        {
+            var collection = MongoTools.GetCollection<T>();
+            collection.InsertOne(item);
+            return item;
+        }
+
+
 
         public static async Task<T> Update<T>(this T item) where T : IMongoModel
         {

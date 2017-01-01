@@ -6,26 +6,30 @@ namespace VoteServer.Modules
 {
     public class GameModule : BaseModule
     {
-        public GameModule(VoteServerLogic logic) : base("api/game")
+        public GameModule() : base("api/game")
         {
-            Get["/check"] = (_) => this.Success(1);
+            Get["/check"] = (_) =>
+            {
+                var j=VoteServerLogic.instance;
+                return this.Success(1);
+            };
 
             Get["/state", true] = async (_, __) =>
             {
                 var model = ValidateRequest<GetStateRequest>();
-                var response = await GameLogic.GetState(logic, model);
+                var response = await GameLogic.GetState(VoteServerLogic.instance, model);
                 return this.Success(response);
             };
             Get["/generation", true] = async (_, __) =>
             {
-                var response = await GameLogic.GetGeneration(logic);
+                var response = await GameLogic.GetGeneration(VoteServerLogic.instance);
                 return this.Success(response);
             };
 
             Post["/vote", true] = async (_, __) =>
             {
                 var model = ValidateRequest<PostVoteRequest>();
-                var response = await GameLogic.VoteAction(logic, model);
+                var response = await GameLogic.VoteAction(VoteServerLogic.instance, model);
                 return this.Success(response);
             };
          

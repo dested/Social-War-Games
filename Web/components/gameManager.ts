@@ -23,7 +23,7 @@ export class GameManager {
     tapStart = {x: 0, y: 0};
     private fpsMeter;
     // private voteServer: string='https://vote.socialwargames.com/';
-    private voteServer: string = 'http://localhost:60607/';
+    private voteServer: string = 'http://localhost:3568/';
 
     constructor() {
         this.fpsMeter = new (<any>window).FPSMeter(document.body, {

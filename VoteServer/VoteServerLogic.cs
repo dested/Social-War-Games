@@ -12,11 +12,13 @@ namespace VoteServer
 {
     public class VoteServerLogic
     {
+        public static VoteServerLogic instance = new VoteServerLogic();
         public GameManager GameManager { get; set; }
         public GameListener GameListener { get; set; }
         public string VoteServerId = Guid.NewGuid().ToString();
-        public VoteServerLogic()
+        private VoteServerLogic()
         {
+
             GameManager = new GameManager();
             GameListener = new GameListener();
 

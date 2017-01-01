@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Common.Data;
 using Common.Game;
 using Common.GameLogic;
 using Common.GameLogic.Models;
+using Newtonsoft.Json;
 
 namespace MasterVoteServer
 {
@@ -36,10 +38,12 @@ namespace MasterVoteServer
 
         private void gameTick(object state)
         {
+            MongoServerLog.AddServerLog("Master.tick", "1", "1");
             Task.WaitAll(GameListener.SendStopVote(new StopVoteMessage()));
             GameManager.Tick();
             GameManager.Reset();
             Task.WaitAll(GameListener.SendNewRound(new NewRoundMessage()));
+            MongoServerLog.AddServerLog("Master.end", "1", "1");
         }
 
     }

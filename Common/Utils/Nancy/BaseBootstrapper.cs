@@ -1,4 +1,5 @@
 ﻿using System;
+using Common.Data;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.Json;
@@ -19,6 +20,7 @@ namespace Common.Utils.Nancy
         {
             pipelines.AfterRequest.AddItemToEndOfPipeline((ctx) =>
             {
+                Console.WriteLine("Request made: " + ctx.Request.Path + " " + ctx.Request.Method);
                 ctx.Response.WithHeader("Access-Control-Allow-Origin", "*")
                                 .WithHeader("Access-Control-Allow-Methods", "POST,GET")
                                 .WithHeader("Access-Control-Allow-Headers", "Accept, Origin, Content-type");
@@ -27,6 +29,7 @@ namespace Common.Utils.Nancy
 
             pipelines.OnError.AddItemToEndOfPipeline((context, exception) =>
             {
+                MongoServerLog.AddServerLog("Error", exception, context.Request.Path);
                 if (exception is RequestException)
                 {
                     var hyException = (RequestException)exception;
