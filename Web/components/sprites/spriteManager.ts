@@ -3,31 +3,33 @@ import {HexBoard} from "../hexLibraries/hexBoard";
 import {GridHexagonConstants} from "../hexLibraries/gridHexagonConstants";
 import {HexagonColor} from "../utils/drawingUtilities";
 import {GridHexagon} from "../hexLibraries/gridHexagon";
+import {Vector3} from "../hexLibraries/hexUtils";
 export class SpriteManager {
 
     constructor(private hexBoard: HexBoard) {
     }
 
 
-    sprites: BaseSprite[] = [];
-    spritesMap: {[tileKey: number]: BaseSprite[]} = {};
+    private sprites: BaseSprite[] = [];
+    private spriteKeys: {[entityId: number]: BaseSprite} = {};
+    private spritesMap: {[tileKey: number]: BaseSprite} = {};
 
 
     tick() {
-        for (var i = 0; i < this.sprites.length; i++) {
-            var sprite = this.sprites[i];
+        for (let i = 0; i < this.sprites.length; i++) {
+            let sprite = this.sprites[i];
             sprite.tick();
         }
     }
 
-    getSpritesAtTile(item: GridHexagon): BaseSprite[] {
-        return this.spritesMap[item.x + item.z * 5000] || [];
+    getSpriteAtTile(item: Vector3): BaseSprite {
+        return this.spritesMap[item.x + item.z * 5000];
     }
 
 
     addSprite(sprite: BaseSprite) {
         this.sprites.push(sprite);
-
+        this.spriteKeys[sprite.id] = sprite;
         sprite.hexBoard = this.hexBoard;
     }
 
@@ -41,6 +43,23 @@ export class SpriteManager {
     }
 
 
+    empty(): void {
+        this.sprites.length = 0;
+        this.spritesMap = {};
+        this.spriteKeys = {};
+    }
+
+    getSpriteById(id: string): BaseSprite {
+        return this.spriteKeys[id];
+    }
+
+    clearSpriteAtTile(tile: GridHexagon): void {
+        this.spritesMap[tile.x + tile.z * 5000] = null;
+    }
+
+    setSpriteAtTile(tile: GridHexagon, sprite: BaseSprite): void {
+        this.spritesMap[tile.x + tile.z * 5000] = sprite;
+    }
 }
 
 export abstract class BaseSprite {
@@ -56,6 +75,7 @@ export abstract class BaseSprite {
     public key: string;
     public spriteManager: SpriteManager;
     id: string;
+    private health: number;
 
     setId(id: string) {
         this.id = id;
@@ -65,27 +85,24 @@ export abstract class BaseSprite {
 
     }
 
+    setHealth(health: number) {
+        this.health = health;
+    }
+
     setTile(tile: GridHexagon) {
         if (this.tile) {
-            this.tile.clearHighlight();
-
-            var sprites = this.spriteManager.spritesMap[this.tile.x + this.tile.z * 5000];
-            sprites = sprites || [];
-            sprites.splice(sprites.indexOf(this), 1);
-            this.spriteManager.spritesMap[this.tile.x + this.tile.z * 5000] = sprites;
+            this.tile.setSprite(null);
+            this.spriteManager.clearSpriteAtTile(this.tile);
         }
 
 
         this.tile = tile;
 
         if (tile) {
-            this.tile.setHighlight(new HexagonColor("#f0c2bc"));
+            this.tile.setSprite(this);
             this.x = this.tile.getRealX();
             this.y = this.tile.getRealY();
-            var sprites = this.spriteManager.spritesMap[tile.x + tile.z * 5000];
-            sprites = sprites || [];
-            sprites.push(this);
-            this.spriteManager.spritesMap[tile.x + tile.z * 5000] = sprites;
+            this.spriteManager.setSpriteAtTile(tile, this);
         }
     }
 
@@ -119,6 +136,7 @@ export abstract class BaseSprite {
             y < viewPort.y + viewPort.height + viewPort.padding;
 
     }
+
 }
 export class SixDirectionSprite extends BaseSprite {
 

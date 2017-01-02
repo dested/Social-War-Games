@@ -2,7 +2,7 @@
 export class Node {
     parent: Node = null;
     x = 0;
-    y = 0;
+    z = 0;
     item: GridHexagon = null;
     f = 0;
     g = 0;
@@ -13,7 +13,7 @@ export class Node {
 
         // the location coordinates of this Node
         this.x = piece.x;
-        this.y = piece.z;
+        this.z = piece.z;
         this.item = piece;
         // the distanceFunction cost to get
         // TO this Node from the START
@@ -24,13 +24,12 @@ export class Node {
     }
 
     value() {
-        return this.x + (this.y * 5000);
+        return this.x + (this.z * 5000);
     }
 }
 
 export interface Vector3 {
     x?: number;
-    y?: number;
     z?: number;
 }
 
@@ -75,7 +74,7 @@ export class HexUtils {
     }
 
     static getDirection(p1: Vector3, p2: Vector3): Direction {
-        console.log('x1', p1.x, 'x2', p2.x, 'y1', p1.z, 'y2', p2.z);
+        // console.log('x1', p1.x, 'x2', p2.x, 'y1', p1.z, 'y2', p2.z);
         if (p1.x > p2.x) {
             if (p1.z == p2.z) {
                 return Direction.BottomLeft;
@@ -88,14 +87,14 @@ export class HexUtils {
             }
         } else if (p1.x < p2.x) {
             if (p1.z == p2.z) {
-                console.log('a');
+                // console.log('a');
                 return Direction.TopRight;
             } else {
                 if (p1.z < p2.z) {
-                    console.log('b');
+                    // console.log('b');
                     return Direction.BottomRight;
                 } else {
-                    console.log('c');
+                    // console.log('c');
                     return Direction.TopRight;
                 }
             }

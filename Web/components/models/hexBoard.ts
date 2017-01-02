@@ -1,3 +1,6 @@
+export interface VoteResponse{
+    generationMismatch:boolean;
+}
 export interface GameState {
     id: string;
     lastGeneration: Date;

@@ -1,4 +1,4 @@
-import {GameState, GameMetrics} from "./models/hexBoard";
+import {GameState, GameMetrics, VoteResponse} from "./models/hexBoard";
 declare let fetch;
 
 export class DataService {
@@ -14,7 +14,8 @@ export class DataService {
                     'Content-Type': 'application/json',
                 }
             });
-
+            if (!response.ok) // or check for response.status
+                throw new Error(response.statusText);
             let json = await response.json();
             return json.data.metrics;
         } catch (ex) {
@@ -22,7 +23,8 @@ export class DataService {
             return ex;
         }
     }
-    static async vote(vote:{entityId:string,action:string,userId:string,generation:number,x:number,z:number}): Promise<void> {
+
+    static async vote(vote: {entityId: string, action: string, userId: string, generation: number, x: number, z: number}): Promise<VoteResponse> {
         try {
             let response = await fetch(this.voteServer + 'api/game/vote', {
                 method: "POST",
@@ -31,8 +33,7 @@ export class DataService {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(vote)
-            });
-
+            }); ;
             let json = await response.json();
             return json.data;
         } catch (ex) {
@@ -42,7 +43,7 @@ export class DataService {
     }
 
 
-    static async  getGameState() : Promise<GameState> {
+    static async  getGameState(): Promise<GameState> {
         try {
             let response = await fetch(this.voteServer + 'api/game/state', {
                 headers: {
@@ -50,7 +51,8 @@ export class DataService {
                     'Content-Type': 'application/json',
                 }
             });
-
+            if (!response.ok) // or check for response.status
+                throw new Error(response.statusText);
             let json = await response.json();
             return json.data.state;
         } catch (ex) {
@@ -59,15 +61,17 @@ export class DataService {
         }
 
     }
-    static async getGenerationResult(generation:number) : Promise<GameMetrics> {
+
+    static async getGenerationResult(generation: number): Promise<GameMetrics> {
         try {
-            let response = await fetch(this.voteServer + 'api/game/result?generation='+generation, {
+            let response = await fetch(this.voteServer + 'api/game/result?generation=' + generation, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 }
             });
-
+            if (!response.ok) // or check for response.status
+                throw new Error(response.statusText);
             let json = await response.json();
             return json.data.metrics;
         } catch (ex) {

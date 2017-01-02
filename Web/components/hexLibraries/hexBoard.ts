@@ -10,6 +10,7 @@ import {
 } from "../sprites/spriteManager";
 import {ColorUtils} from "../color";
 import {Vector3, HexUtils, Node} from "./hexUtils";
+import {AssetManager} from "./assetManager";
 
 export class HexBoard {
     viewPort = {x: 0, y: 0, width: 400, height: 400, padding: GridHexagonConstants.width * 2};
@@ -45,8 +46,8 @@ export class HexBoard {
         this.hexList = HexUtils.orderBy(this.hexList, m => (m.z - m.y) * 1000 + (m.x % 2) * -200 + m.height);
     }
 
-    xyToHexIndex(x, y): GridHexagon {
-        return this.hexBlock[x + y * 5000];
+    getHexAtSpot(x, z): GridHexagon {
+        return this.hexBlock[x + z * 5000];
     }
 
     pathFind(start: GridHexagon, finish: GridHexagon) {
@@ -70,7 +71,7 @@ export class HexBoard {
                 }
             }
             node = open.splice(min, 1)[0];
-            if (node.x === myPathEnd.x && node.y === myPathEnd.y) {
+            if (node.x === myPathEnd.x && node.z === myPathEnd.z) {
                 path = closed[closed.push(node) - 1];
                 do {
                     result.push(path.item);
@@ -82,7 +83,7 @@ export class HexBoard {
             else {
                 neighbors = node.item.getNeighbors();
                 for (i = 0, j = neighbors.length; i < j; i++) {
-                    const n = this.xyToHexIndex(neighbors[i].x, neighbors[i].y);
+                    const n = this.getHexAtSpot(neighbors[i].x, neighbors[i].z);
                     if (!n) continue;
                     if (Math.abs((node.item.y + node.item.height) - (n.y + n.height)) >= 2)
                         continue;
@@ -117,6 +118,8 @@ export class HexBoard {
         this.viewPort.x = x;
         this.viewPort.y = y;
         this.constrainViewPort();
+        localStorage.setItem("lastX", this.viewPort.x.toString());
+        localStorage.setItem("lastY", this.viewPort.y.toString());
     }
 
     constrainViewPort() {
@@ -132,18 +135,20 @@ export class HexBoard {
         let terrain = state.terrain;
         const str = terrain.boardStr;
         this.setSize(terrain.width, terrain.height);
+        let tile = AssetManager.assets['tile'];
 
         let ys = str.split('|');
-        for (let y = 0; y < terrain.height; y++) {
-            const yItem = ys[y].split('');
+        for (let z = 0; z < terrain.height; z++) {
+            const yItem = ys[z].split('');
             for (let x = 0; x < terrain.width; x++) {
-                const xItem = parseInt(yItem[x]);
+                const result = parseInt(yItem[x]);
                 let gridHexagon = new GridHexagon();
                 gridHexagon.x = x;
                 gridHexagon.y = 0;
-                gridHexagon.z = y;
-                gridHexagon.height = xItem;
-                gridHexagon.setColor(HexBoard.otherColors[xItem], true);
+                gridHexagon.z = z;
+                gridHexagon.height = result;
+                gridHexagon.setTexture(tile);
+                gridHexagon.setBaseColor(HexBoard.otherColors);
                 gridHexagon.buildPaths();
                 this.addHexagon(gridHexagon);
             }
@@ -151,39 +156,42 @@ export class HexBoard {
 
         this.updateFactionEntities(this.state);
 
-        for (let i = 0; i < this.state.entities.length; i++) {
-            let ent = this.state.entities[i];
-            if (ent.entityType == 'MainBase') {
-                let hex = this.getHexAtSpot(ent.x, 0, ent.z);
-                this.centerOnHex(hex);
-                break;
+        this.spriteManager.empty();
+
+        for (let i = 0; i < state.entities.length; i++) {
+            let entity = state.entities[i];
+            let gridHexagon = this.getHexAtSpot(entity.x, entity.z);
+            let sprite: BaseSprite;
+            switch (entity.entityType) {
+                case "MainBase": {
+                    sprite = new MainBaseSprite(this.spriteManager);
+                    break;
+                }
+                case "Plane": {
+                    sprite = new HeliSprite(this.spriteManager);
+                    break;
+                }
             }
+            sprite.setTile(gridHexagon);
+            sprite.setId(entity.id);
+            sprite.setHealth(entity.health);
+            this.spriteManager.addSprite(sprite);
         }
 
+        this.reorderHexList();
+
+        let lx = localStorage.getItem("lastX");
+        let ly = localStorage.getItem("lastY");
+
+        if (lx && ly) {
+            this.setView(parseInt(lx), parseInt(ly))
+        }
     }
 
 
     static otherColors: HexagonColor[];
     static factionHexColors: HexagonColor[][];
     static factionColors: string[];
-
-    public static setupColors() {
-        this.otherColors = [new HexagonColor('#AFFFFF')];
-        for (let i = 0; i < 6; i++) {
-            this.otherColors.push(new HexagonColor(DrawingUtils.colorLuminance('#AFF000', (i / 6))));
-        }
-        this.factionColors = ["#4953FF", "#FF4F66", "#3DFF53"];
-        this.factionHexColors = [];
-
-        for (let f = 0; f < this.factionColors.length; f++) {
-            this.factionHexColors[f] = [];
-            this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.otherColors[0].color, this.factionColors[f], 0.9)));
-            for (let i = 0; i < 6; i++) {
-                this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.otherColors[i + 1].color, DrawingUtils.colorLuminance(this.factionColors[f], (i / 6)), 0.9)));
-            }
-        }
-
-    }
 
 
     public updateFactionEntities(state: GameState) {
@@ -192,54 +200,40 @@ export class HexBoard {
         let factionData = state.factionData;
 
         let ys = factionData.split('|');
-        for (let y = 0; y < state.terrain.height; y++) {
-            const yItem = ys[y].split('');
+        for (let z = 0; z < state.terrain.height; z++) {
+            const yItem = ys[z].split('');
             for (let x = 0; x < state.terrain.width; x++) {
                 const faction = parseInt(yItem[x]);
-                let hex = this.getHexAtSpot(x, 0, y);
+                let hex = this.getHexAtSpot(x, z);
                 hex.faction = faction;
-                if (faction > 0) {
-                    hex.setColor(HexBoard.factionHexColors[hex.faction - 1][hex.height], false);
-                }
             }
         }
-        this.spriteManager.sprites.length = 0;
-        this.spriteManager.spritesMap = {};
 
         for (let i = 0; i < state.entities.length; i++) {
             let entity = state.entities[i];
-            let gridHexagon = this.getHexAtSpot(entity.x, 0, entity.z);
-            switch (entity.entityType) {
-                case "MainBase": {
-                    let sprite = new MainBaseSprite(this.spriteManager);
-                    sprite.setTile(gridHexagon);
-                    sprite.setId(entity.id);
-                    this.spriteManager.addSprite(sprite);
-                    break;
+            let sprite = this.spriteManager.getSpriteById(entity.id);
+            let gridHexagon = this.getHexAtSpot(entity.x, entity.z);
+            if (sprite == null) {
+                let sprite: BaseSprite;
+                switch (entity.entityType) {
+                    case "MainBase": {
+                        sprite = new MainBaseSprite(this.spriteManager);
+                        break;
+                    }
+                    case "Plane": {
+                        sprite = new HeliSprite(this.spriteManager);
+                        break;
+                    }
                 }
-                case "Plane": {
-                    let sprite = new HeliSprite(this.spriteManager);
-                    sprite.setTile(gridHexagon);
-                    sprite.setId(entity.id);
-                    this.spriteManager.addSprite(sprite);
-                    break;
-                }
+                sprite.setTile(gridHexagon);
+                sprite.setId(entity.id);
+                sprite.setHealth(entity.health);
+                this.spriteManager.addSprite(sprite);
+            } else {
+                sprite.setHealth(entity.health);
+                sprite.setTile(gridHexagon);
             }
         }
-
-
-        this.reorderHexList();
-    }
-
-
-    getHexAtSpot(x: number, y: number, z: number): GridHexagon {
-        for (let i = 0; i < this.hexList.length; i++) {
-            const gridHexagon = this.hexList[i];
-            if (gridHexagon.x === x && gridHexagon.y === y && gridHexagon.z === z) {
-                return gridHexagon;
-            }
-        }
-        return null;
     }
 
     getHexAtPoint(clickX, clickY): GridHexagon {
@@ -271,7 +265,7 @@ export class HexBoard {
     }
 
 
-    drawBoard(context: CanvasRenderingContext2D) {
+    drawBoard(context: CanvasRenderingContext2D): void {
         context.save();
         context.translate(-this.viewPort.x, -this.viewPort.y);
         context.lineWidth = 1;
@@ -279,12 +273,9 @@ export class HexBoard {
             const gridHexagon = this.hexList[i];
             if (this.shouldDraw(gridHexagon)) {
                 this.drawHexagon(context, gridHexagon);
-                let sprites = this.spriteManager.spritesMap[gridHexagon.x + gridHexagon.z * 5000];
-                if (sprites) {
-                    for (let j = 0; j < sprites.length; j++) {
-                        let sprite = sprites[j];
-                        sprite.draw(context);
-                    }
+                let sprite = this.spriteManager.getSpriteAtTile(gridHexagon);
+                if (sprite) {
+                    sprite.draw(context);
                 }
             }
         }
@@ -293,7 +284,7 @@ export class HexBoard {
         context.restore();
     }
 
-    shouldDraw(gridHexagon: GridHexagon) {
+    shouldDraw(gridHexagon: GridHexagon): boolean {
 
         const x = gridHexagon.getRealX();
         const y = gridHexagon.getRealY();
@@ -306,21 +297,35 @@ export class HexBoard {
 
     }
 
-    drawHexagon(context: CanvasRenderingContext2D, gridHexagon: GridHexagon) {
+    drawHexagon(context: CanvasRenderingContext2D, gridHexagon: GridHexagon): void {
 
         const x = gridHexagon.getRealX();
         const y = gridHexagon.getRealY();
-        context.save();
-        context.translate(x, y);
-        gridHexagon.draw(context);
-        context.restore();
-
+        gridHexagon.draw(context, x, y);
     }
 
-    centerOnHex(gridHexagon: GridHexagon) {
+    centerOnHex(gridHexagon: GridHexagon): void {
         const x = gridHexagon.getRealX();
         const y = gridHexagon.getRealY();
         this.setView(x - this.viewPort.width / 2, y - this.viewPort.height / 2);
+    }
+
+    public static setupColors() {
+        this.otherColors = [new HexagonColor('#AFFFFF')];
+        for (let i = 0; i < 6; i++) {
+            this.otherColors.push(new HexagonColor(DrawingUtils.colorLuminance('#AFF000', (i / 6))));
+        }
+        this.factionColors = ["#4953FF", "#FF4F66", "#3DFF53"];
+        this.factionHexColors = [];
+
+        for (let f = 0; f < this.factionColors.length; f++) {
+            this.factionHexColors[f] = [];
+            this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.otherColors[0].color, this.factionColors[f], 0.9)));
+            for (let i = 0; i < 6; i++) {
+                this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.otherColors[i + 1].color, DrawingUtils.colorLuminance(this.factionColors[f], (i / 6)), 0.9)));
+            }
+        }
+
     }
 
 }
