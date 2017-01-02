@@ -13,8 +13,6 @@ namespace UserServer.Modules
 
             Post["/login", true] = async (_, __) =>
             {
-                var ip = Request.UserHostAddress;
-
                 var model = ValidateRequest<UserLoginRequest>();
                 var response =await  UserLogic.Login(model);
                 return this.Success(response, new TokenMetaData(new JwtToken().Encode(new UserJwtModel() {UserId = response.UserId}.ToJwtPayload())));

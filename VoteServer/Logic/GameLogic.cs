@@ -23,16 +23,21 @@ namespace VoteServer.Logic
                 State = logic.GameManager.GameState
             };
         }
-        public static async Task<GetGenerationResponse> GetGeneration(VoteServerLogic logic)
+        public static async Task<GetMetricsResponse> GetMetrics(VoteServerLogic logic)
         {
-            return new GetGenerationResponse()
+            return new GetMetricsResponse()
             {
-                Generation = logic.GameManager.GameState.Generation
+                Metrics = new GameMetrics()
+                {
+                    Generation= logic.GameManager.GameState.Generation,
+                    Votes=logic.GameManager.TrackedVotes.ToArray(),
+                    UsersVoted=logic.GameManager.UserVotes.Count
+                }
             };
         }
         public static async Task<PostVoteResponse> VoteAction(VoteServerLogic logic, PostVoteRequest model)
         {
-            var gameStateData = (await MongoGameState.Collection.GetOne(a => true));
+            var gameStateData = (await MongoGameState.Collection.GetOne(a => !a.Initial));
 
             if (model.Generation != gameStateData.Generation)
             {
@@ -45,6 +50,14 @@ namespace VoteServer.Logic
 
             switch (unit.EntityType)
             {
+                case GameEntityType.Infantry:
+                    break;
+                case GameEntityType.Tank:
+                    break;
+                case GameEntityType.Base:
+                    break;
+                case GameEntityType.MainBase:
+                    break;
                 case GameEntityType.Plane:
                     switch (model.Action)
                     {
@@ -61,10 +74,10 @@ namespace VoteServer.Logic
                             {
                                 Generated = DateTime.UtcNow,
                                 Generation = model.Generation,
-                                Action= new MongoGameVote.MoveVoteAction()
+                                UserId = model.UserId,
+                                Action = new MongoGameVote.MoveVoteAction()
                                 {
                                     EntityId = model.EntityId,
-                                    UserId = model.UserId,
                                     X = model.X,
                                     Z = model.Z
                                 }
@@ -80,8 +93,8 @@ namespace VoteServer.Logic
                             throw new RequestValidationException("Action not found");
                     }
                     break;
-                default:
-                    throw new RequestValidationException("Action not found");
+                default: throw new RequestValidationException("Action not found");
+
             }
 
 

@@ -24,12 +24,12 @@ namespace Common.Data
             public DateTime Generated { get; set; }
             public int Generation { get; set; }
             public VoteAction Action { get; set; }
+            public string UserId { get; set; }
         }
 
         [BsonKnownTypes(typeof(MoveVoteAction), typeof(AttackVoteAction), typeof(SpawnVoteAction))]
         public abstract class VoteAction
         {
-            public string UserId { get; set; }
             public string EntityId { get; set; }
             public abstract bool Equates(VoteAction argAction);
             public abstract VoteActionType ActionType { get; }

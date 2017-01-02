@@ -1,4 +1,4 @@
-﻿//#define local
+﻿#define local
 using System;
 using System.Configuration;
 using System.Threading.Tasks;
@@ -22,7 +22,7 @@ namespace Common.Utils.Redis
             Console.WriteLine("----REDIS SERVER----");
             Console.WriteLine(redisStr);
             Console.WriteLine("----REDIS SERVER----");
-
+             
             ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(redisStr);
             this.subscriber = redis.GetSubscriber();
         }

@@ -8,15 +8,15 @@ using Nancy.TinyIoc;
 
 namespace Common.Utils.Nancy
 {
-    public class BaseBootstrapper  
+    public class BaseBootstrapper  : DefaultNancyBootstrapper
     {
         public BaseBootstrapper()
         {
             JsonSettings.MaxJsonLength = Int32.MaxValue;
             JsonSettings.RetainCasing = false;
         }
-        
-        public  void RequestStartup(TinyIoCContainer container, IPipelines pipelines, NancyContext requestContext)
+
+        protected override void RequestStartup(TinyIoCContainer container, IPipelines pipelines, NancyContext requestContext)
         {
             pipelines.AfterRequest.AddItemToEndOfPipeline((ctx) =>
             {

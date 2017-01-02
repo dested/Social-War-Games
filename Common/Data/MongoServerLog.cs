@@ -75,7 +75,7 @@ namespace Common.Data
 
         private static void pushToCloudWatch(ServerLog log)
         {
-            Console.WriteLine(JsonConvert.SerializeObject(log));
+            Console.WriteLine(JsonConvert.SerializeObject(log,Formatting.Indented));
         }
     }
 }

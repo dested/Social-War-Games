@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Nancy;
@@ -27,10 +28,17 @@ namespace Common.Utils.Nancy
 
         public void Serialize<TModel>(string contentType, TModel model, Stream outputStream)
         {
-            using (var writer = new JsonTextWriter(new StreamWriter(outputStream)))
+            try
             {
-                _serializer.Serialize(writer, model);
-                writer.Flush();
+                using (var writer = new JsonTextWriter(new StreamWriter(outputStream)))
+                {
+                    _serializer.Serialize(writer, model);
+                    writer.Flush();
+                }
+            }
+            catch (Exception ex)
+            {
+                
             }
         }
 

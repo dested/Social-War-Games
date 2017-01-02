@@ -36,12 +36,12 @@ export class AssetManager {
         }
     }
 
-    static addAsset(name: string, url: string, size: {width: number,height: number}, base: {x: number,y: number}) {
+    static addAsset(name: string, url: string, size?: {width: number,height: number}, base?: {x: number,y: number}) {
         this.assetQueue[name] = {base, size, url, realName: name};
         this.$assetsRequested++;
     }
 
-    static addAssetFrame(name: string, frameIndex: number, url: string, size: {width: number,height: number}, base: {x: number,y: number}) {
+    static addAssetFrame(name: string, frameIndex: number, url: string, size?: {width: number,height: number}, base?: {x: number,y: number}) {
         this.assetQueue[name + frameIndex] = {base, size, url, frameIndex: frameIndex, realName: name};
         this.$assetsRequested++;
     }

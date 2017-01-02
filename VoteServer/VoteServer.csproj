@@ -53,7 +53,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -123,7 +123,6 @@
     <Content Include="STResponse.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Compile Include="Bootstrapper.cs" />
     <Compile Include="Modules\Models\GetStateRequest.cs" />
     <Compile Include="Modules\Models\GetStateResponse.cs" />
     <Compile Include="Modules\Models\PostVoteRequest.cs" />

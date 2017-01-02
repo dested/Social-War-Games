@@ -45,6 +45,11 @@ namespace Common.Utils.Mongo
             var findFluent = await collection.FindAsync<T>(expression);
             return await findFluent.ToListAsync();
         }
+        public static List<T> GetAllSync<T>(this IMongoCollection<T> collection, Expression<Func<T, bool>> expression)
+        {
+            var findFluent = collection.Find<T>(expression);
+            return findFluent.ToList();
+        }
 
         public static async Task<List<T>> GetAll<T>(this IMongoCollection<T> collection)
         {

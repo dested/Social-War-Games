@@ -100,7 +100,7 @@ export class GridHexagon {
             context.fill(this.leftDepthPath);
         }
         context.restore();
-        context.lineWidth = 3;
+        context.lineWidth = 1;
 
 
         context.strokeStyle = this.getDrawingColor().dark1;
@@ -122,7 +122,7 @@ export class GridHexagon {
             context.fill(this.bottomDepthPath);
         }
         context.restore();
-        context.lineWidth = 3;
+        context.lineWidth = 1;
 
 
         context.strokeStyle = this.getDrawingColor().dark2;
@@ -144,7 +144,7 @@ export class GridHexagon {
         }
         context.restore();
 
-        context.lineWidth = 3;
+        context.lineWidth = 1;
 
         context.strokeStyle = this.getDrawingColor().dark3;
         context.stroke(this.rightDepthPath);
@@ -167,7 +167,7 @@ export class GridHexagon {
                 context.fill(this.topPath);
             }
             context.restore();
-            context.lineWidth = 3;
+            context.lineWidth = 1;
 
             context.strokeStyle = this.getDrawingColor().darkBorder;
             context.stroke(this.topPath);

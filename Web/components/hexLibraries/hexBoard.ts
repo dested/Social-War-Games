@@ -268,7 +268,7 @@ export class HexBoard {
                 let sprites = this.spriteManager.spritesMap[gridHexagon.x + gridHexagon.z * 5000];
                 if (sprites) {
                     for (let j = 0; j < sprites.length; j++) {
-                        let sprite = <BaseSprite>sprites[j];
+                        let sprite = sprites[j];
                         sprite.draw(context);
                     }
                 }

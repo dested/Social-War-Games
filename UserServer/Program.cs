@@ -1,4 +1,5 @@
 ﻿using System;
+using Common.Utils.Nancy;
 using Nancy.Hosting.Self;
 
 namespace UserServer
@@ -10,7 +11,7 @@ namespace UserServer
             var uri = new Uri("http://localhost:3569");
             HostConfiguration hostConfigs = new HostConfiguration();
             hostConfigs.UrlReservations.CreateAutomatically = true;
-            using (var host = new NancyHost(uri, new Bootstrapper(), hostConfigs))
+            using (var host = new NancyHost(uri, new BaseBootstrapper(), hostConfigs))
             {
                 host.Start();
 

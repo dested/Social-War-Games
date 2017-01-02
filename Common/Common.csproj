@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\GameEntityType.cs" />
+    <Compile Include="Data\MongoTickResult.cs" />
     <Compile Include="Data\MongoGameVote.cs" />
     <Compile Include="Data\MongoGameState.cs" />
     <Compile Include="Data\MongoServerLog.cs" />

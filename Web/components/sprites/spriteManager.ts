@@ -3,14 +3,14 @@ import {HexBoard} from "../hexLibraries/hexBoard";
 import {GridHexagonConstants} from "../hexLibraries/gridHexagonConstants";
 import {HexagonColor} from "../utils/drawingUtilities";
 import {GridHexagon} from "../hexLibraries/gridHexagon";
-export class SpriteManager  {
+export class SpriteManager {
 
     constructor(private hexBoard: HexBoard) {
     }
 
 
     sprites: BaseSprite[] = [];
-    spritesMap: { [tileKey: number]: BaseSprite[] } = {};
+    spritesMap: {[tileKey: number]: BaseSprite[]} = {};
 
 
     tick() {
@@ -33,7 +33,7 @@ export class SpriteManager  {
 
     draw(context: CanvasRenderingContext2D) {
         for (let i = 0; i < this.sprites.length; i++) {
-            let sprite = <BaseSprite> this.sprites[i];
+            let sprite = this.sprites[i];
             if (sprite.tile == null && sprite.shouldDraw()) {
                 sprite.draw(context);
             }
@@ -43,7 +43,7 @@ export class SpriteManager  {
 
 }
 
-export abstract class BaseSprite  {
+export abstract class BaseSprite {
     totalFrames: number;
     animationSpeed: number;
 
@@ -132,8 +132,17 @@ export class SixDirectionSprite extends BaseSprite {
         let assetName = this.key + '.' + this.currentDirectionToSpriteName();
         let asset = AssetManager.assets[assetName];
         let image = asset.images[this.animationFrame];
-        context.scale(1.4, 1.4);
-        context.drawImage(image, -asset.base.x, -asset.base.y - this.hoverY() - GridHexagonConstants.depthHeight() / 2);
+
+
+        let ratio = (GridHexagonConstants.width / asset.size.width);
+
+
+        let width = GridHexagonConstants.width;
+        let height = asset.size.height * ratio;
+
+        context.drawImage(image, -asset.base.x * ratio, -asset.base.y * ratio - this.hoverY(), width, height);
+
+
         context.restore();
     }
 
@@ -157,7 +166,8 @@ export class SixDirectionSprite extends BaseSprite {
     }
 
     private hoverY() {
-        return (Math.sin(this._drawTickNumber / 10)) * 12 - 6;
+        let offset = GridHexagonConstants.depthHeight();
+        return -(Math.sin(this._drawTickNumber / 10)) * offset + offset * 1.5;
     }
 }
 
@@ -170,7 +180,15 @@ export class StationarySprite extends BaseSprite {
         let assetName = this.key;
         let asset = AssetManager.assets[assetName];
         let image = asset.image || asset.images[this.animationFrame];
-        context.drawImage(image, -asset.base.x, -asset.base.y - GridHexagonConstants.depthHeight() / 2);
+
+        let ratio = (GridHexagonConstants.width / asset.size.width);
+
+        var shrink = .75;
+        let width = GridHexagonConstants.width * shrink;
+        let height = asset.size.height * ratio * shrink;
+
+
+        context.drawImage(image, -asset.base.x * ratio * shrink, -asset.base.y * ratio * shrink, width, height);
         context.restore();
     }
 }

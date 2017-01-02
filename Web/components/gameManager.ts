@@ -4,11 +4,11 @@ import {MenuManager} from "./hexLibraries/menuManager";
 import {HexUtils} from "./hexLibraries/hexUtils";
 import {GridHexagon} from "./hexLibraries/gridHexagon";
 import {HexBoard} from "./hexLibraries/hexBoard";
+import {DataService} from "./dataServices";
 declare let Hammer;
-declare let fetch;
 export class GameManager {
     private menuManager: MenuManager;
-    private hexBoard: HexBoard;
+    hexBoard: HexBoard;
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
 
@@ -22,10 +22,11 @@ export class GameManager {
     swipeVelocity = {x: 0, y: 0};
     tapStart = {x: 0, y: 0};
     private fpsMeter;
-    // private voteServer: string='https://vote.socialwargames.com/';
-    private voteServer: string = 'http://localhost:3568/';
 
     constructor() {
+    }
+
+    async init() {
         this.fpsMeter = new (<any>window).FPSMeter(document.body, {
             right: '5px',
             left: 'auto',
@@ -45,15 +46,10 @@ export class GameManager {
         mc.add(new Hammer.Pan({threshold: 0, pointers: 0}));
         mc.add(new Hammer.Swipe()).recognizeWith(mc.get('pan'));
         mc.add(new Hammer.Tap());
-        overlay.onmousemove = (ev) => {
-            let x = <number> ev.pageX;
-            let y = <number> ev.pageY;
-            // this.tapHex(x, y);
-        };
-
         window.onresize = () => {
             this.canvas.width = document.body.clientWidth;
             this.canvas.height = document.body.clientHeight;
+            this.hexBoard.resize(this.canvas.width, this.canvas.height);
         };
         this.canvas.width = document.body.clientWidth;
         this.canvas.height = document.body.clientHeight;
@@ -100,56 +96,31 @@ export class GameManager {
 
         this.draw();
 
+        let state = await
+            DataService.getGameState();
+        this.hexBoard.initialize(state);
 
-        fetch(this.voteServer + 'api/game/state', {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
+        setTimeout(() => {
+            this.randomTap();
+        }, 1000);
+
+
+        setInterval(async() => {
+            console.log('checking generation');
+            if (!this.hexBoard || !this.hexBoard.state)return;
+
+
+            let metrics = await DataService.getGameMetrics();
+
+            if (this.hexBoard.state.generation != metrics.generation) {
+                console.log('getting new game state');
+                let state = await  DataService.getGameState();
+                console.log('game updated');
+                this.hexBoard.updateFactionEntities(state);
             }
-        }).then(response => {
-            response.json()
-                .then(data => {
-                    this.hexBoard.initialize(data.data.state);
-                });
-        }).catch((err) => {
-            console.log('Fetch Error :-S', err);
-        });
 
+        }, 10 * 1000);
 
-       setInterval(()=>{
-           console.log('checking generation');
-           if (!this.hexBoard || !this.hexBoard.state)return;
-
-           fetch(this.voteServer + 'api/game/generation', {
-               headers: {
-                   'Accept': 'application/json',
-                   'Content-Type': 'application/json',
-               }
-           }).then(response => {
-               response.json()
-                   .then(data => {
-                       if (this.hexBoard.state.generation != data.data.generation) {
-                           console.log('getting new game state');
-                           fetch(this.voteServer + 'api/game/state', {
-                               headers: {
-                                   'Accept': 'application/json',
-                                   'Content-Type': 'application/json',
-                               }
-                           }).then(response => {
-                               response.json()
-                                   .then(data => {
-                                       console.log('game updated');
-                                       this.hexBoard.updateFactionEntities(data.data.state);
-                                   });
-                           }).catch((err) => {
-                               console.log('Fetch Error :-S', err);
-                           });
-                       }
-                   });
-           }).catch((err) => {
-               console.log('Fetch Error :-S', err);
-           });
-       },10*1000);
     }
 
     startAction(item: GridHexagon) {
@@ -222,7 +193,38 @@ export class GameManager {
 
     private selectedHex: GridHexagon;
 
-    private tapHex(x: number, y: number) {
+    private async randomTap() {
+
+        let ent;
+        let px;
+        let pz;
+
+        while (true) {
+            let p = Math.round(this.hexBoard.state.entities.length * Math.random());
+            ent = this.hexBoard.state.entities[p];
+            if(!ent)continue;
+            px = Math.round(ent.x + Math.random() * 10 - 5);
+            pz = Math.round(ent.z + Math.random() * 10 - 5);
+            if(px==0&&pz==0)continue;
+
+            if (HexUtils.distance({x: px, z: pz}, {x: ent.x, z: ent.z}) <= 5) {
+                break;
+            }
+        }
+        await DataService.vote({
+            entityId: ent.id,
+            action: 'Move',
+            userId: 'foo',
+            generation: this.hexBoard.state.generation,
+            x: px,
+            z: pz
+        });
+        setTimeout(() => {
+            this.randomTap()
+        }, Math.random() * 1000 + 100);
+    }
+
+    private async tapHex(x: number, y: number) {
         this.swipeVelocity.x = this.swipeVelocity.y = 0;
 
 
@@ -243,36 +245,20 @@ export class GameManager {
 
 
         if (this.selectedHex) {
-            let sprite = <HeliSprite> this.hexBoard.spriteManager.getSpritesAtTile(this.selectedHex)[0];
+            let sprite = this.hexBoard.spriteManager.getSpritesAtTile(this.selectedHex)[0];
             if (!sprite) {
                 this.selectedHex = null;
                 return;
             }
+            await DataService.vote({
+                entityId: sprite.id,
+                action: 'Move',
+                userId: 'foo',
+                generation: this.hexBoard.state.generation,
+                x: item.x,
+                z: item.z
+            });
 
-            fetch(this.voteServer + 'api/game/vote', {
-                method: "POST",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    entityId: sprite.id,
-                    action: 'Move',
-                    userId: 'foo',
-                    generation: this.hexBoard.state.generation,
-                    x: item.x,
-                    z: item.z
-                })
-            })
-                .then(response => {
-                    response.text()
-                        .then(data => {
-                            console.log(JSON.parse(data));
-                        });
-                })
-                .catch((err) => {
-                    console.log('Fetch Error :-S', err);
-                });
 
             /*
              let path = this.hexBoard.pathFind(this.selectedHex, item);

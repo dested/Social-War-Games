@@ -20,9 +20,9 @@ namespace VoteServer.Modules
                 var response = await GameLogic.GetState(VoteServerLogic.instance, model);
                 return this.Success(response);
             };
-            Get["/generation", true] = async (_, __) =>
+            Get["/metrics", true] = async (_, __) =>
             {
-                var response = await GameLogic.GetGeneration(VoteServerLogic.instance);
+                var response = await GameLogic.GetMetrics(VoteServerLogic.instance);
                 return this.Success(response);
             };
 
@@ -37,21 +37,4 @@ namespace VoteServer.Modules
 
 
     }
-
-    /*
-
-  get next turn time
-  post action
-      unit id
-      actionid
-      redis??
-          key++
-  get game state
-      highly cached
-  get unit state
-      points on each action
-
-  hot units??
-
-*/
 }

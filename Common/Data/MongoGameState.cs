@@ -20,10 +20,12 @@ namespace Common.Data
         {
             public ObjectId Id { get; set; }
             public DateTime LastGeneration { get; set; }
+            public int TickIntervalMinutes { get; set; }
             public Terrain Terrain { get; set; }
             public List<GameEntity> Entities { get; set; }
             public int Generation { get; set; }
             public string FactionData { get; set; }
+            public bool Initial { get; set; }
         }
 
         [BsonIgnoreExtraElements]

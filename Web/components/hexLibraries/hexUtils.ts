@@ -28,15 +28,15 @@
 }
 
 export interface Vector3 {
-    x: number;
-    y: number;
-    z: number;
+    x?: number;
+    y?: number;
+    z?: number;
 }
 
 
 export class HexUtils {
 
-    static distance(p1, p2) {
+    static distance(p1:Vector3, p2:Vector3) {
         const x1 = p1.x;
         const y1 = p1.z;
 

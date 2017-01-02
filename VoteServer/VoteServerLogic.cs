@@ -32,7 +32,7 @@ namespace VoteServer
             });
             GameListener.OnNewRound((message) =>
             {
-                GameManager.UpdateGameState();
+                GameManager.UpdateGameState(false);
                 GameManager.Locked = false;
             });
 
