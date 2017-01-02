@@ -4,6 +4,7 @@ namespace Common.GameLogic.Models
 {
     public class NewRoundMessage
     {
+         public MongoGameState.GameState State { get; set; }
     }
 
     public class BootUserMessage

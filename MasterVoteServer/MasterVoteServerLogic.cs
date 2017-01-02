@@ -39,7 +39,7 @@ namespace MasterVoteServer
             GameListener = new GameListener();
             GameManager = new GameManager();
             this.timer = new Timer(gameTick, null, GameManager.GameState.TickIntervalSeconds * 1000, -1);
-            GameListener.OnGameVote((message) =>
+            GameListener.OnGameVote(GameManager.GameState.Generation, (message) =>
             {
                 GameManager.AddVote(message.Vote);
             });
@@ -51,7 +51,14 @@ namespace MasterVoteServer
             Task.WaitAll(GameListener.SendStopVote(new StopVoteMessage()));
             GameManager.Tick();
             timer = new Timer(gameTick, null, GameManager.GameState.TickIntervalSeconds * 1000, -1);
-            Task.WaitAll(GameListener.SendNewRound(new NewRoundMessage()));
+            GameListener.OnGameVote(GameManager.GameState.Generation, (message) =>
+            {
+                GameManager.AddVote(message.Vote);
+            });
+            Task.WaitAll(GameListener.SendNewRound(new NewRoundMessage()
+            {
+                State = GameManager.GameState
+            }));
         }
 
 
@@ -65,7 +72,7 @@ namespace MasterVoteServer
             MongoServerLog.Collection.DeleteMany(FilterDefinition<MongoServerLog.ServerLog>.Empty);
 
             var terrain = GenerateTerrain(84 * 2, 84 * 2);
-            var board = new GameBoard(terrain, null);
+            var board = new GameBoard(new MongoGameState.GameState() { Terrain = terrain });
             var entities = new List<MongoGameState.GameEntity>();
 
             GenerateFaction(terrain, entities, board, new Vector2(terrain.Width / 4, terrain.Height / 3), 1);
@@ -111,11 +118,11 @@ namespace MasterVoteServer
                 h.Faction = faction;
             }
 
-            entities.AddRange(Enumerable.Range(0, 30).Select(_ =>
-            {
-                var random = spots.Random();
-                return MongoGameState.GameEntity.CreatePlane(random.X, random.Z, faction);
-            }));
+            entities.AddRange(Enumerable.Range(0, 30 * 4).Select(_ =>
+              {
+                  var random = spots.Random();
+                  return MongoGameState.GameEntity.CreatePlane(random.X, random.Z, faction);
+              }));
 
         }
 

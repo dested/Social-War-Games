@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deploy", "Deploy\Deploy.csproj", "{27E8DFEF-9C6B-4C05-8152-91EAE6AB119A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{41698FD4-3B74-423A-ABB4-9AF05E12E0A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerSlammer", "ServerSlammer\ServerSlammer.csproj", "{E0695448-5F0B-40FF-84C7-0F96E6864009}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,8 +43,16 @@ Global
 		{27E8DFEF-9C6B-4C05-8152-91EAE6AB119A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27E8DFEF-9C6B-4C05-8152-91EAE6AB119A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27E8DFEF-9C6B-4C05-8152-91EAE6AB119A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0695448-5F0B-40FF-84C7-0F96E6864009}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0695448-5F0B-40FF-84C7-0F96E6864009}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0695448-5F0B-40FF-84C7-0F96E6864009}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0695448-5F0B-40FF-84C7-0F96E6864009}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{27E8DFEF-9C6B-4C05-8152-91EAE6AB119A} = {41698FD4-3B74-423A-ABB4-9AF05E12E0A8}
+		{E0695448-5F0B-40FF-84C7-0F96E6864009} = {41698FD4-3B74-423A-ABB4-9AF05E12E0A8}
 	EndGlobalSection
 EndGlobal

@@ -39,7 +39,7 @@ namespace VoteServer.Logic
         {
             if (model.Generation + 1 == logic.GameManager.GameState.Generation)
             {
-                var tickResult=await MongoTickResult.Collection.GetOne(a => a.Generation == model.Generation);
+                var tickResult = await MongoTickResult.Collection.GetOne(a => a.Generation == model.Generation);
                 return new GetMetricsResponse()
                 {
                     Metrics = new GameMetrics()
@@ -58,7 +58,7 @@ namespace VoteServer.Logic
             var board = logic.GameManager.GameBoard;
             if (model.Generation != gameState.Generation)
             {
-                throw new ValidationException("Generation invalid");
+                return new PostVoteResponse() { GenerationMismatch = true };
             }
 
             var unit = gameState.GetUnitById(model.EntityId);
@@ -100,7 +100,7 @@ namespace VoteServer.Logic
                             };
                             await gameVote.Insert();
 
-                            await logic.GameListener.SendGameVote(new GameVoteMessage()
+                            await logic.GameListener.SendGameVote(model.Generation, new GameVoteMessage()
                             {
                                 Vote = gameVote
                             });

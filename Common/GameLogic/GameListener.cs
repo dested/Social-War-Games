@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Threading.Tasks;
 using Common.GameLogic.Models;
 using Common.Utils.Redis;
@@ -7,47 +8,50 @@ namespace Common.GameLogic
 {
     public class GameListener
     {
+
         public GameListener()
         {
-            PubSub = new PubSub();
+
+            VotePubSub = new PubSub(ConfigurationManager.AppSettings["redis-vote"]);
+            StatePubSub = new PubSub(ConfigurationManager.AppSettings["redis-state"]);
         }
 
-        private PubSub PubSub { get; set; }
+        private PubSub VotePubSub { get; set; }
+        private PubSub StatePubSub { get; set; }
 
-        public void OnGameVote(Action<GameVoteMessage> callback)
+        private string lastGameVote = null;
+
+        public void OnGameVote(int generation, Action<GameVoteMessage> callback)
         {
-            PubSub.Subscribe("GameVote", callback);
+            var channel = "GameVote" + generation;
+            if (lastGameVote != null)
+            {
+                VotePubSub.Unsubscribe(lastGameVote);
+            }
+            lastGameVote = channel;
+            VotePubSub.Subscribe(channel, callback);
         }
         public void OnStopVote(Action<StopVoteMessage> callback)
         {
-            PubSub.Subscribe("StopVote", callback);
+            StatePubSub.Subscribe("StopVote", callback);
         }
         public void OnNewRound(Action<NewRoundMessage> callback)
         {
-            PubSub.Subscribe("NewRound", callback);
+            StatePubSub.Subscribe("NewRound", callback);
         }
 
-        public void OnBootUser(Action<BootUserMessage> callback)
-        {
-            PubSub.Subscribe("BootUser", callback);
-        }
 
-        public async Task SendGameVote(GameVoteMessage message)
+        public async Task SendGameVote(int generation, GameVoteMessage message)
         {
-            await PubSub.Publish("GameVote", message);
+            await VotePubSub.Publish("GameVote" + generation, message);
         }
         public async Task SendStopVote(StopVoteMessage message)
         {
-            await PubSub.Publish("StopVote", message);
+            await StatePubSub.Publish("StopVote", message);
         }
         public async Task SendNewRound(NewRoundMessage message)
         {
-            await PubSub.Publish("NewRound", message);
-        }
-
-        public async Task SendBootUser(BootUserMessage message)
-        {
-            await PubSub.Publish("BootUser", message);
+            await StatePubSub.Publish("NewRound", message);
         }
 
     }

@@ -1,5 +1,4 @@
-﻿#define local
-using System;
+﻿using System;
 using System.Configuration;
 using System.Threading.Tasks;
 using Common.Utils.JsonUtils;
@@ -12,12 +11,9 @@ namespace Common.Utils.Redis
     {
         private ISubscriber subscriber;
 
-        public PubSub()
+        public PubSub(string redisStr)
         {
-            var redisStr = "localhost";
-#if !local
-            redisStr=ConfigurationManager.AppSettings["redis"];
-#endif
+
 
             Console.WriteLine("----REDIS SERVER----");
             Console.WriteLine(redisStr);
@@ -38,6 +34,10 @@ namespace Common.Utils.Redis
             {
                 callback(Json.Deserialize<T>(value));
             });
+        }
+        public void Unsubscribe(string channel)
+        {
+            subscriber.Unsubscribe(channel);
         }
     }
 }

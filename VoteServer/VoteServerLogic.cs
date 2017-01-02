@@ -22,17 +22,22 @@ namespace VoteServer
             GameManager = new GameManager();
             GameListener = new GameListener();
 
-            GameListener.OnGameVote((message) =>
-            {
-                GameManager.AddVote(message.Vote);
-            });
+            GameListener.OnGameVote(GameManager.GameState.Generation, (message) =>
+             {
+                 GameManager.AddVote(message.Vote);
+             });
             GameListener.OnStopVote((message) =>
             {
                 GameManager.Locked = true;
             });
-            GameListener.OnNewRound((message) =>
+            GameListener.OnNewRound((messageRound) =>
             {
-                GameManager.UpdateGameState(false);
+                GameManager.GameState = messageRound.State;
+                GameListener.OnGameVote(GameManager.GameState.Generation, (messageVote) =>
+                {
+                    GameManager.AddVote(messageVote.Vote);
+                });
+                Console.WriteLine("Got new round: " + messageRound.State.Generation);
                 GameManager.Locked = false;
             });
 

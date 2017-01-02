@@ -69,6 +69,7 @@ export class GameManager {
             this.tapStart.x = this.hexBoard.viewPort.x;
             this.tapStart.y = this.hexBoard.viewPort.y;
             this.hexBoard.setView(this.tapStart.x - ev.deltaX, this.tapStart.y - ev.deltaY);
+            return true;
         });
         mc.on('panmove', (ev) => {
             if (this.menuManager.isOpen) {
@@ -89,9 +90,7 @@ export class GameManager {
         mc.on('tap', (ev) => {
             let x = <number> ev.center.x;
             let y = <number> ev.center.y;
-
             this.tapHex(x, y)
-
         });
 
 
@@ -105,95 +104,101 @@ export class GameManager {
         }, 1000);
 
         setInterval(async() => {
-            console.log('checking generation');
-            if (!this.hexBoard || !this.hexBoard.state || this.animating)return;
+            await this.checkState();
+        }, 10 * 1000);
+
+    }
+
+    private async checkState() {
+        console.log('checking generation');
+        if (!this.hexBoard || !this.hexBoard.state || this.animating)return;
 
 
-            let metrics = await DataService.getGameMetrics();
+        let metrics = await
+            DataService.getGameMetrics();
 
-            if (this.hexBoard.state.generation != metrics.generation) {
-                let result = await  DataService.getGenerationResult(this.hexBoard.state.generation);
-                if (!result) {
+        if (this.hexBoard.state.generation != metrics.generation) {
+            let result = await
+                DataService.getGenerationResult(this.hexBoard.state.generation);
+            if (!result) {
+                console.log('getting new game state');
+                DataService.getGameState().then(state => {
+                    console.log('game updated');
+                    this.hexBoard.updateFactionEntities(state);
+                });
+                return;
+            }
+            this.animating = true;
+            let totalAnimations = 0;
+            let doneAnimations = 0;
+            let doneAnimating = async() => {
+                doneAnimations++;
+                if (doneAnimations == totalAnimations) {
                     console.log('getting new game state');
                     DataService.getGameState().then(state => {
                         console.log('game updated');
+                        this.animating = false;
                         this.hexBoard.updateFactionEntities(state);
                     });
-                    return;
                 }
-                this.animating = true;
-                let totalAnimations = 0;
-                let doneAnimations = 0;
-                let doneAnimating = async() => {
-                    doneAnimations++;
-                    if (doneAnimations == totalAnimations) {
-                        console.log('getting new game state');
-                        DataService.getGameState().then(state => {
-                            console.log('game updated');
-                            this.animating = false;
-                            this.hexBoard.updateFactionEntities(state);
-                        });
+            };
+            console.log(result.votes);
+            for (let i = 0; i < result.votes.length; i++) {
+                let vote = result.votes[i];
+                let action = vote.action;
+                let selectedEntity: GameEntity;
+                for (let j = 0; j < this.hexBoard.state.entities.length; j++) {
+                    let entity = this.hexBoard.state.entities[j];
+                    if (entity.id == action.entityId) {
+                        selectedEntity = entity;
+                        break;
                     }
-                };
-                console.log(result.votes);
-                for (let i = 0; i < result.votes.length; i++) {
-                    let vote = result.votes[i];
-                    let action = vote.action;
-                    let selectedEntity: GameEntity;
-                    for (let j = 0; j < this.hexBoard.state.entities.length; j++) {
-                        let entity = this.hexBoard.state.entities[j];
-                        if (entity.id == action.entityId) {
-                            selectedEntity = entity;
-                            break;
+                }
+                if (!selectedEntity)continue;
+                let sprite = this.hexBoard.spriteManager.getSpriteAtTile(selectedEntity);
+                console.log('executing action: ', action);
+                if (!sprite) {
+                    //idk
+                    continue;
+                }
+                switch (action.actionType) {
+                    case "Move":
+                        let moveAction = <GameMetricMoveVoteAction>action;
+                        let path = this.hexBoard.pathFind(
+                            this.hexBoard.getHexAtSpot(selectedEntity.x, selectedEntity.z),
+                            this.hexBoard.getHexAtSpot(moveAction.x, moveAction.z)
+                        );
+
+                        for (let i = 1; i < path.length; i++) {
+                            let p = path[i];
+                            let oldP = path[i - 1];
+                            setTimeout(() => {
+
+                                sprite.tile.clearHighlightColor();
+
+                                sprite.currentDirection = HexUtils.getDirection(oldP, p);
+                                let hex = this.hexBoard.getHexAtSpot(p.x, p.z);
+                                hex.faction = selectedEntity.factionId;
+                                let neighbors = hex.getNeighbors();
+                                for (let j = 0; j < neighbors.length; j++) {
+                                    let ne = neighbors[j];
+                                    let tile = this.hexBoard.getHexAtSpot(ne.x, ne.z);
+                                    if (!tile)continue;
+                                    tile.faction = selectedEntity.factionId;
+                                }
+                                sprite.setTile(hex);
+                                doneAnimating();
+                            }, i * 500);
+                            totalAnimations++;
                         }
-                    }
-                    if (!selectedEntity)continue;
-                    let sprite = this.hexBoard.spriteManager.spritesMap[selectedEntity.x + selectedEntity.z * 5000].filter(a => a.id == selectedEntity.id)[0];
-                    console.log('executing action: ', action);
-
-                    switch (action.actionType) {
-                        case "Move":
-                            let moveAction = <GameMetricMoveVoteAction>action;
-                            let path = this.hexBoard.pathFind(
-                                this.hexBoard.getHexAtSpot(selectedEntity.x, 0, selectedEntity.z),
-                                this.hexBoard.getHexAtSpot(moveAction.x, 0, moveAction.z)
-                            );
-
-                            for (let i = 1; i < path.length; i++) {
-                                let p = path[i];
-                                let oldP = path[i - 1];
-                                setTimeout(() => {
-                                    sprite.tile.clearHighlight();
-
-                                    sprite.currentDirection = HexUtils.getDirection(oldP, p);
-                                    console.log('ticking animation ');
-                                    let hex = this.hexBoard.getHexAtSpot(p.x, p.y, p.z);
-                                    hex.faction = selectedEntity.factionId;
-                                    hex.setColor(HexBoard.factionHexColors[hex.faction - 1][hex.height], false);
-                                    let neighbors = hex.getNeighbors();
-                                    for (let j = 0; j < neighbors.length; j++) {
-                                        let ne = neighbors[j];
-                                        let tile = this.hexBoard.getHexAtSpot(ne.x, 0, ne.y);
-                                        tile.faction = selectedEntity.factionId;
-                                        if (selectedEntity.factionId > 0) {
-                                            tile.setColor(HexBoard.factionHexColors[tile.faction - 1][hex.height], false);
-                                        }
-
-                                    }
-                                    sprite.setTile(hex);
-                                    doneAnimating();
-                                }, i * 500);
-                                totalAnimations++;
-                            }
-                            break;
-                    }
-
+                        break;
                 }
-
 
             }
 
-        }, 10 * 1000);
+
+        }
+
 
     }
 
@@ -204,16 +209,15 @@ export class GameManager {
         let spots = this.findAvailableSpots(radius, item);
         for (let i = 0; i < spots.length; i++) {
             let spot = spots[i];
-            let sprites = this.hexBoard.spriteManager.spritesMap[spot.x + spot.z * 5000];
-            if (spot == item || (sprites && sprites.length > 0)) continue;
+            let sprite = this.hexBoard.spriteManager.getSpriteAtTile(spot);
+            if (spot == item || sprite) continue;
             let path = this.hexBoard.pathFind(item, spot);
             if (path.length > 1 && path.length <= radius + 1) {
-                spot.setHighlight(GameManager.moveHighlightColor);
+                spot.setHighlightColor(GameManager.moveHighlightColor);
                 // spot.setHeightOffset(.25);
             }
         }
     }
-
 
     findAvailableSpots(radius, center): GridHexagon[] {
         let items = [];
@@ -224,12 +228,8 @@ export class GameManager {
                 items.push(item);
             }
         }
-
         return items;
-
     }
-
-    drawIndex = 0;
 
     draw() {
         requestAnimationFrame(() => {
@@ -261,7 +261,7 @@ export class GameManager {
         }
         // if (Math.abs(this.swipeVelocity.x) > 0 || Math.abs(this.swipeVelocity.y) > 0)
         {
-            this.hexBoard.offsetView(this.swipeVelocity.x, this.swipeVelocity.y);
+            this.hexBoard.offsetView(-this.swipeVelocity.x, -this.swipeVelocity.y);
         }
         this.hexBoard.spriteManager.tick();
 
@@ -293,7 +293,7 @@ export class GameManager {
                 break;
             }
         }
-        await DataService.vote({
+        let result = await DataService.vote({
             entityId: ent.id,
             action: 'Move',
             userId: 'foo',
@@ -301,6 +301,9 @@ export class GameManager {
             x: px,
             z: pz
         });
+        if (result.generationMismatch) {
+            await this.checkState();
+        }
         setTimeout(() => {
             this.randomTap()
         }, Math.random() * 1000 + 100);
@@ -318,7 +321,7 @@ export class GameManager {
 
         for (let i = 0; i < this.hexBoard.hexList.length; i++) {
             let h = this.hexBoard.hexList[i];
-            h.clearHighlight(GameManager.moveHighlightColor);
+            h.clearHighlightColor();
         }
 
         let item = this.hexBoard.getHexAtPoint(x, y);
@@ -326,19 +329,16 @@ export class GameManager {
 
 
         if (this.selectedHex) {
-
-            let sprite = this.hexBoard.spriteManager.getSpritesAtTile(this.selectedHex)[0];
+            let sprite = this.hexBoard.spriteManager.getSpriteAtTile(this.selectedHex);
             let distance = HexUtils.distance(this.selectedHex, item);
             console.log(distance);
             if (distance > 5) {
-                sprite.tile.setHighlight(new HexagonColor("#f0c2bc"));
                 return;
             }
             if (!sprite) {
                 this.selectedHex = null;
                 return;
             }
-            sprite.tile.setHighlight(new HexagonColor("#f0c2bc"));
             await DataService.vote({
                 entityId: sprite.id,
                 action: 'Move',
@@ -352,12 +352,9 @@ export class GameManager {
             return;
         }
 
-        this.selectedHex = item;
-
-        let sprites = this.hexBoard.spriteManager.getSpritesAtTile(item);
-        if (sprites && sprites.length > 0) {
-            let sprite = sprites[0];
-            item.setHighlight(GameManager.selectedHighlightColor);
+        let sprite = this.hexBoard.spriteManager.getSpriteAtTile(item);
+        if (sprite) {
+            this.selectedHex = item;
             this.startAction(item);
         }
 

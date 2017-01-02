@@ -17,4 +17,5 @@ namespace Common.Utils.Nancy
             return JsonConvert.SerializeObject(Data, Formatting.Indented);
         }
     }
+
 }

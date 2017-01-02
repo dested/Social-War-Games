@@ -8,7 +8,7 @@ using Nancy.TinyIoc;
 
 namespace Common.Utils.Nancy
 {
-    public class BaseBootstrapper  : DefaultNancyBootstrapper
+    public class BaseBootstrapper : DefaultNancyBootstrapper
     {
         public BaseBootstrapper()
         {
@@ -16,11 +16,15 @@ namespace Common.Utils.Nancy
             JsonSettings.RetainCasing = false;
         }
 
+        public static int count = 0;
+
         protected override void RequestStartup(TinyIoCContainer container, IPipelines pipelines, NancyContext requestContext)
         {
             pipelines.AfterRequest.AddItemToEndOfPipeline((ctx) =>
             {
-                Console.WriteLine("Request made: " + ctx.Request.Path + " " + ctx.Request.Method);
+                count++;
+
+//                Console.WriteLine("Request made: " + ctx.Request.Path + " " + ctx.Request.Method);
                 ctx.Response.WithHeader("Access-Control-Allow-Origin", "*")
                                 .WithHeader("Access-Control-Allow-Methods", "POST,GET")
                                 .WithHeader("Access-Control-Allow-Headers", "Accept, Origin, Content-type");
@@ -41,18 +45,18 @@ namespace Common.Utils.Nancy
                             var hyRequestValidationException = (RequestValidationException)hyException;
                             negotiator = new Negotiator(context);
                             negotiator.ValidationError(hyRequestValidationException.Errors);
-                            response= container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
+                            response = container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
                             break;
                         case RequestExceptionType.ServerError:
                             var hyServerErrorException = (ServerErrorException)hyException;
                             negotiator = new Negotiator(context);
                             negotiator.ServerError(hyServerErrorException.Errors);
-                            response= container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
+                            response = container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
                             break;
                         case RequestExceptionType.Unauthorized:
                             negotiator = new Negotiator(context);
                             negotiator.Unauthorized();
-                            response= container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
+                            response = container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -62,7 +66,7 @@ namespace Common.Utils.Nancy
                 {
                     var negotiator = new Negotiator(context);
                     negotiator.ServerError(exception.Message);
-                    response= container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
+                    response = container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
                 }
 
                 return response.WithHeader("Access-Control-Allow-Origin", "*")

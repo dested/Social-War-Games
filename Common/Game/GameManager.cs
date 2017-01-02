@@ -29,7 +29,7 @@ namespace Common.Game
         public void UpdateGameState(bool getVotes)
         {
             GameState = MongoGameState.Collection.GetOneSync(a => !a.Initial);
-            this.GameBoard = new GameBoard(GameState.Terrain, GameState.FactionData);
+            this.GameBoard = new GameBoard(GameState);
             if (getVotes)
             {
                 var votes = MongoGameVote.Collection.GetAllSync(a => a.Generation == GameState.Generation);
@@ -49,6 +49,7 @@ namespace Common.Game
                 var details = vote.Action;
                 if (GameState.Generation != vote.Generation)
                 {
+                    Console.WriteLine("Bad generation "+GameState.Generation+" "+vote.Generation);
                     return false;
                 }
 
@@ -114,7 +115,7 @@ namespace Common.Game
 
 
 
-                var formattableString = $"{sw.ElapsedMilliseconds}ms Votes: {TrackedVotes.Sum(a => a.Votes)} Actions: {TrackedVotes.Count}  Users Participated: {UserVotes.Count} Generation: {GameState.Generation}";
+                var formattableString = $"{sw.ElapsedMilliseconds}ms Votes: {TrackedVotes.Sum(a => a.Votes)} Actions: {TrackedVotes.Count}  Users Participated: {UserVotes.Count} Generation: {GameState.Generation-1}";
                 MongoServerLog.AddServerLog("Master.vote", formattableString, null);
                 Reset();
             }

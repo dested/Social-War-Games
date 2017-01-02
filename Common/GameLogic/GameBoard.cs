@@ -12,13 +12,14 @@ namespace Common.GameLogic
         public List<GridHexagon> HexList { get; }
         private Dictionary<int, GridHexagon> HexBoard { get; }
         public Size BoardSize { get; set; }
-        public GameBoard(MongoGameState.Terrain board, string factionData)
+        public GameBoard(MongoGameState.GameState gameState)
         {
+            GameState = gameState;
             BoardSize = new Size();
             HexList = new List<GridHexagon>();
             HexBoard = new Dictionary<int, GridHexagon>();
-            var str = board.BoardStr;
-            SetSize(board.Width, board.Height);
+            var str = GameState.Terrain.BoardStr;
+            SetSize(GameState.Terrain.Width, GameState.Terrain.Height);
 
             foreach (var vectorHex in str.ToHexMap())
             {
@@ -30,9 +31,9 @@ namespace Common.GameLogic
                 Add(gridHexagon);
             }
 
-            if (factionData != null)
+            if (GameState.FactionData != null)
             {
-                foreach (var vectorHex in factionData.ToHexMap())
+                foreach (var vectorHex in GameState.FactionData.ToHexMap())
                 {
                     GetHexagon(vectorHex.X, vectorHex.Z).Faction = vectorHex.Item;
                 }
