@@ -1,12 +1,13 @@
-﻿export class Node {
+﻿import {GridHexagon} from "./gridHexagon";
+export class Node {
     parent: Node = null;
     x = 0;
     y = 0;
-    item: Vector3 = null;
+    item: GridHexagon = null;
     f = 0;
     g = 0;
 
-    constructor(parent: Node, piece: Vector3) {
+    constructor(parent: Node, piece: GridHexagon) {
         this.parent = parent;
         // array index of this Node in the world linear array
 

@@ -12,13 +12,27 @@ namespace Common.HexUtils
         {
         }
 
-        public Vector2(int x, int y)
+        public Vector2(int x, int z)
         {
             X = x;
-            Y = y;
+            Z = z;
         }
 
         public int X { get; set; }
-        public int Y { get; set; }
+        public int Z { get; set; }
     }
+    public struct VectorHex
+    {
+        public VectorHex(int x, int z, int item)
+        {
+            X = x;
+            Z = z;
+            Item = item;
+        }
+
+        public int X { get; set; }
+        public int Z { get; set; }
+        public int Item { get; set; }
+    }
+
 }

@@ -49,14 +49,14 @@ export class HexBoard {
         return this.hexBlock[x + y * 5000];
     }
 
-    pathFind(start: Vector3, finish: Vector3) {
+    pathFind(start: GridHexagon, finish: GridHexagon) {
         const myPathStart = new Node(null, start);
         const myPathEnd = new Node(null, finish);
         let aStar = [];
         let open = [myPathStart];
         let closed = [];
         const result: Vector3[] = [];
-        let neighbours;
+        let neighbors;
         let node;
         let path;
         let length, max, min, i, j;
@@ -80,9 +80,9 @@ export class HexBoard {
                 result.reverse();
             }
             else {
-                neighbours = node.item.getNeighbors();
-                for (i = 0, j = neighbours.length; i < j; i++) {
-                    const n = this.xyToHexIndex(neighbours[i].x, neighbours[i].y);
+                neighbors = node.item.getNeighbors();
+                for (i = 0, j = neighbors.length; i < j; i++) {
+                    const n = this.xyToHexIndex(neighbors[i].x, neighbors[i].y);
                     if (!n) continue;
                     if (Math.abs((node.item.y + node.item.height) - (n.y + n.height)) >= 2)
                         continue;
@@ -132,11 +132,6 @@ export class HexBoard {
         let terrain = state.terrain;
         const str = terrain.boardStr;
         this.setSize(terrain.width, terrain.height);
-        let otherColors = [new HexagonColor('#AFFFFF')];
-
-        for (let i = 0; i < 6; i++) {
-            otherColors.push(new HexagonColor(DrawingUtils.colorLuminance('#AFF000', (i / 6))));
-        }
 
         let ys = str.split('|');
         for (let y = 0; y < terrain.height; y++) {
@@ -148,33 +143,53 @@ export class HexBoard {
                 gridHexagon.y = 0;
                 gridHexagon.z = y;
                 gridHexagon.height = xItem;
-                gridHexagon.setColor(otherColors[xItem], true);
+                gridHexagon.setColor(HexBoard.otherColors[xItem], true);
                 gridHexagon.buildPaths();
                 this.addHexagon(gridHexagon);
             }
         }
 
         this.updateFactionEntities(this.state);
-    }
 
-    public updateFactionEntities(state: GameState) {
-        this.state = state;
-        let otherColors = [new HexagonColor('#AFFFFF')];
-        for (let i = 0; i < 6; i++) {
-            otherColors.push(new HexagonColor(DrawingUtils.colorLuminance('#AFF000', (i / 6))));
-        }
-        let factionData = state.factionData;
-        let factionColors = ["#4953FF", "#FF4F66", "#3DFF53"];
-        let factionHexColors: HexagonColor[][] = [];
-
-        for (let f = 0; f < factionColors.length; f++) {
-            factionHexColors[f] = [];
-            factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(otherColors[0].color, factionColors[f], 0.9)));
-            for (let i = 0; i < 6; i++) {
-                factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(otherColors[i + 1].color, DrawingUtils.colorLuminance(factionColors[f], (i / 6)), 0.9)));
+        for (let i = 0; i < this.state.entities.length; i++) {
+            let ent = this.state.entities[i];
+            if (ent.entityType == 'MainBase') {
+                let hex = this.getHexAtSpot(ent.x, 0, ent.z);
+                this.centerOnHex(hex);
+                break;
             }
         }
 
+    }
+
+
+    static otherColors: HexagonColor[];
+    static factionHexColors: HexagonColor[][];
+    static factionColors: string[];
+
+    public static setupColors() {
+        this.otherColors = [new HexagonColor('#AFFFFF')];
+        for (let i = 0; i < 6; i++) {
+            this.otherColors.push(new HexagonColor(DrawingUtils.colorLuminance('#AFF000', (i / 6))));
+        }
+        this.factionColors = ["#4953FF", "#FF4F66", "#3DFF53"];
+        this.factionHexColors = [];
+
+        for (let f = 0; f < this.factionColors.length; f++) {
+            this.factionHexColors[f] = [];
+            this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.otherColors[0].color, this.factionColors[f], 0.9)));
+            for (let i = 0; i < 6; i++) {
+                this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.otherColors[i + 1].color, DrawingUtils.colorLuminance(this.factionColors[f], (i / 6)), 0.9)));
+            }
+        }
+
+    }
+
+
+    public updateFactionEntities(state: GameState) {
+        this.state = state;
+
+        let factionData = state.factionData;
 
         let ys = factionData.split('|');
         for (let y = 0; y < state.terrain.height; y++) {
@@ -184,7 +199,7 @@ export class HexBoard {
                 let hex = this.getHexAtSpot(x, 0, y);
                 hex.faction = faction;
                 if (faction > 0) {
-                    hex.setColor(factionHexColors[hex.faction - 1][hex.height], false);
+                    hex.setColor(HexBoard.factionHexColors[hex.faction - 1][hex.height], false);
                 }
             }
         }
@@ -200,7 +215,6 @@ export class HexBoard {
                     sprite.setTile(gridHexagon);
                     sprite.setId(entity.id);
                     this.spriteManager.addSprite(sprite);
-                    this.centerOnHex(gridHexagon);
                     break;
                 }
                 case "Plane": {

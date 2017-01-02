@@ -3,6 +3,7 @@
 import {AssetManager, Asset} from "./AssetManager";
 import {HexagonColor, DrawingUtils} from "../utils/drawingUtilities";
 import {GridHexagonConstants} from "./gridHexagonConstants";
+import {HexBoard} from "./hexBoard";
 
 export class GridHexagon {
 
@@ -23,18 +24,18 @@ export class GridHexagon {
     z = 0;
     height = 0;
     heightOffset = 0;
-    faction: number=0;
+    faction: number = 0;
 
 
-    getRealX(){
-        return  GridHexagonConstants.width * 3 / 4 * this.x;
+    getRealX() {
+        return GridHexagonConstants.width * 3 / 4 * this.x;
     }
 
-    getRealY(){
+    getRealY() {
         let y = this.z * GridHexagonConstants.height() + ((this.x % 2 === 1) ? (-GridHexagonConstants.height() / 2) : 0);
         y -= this.getDepthHeight();
         y += this.y * GridHexagonConstants.depthHeight();
-        return  y;
+        return y;
     }
 
     getDepthHeight() {
@@ -61,10 +62,30 @@ export class GridHexagon {
         }
     }
 
+    clearSecondaryColor() {
+        this.hexColor = this.originalColor;
+        this.invalidate();
+    }
+
     setHighlight(highlightColor: HexagonColor) {
         if (this.highlightColor !== highlightColor) {
             this.highlightColor = highlightColor;
             this.invalidate();
+        }
+    }
+
+    clearHighlight(checkHighlight: HexagonColor = null) {
+        if (this.highlightColor != null) {
+            if (checkHighlight != null) {
+                if (this.highlightColor === checkHighlight) {
+                    this.highlightColor = null;
+                    this.invalidate();
+                    return;
+                }
+            } else {
+                this.highlightColor = null;
+                this.invalidate();
+            }
         }
     }
 
@@ -191,7 +212,7 @@ export class GridHexagon {
     }
 
     envelope() {
-        const size = { width: 0, height: 0 };
+        const size = {width: 0, height: 0};
         size.width = GridHexagonConstants.width;
         size.height = GridHexagonConstants.height();
 
@@ -209,7 +230,7 @@ export class GridHexagon {
     }
 
     hexCenter() {
-        const center = { x: 0, y: 0 };
+        const center = {x: 0, y: 0};
 
         center.y = GridHexagonConstants.height() / 2;
         if (this.icon) {
@@ -227,7 +248,6 @@ export class GridHexagon {
         return center;
     }
 
-    factionColors = ["#FFFFFF", "#4953FF", "#FF4F66", "#3DFF53"];
 
     draw(context: CanvasRenderingContext2D) {
 
@@ -235,7 +255,7 @@ export class GridHexagon {
         if (this.drawCache) {
             context.drawImage(this.drawCache, -center.x, -center.y);
         } else {
-            const c = GridHexagon.getCacheImage(this.getDepthHeight(), this.icon, this.highlightColor || this.hexColor, this.factionColors[this.faction]);
+            const c = GridHexagon.getCacheImage(this.getDepthHeight(), this.icon, this.highlightColor || this.hexColor, HexBoard.factionColors[this.faction]);
             if (!c) {
                 const can = document.createElement('canvas');
                 const ctx = can.getContext('2d');
@@ -264,7 +284,7 @@ export class GridHexagon {
                 this.drawIcon(ctx);
                 ctx.restore();
 
-                GridHexagon.setCacheImage(this.getDepthHeight(), this.icon, this.highlightColor || this.hexColor, this.factionColors[this.faction], can);
+                GridHexagon.setCacheImage(this.getDepthHeight(), this.icon, this.highlightColor || this.hexColor, HexBoard.factionColors[this.faction], can);
                 /*       ctx.strokeStyle='black';
                  ctx.lineWidth=1;
                  ctx.strokeRect(0,0,can.width,can.height);*/
@@ -277,32 +297,32 @@ export class GridHexagon {
         }
     }
 
-    getNeighbors() {
+    getNeighbors(): {x: number, y: number}[] {
 
         const neighbors = [];
 
         if ((this.x % 2 === 0)) {
-            neighbors.push({ x: this.x - 1, y: this.z });
-            neighbors.push({ x: this.x, y: this.z - 1 });
-            neighbors.push({ x: this.x + 1, y: this.z });
+            neighbors.push({x: this.x - 1, y: this.z});
+            neighbors.push({x: this.x, y: this.z - 1});
+            neighbors.push({x: this.x + 1, y: this.z});
 
-            neighbors.push({ x: this.x - 1, y: this.z + 1 });
-            neighbors.push({ x: this.x, y: this.z + 1 });
-            neighbors.push({ x: this.x + 1, y: this.z + 1 });
+            neighbors.push({x: this.x - 1, y: this.z + 1});
+            neighbors.push({x: this.x, y: this.z + 1});
+            neighbors.push({x: this.x + 1, y: this.z + 1});
         } else {
-            neighbors.push({ x: this.x - 1, y: this.z - 1 });
-            neighbors.push({ x: this.x, y: this.z - 1 });
-            neighbors.push({ x: this.x + 1, y: this.z - 1 });
+            neighbors.push({x: this.x - 1, y: this.z - 1});
+            neighbors.push({x: this.x, y: this.z - 1});
+            neighbors.push({x: this.x + 1, y: this.z - 1});
 
-            neighbors.push({ x: this.x - 1, y: this.z });
-            neighbors.push({ x: this.x, y: this.z + 1 });
-            neighbors.push({ x: this.x + 1, y: this.z });
+            neighbors.push({x: this.x - 1, y: this.z});
+            neighbors.push({x: this.x, y: this.z + 1});
+            neighbors.push({x: this.x + 1, y: this.z});
         }
         return neighbors;
     }
 
 
-    static caches: { [key: string]: HTMLCanvasElement } = {};
+    static caches: {[key: string]: HTMLCanvasElement} = {};
 
     static getCacheImage(height: number, icon: Asset, hexColor: HexagonColor, tint: string): HTMLCanvasElement {
         const c = `${icon ? icon.name : ''}-${height}-${hexColor.color}-${tint}`;

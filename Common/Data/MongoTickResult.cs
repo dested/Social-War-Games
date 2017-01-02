@@ -25,6 +25,7 @@ namespace Common.Data
             public DateTime Generated { get; set; }
             public int Generation { get; set; }
             public List<TrackedVote> Votes { get; set; }
+            public int UsersVoted { get; set; }
         }
           
     }

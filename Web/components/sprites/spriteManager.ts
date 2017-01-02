@@ -67,7 +67,7 @@ export abstract class BaseSprite {
 
     setTile(tile: GridHexagon) {
         if (this.tile) {
-            this.tile.setColor((this.tile).originalColor, false);
+            this.tile.clearHighlight();
 
             var sprites = this.spriteManager.spritesMap[this.tile.x + this.tile.z * 5000];
             sprites = sprites || [];
@@ -79,7 +79,7 @@ export abstract class BaseSprite {
         this.tile = tile;
 
         if (tile) {
-            this.tile.setColor(new HexagonColor("#f0c2bc"), false);
+            this.tile.setHighlight(new HexagonColor("#f0c2bc"));
             this.x = this.tile.getRealX();
             this.y = this.tile.getRealY();
             var sprites = this.spriteManager.spritesMap[tile.x + tile.z * 5000];

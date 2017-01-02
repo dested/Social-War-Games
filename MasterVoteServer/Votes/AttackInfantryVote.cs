@@ -5,7 +5,7 @@ namespace MasterVoteServer.Votes
     public class AttackInfantryVote : Vote
     {
         public int X { get; set; }
-        public int Y { get; set; }
+        public int Z { get; set; }
 
         public override bool Equivalent(Vote vote)
         {
@@ -17,7 +17,7 @@ namespace MasterVoteServer.Votes
 
             return (infantryVote.EntityId == EntityId &&
                     infantryVote.X == X &&
-                    infantryVote.Y == Y);
+                    infantryVote.Z == Z);
         }
 
         public override void Complete(MongoGameState.GameState stateData)
@@ -25,7 +25,7 @@ namespace MasterVoteServer.Votes
             var unit = stateData.GetUnitById(EntityId);
             if (unit != null)
             {
-                var enemy = stateData.GetEntityByLocation(X, Y);
+                var enemy = stateData.GetEntityByLocation(X, Z);
                 if (enemy != null)
                 {
                     enemy.Hurt(1, stateData);

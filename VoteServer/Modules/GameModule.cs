@@ -26,6 +26,13 @@ namespace VoteServer.Modules
                 return this.Success(response);
             };
 
+            Get["/result", true] = async (_, __) =>
+            {
+                var model = ValidateRequest<GetGenerationRequest>();
+                var response = await GameLogic.GetGenerationResult(VoteServerLogic.instance, model);
+                return this.Success(response);
+            };
+
             Post["/vote", true] = async (_, __) =>
             {
                 var model = ValidateRequest<PostVoteRequest>();

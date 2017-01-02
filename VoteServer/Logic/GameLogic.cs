@@ -29,23 +29,39 @@ namespace VoteServer.Logic
             {
                 Metrics = new GameMetrics()
                 {
-                    Generation= logic.GameManager.GameState.Generation,
-                    Votes=logic.GameManager.TrackedVotes.ToArray(),
-                    UsersVoted=logic.GameManager.UserVotes.Count
+                    Generation = logic.GameManager.GameState.Generation,
+                    Votes = logic.GameManager.TrackedVotes.ToArray(),
+                    UsersVoted = logic.GameManager.UserVotes.Count
                 }
             };
         }
+        public static async Task<GetMetricsResponse> GetGenerationResult(VoteServerLogic logic, GetGenerationRequest model)
+        {
+            if (model.Generation + 1 == logic.GameManager.GameState.Generation)
+            {
+                var tickResult=await MongoTickResult.Collection.GetOne(a => a.Generation == model.Generation);
+                return new GetMetricsResponse()
+                {
+                    Metrics = new GameMetrics()
+                    {
+                        Generation = tickResult.Generation,
+                        Votes = tickResult.Votes.ToArray(),
+                        UsersVoted = tickResult.UsersVoted
+                    }
+                };
+            }
+            return null;
+        }
         public static async Task<PostVoteResponse> VoteAction(VoteServerLogic logic, PostVoteRequest model)
         {
-            var gameStateData = (await MongoGameState.Collection.GetOne(a => !a.Initial));
-
-            if (model.Generation != gameStateData.Generation)
+            var gameState = logic.GameManager.GameState;
+            var board = logic.GameManager.GameBoard;
+            if (model.Generation != gameState.Generation)
             {
                 throw new ValidationException("Generation invalid");
             }
-            var board = new GameBoard(gameStateData.Terrain);
 
-            var unit = gameStateData.GetUnitById(model.EntityId);
+            var unit = gameState.GetUnitById(model.EntityId);
             if (unit == null) throw new ValidationException("Unit not found");
 
             switch (unit.EntityType)
@@ -94,15 +110,8 @@ namespace VoteServer.Logic
                     }
                     break;
                 default: throw new RequestValidationException("Action not found");
-
             }
-
-
-
             return new PostVoteResponse();
         }
     }
-
-
-
 }

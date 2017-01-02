@@ -36,7 +36,7 @@ export class DataService {
             let json = await response.json();
             return json.data;
         } catch (ex) {
-            console.log('Fetch Error :-S', ex);
+            console.error(ex);
             return ex;
         }
     }
@@ -53,6 +53,23 @@ export class DataService {
 
             let json = await response.json();
             return json.data.state;
+        } catch (ex) {
+            console.log('Fetch Error :-S', ex);
+            return ex;
+        }
+
+    }
+    static async getGenerationResult(generation:number) : Promise<GameMetrics> {
+        try {
+            let response = await fetch(this.voteServer + 'api/game/result?generation='+generation, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            let json = await response.json();
+            return json.data.metrics;
         } catch (ex) {
             console.log('Fetch Error :-S', ex);
             return ex;

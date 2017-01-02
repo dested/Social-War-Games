@@ -17,23 +17,23 @@ namespace Common.GameLogic
 
             if ((this.X % 2 == 0))
             {
-                neighbors.Add(new Vector2() { X = this.X - 1, Y = this.Z });
-                neighbors.Add(new Vector2() { X = this.X, Y = this.Z - 1 });
-                neighbors.Add(new Vector2() { X = this.X + 1, Y = this.Z });
+                neighbors.Add(new Vector2() { X = this.X - 1, Z = this.Z });
+                neighbors.Add(new Vector2() { X = this.X, Z = this.Z - 1 });
+                neighbors.Add(new Vector2() { X = this.X + 1, Z = this.Z });
                                   
-                neighbors.Add(new Vector2() { X = this.X - 1, Y = this.Z + 1 });
-                neighbors.Add(new Vector2() { X = this.X, Y = this.Z + 1 });
-                neighbors.Add(new Vector2() { X = this.X + 1, Y = this.Z + 1 });
+                neighbors.Add(new Vector2() { X = this.X - 1, Z = this.Z + 1 });
+                neighbors.Add(new Vector2() { X = this.X, Z = this.Z + 1 });
+                neighbors.Add(new Vector2() { X = this.X + 1, Z = this.Z + 1 });
             }                     
             else                  
             {                     
-                neighbors.Add(new Vector2() { X = this.X - 1, Y = this.Z - 1 });
-                neighbors.Add(new Vector2() { X = this.X, Y = this.Z - 1 });
-                neighbors.Add(new Vector2() { X = this.X + 1, Y = this.Z - 1 });
+                neighbors.Add(new Vector2() { X = this.X - 1, Z = this.Z - 1 });
+                neighbors.Add(new Vector2() { X = this.X, Z = this.Z - 1 });
+                neighbors.Add(new Vector2() { X = this.X + 1, Z = this.Z - 1 });
                                   
-                neighbors.Add(new Vector2() { X = this.X - 1, Y = this.Z });
-                neighbors.Add(new Vector2() { X = this.X, Y = this.Z + 1 });
-                neighbors.Add(new Vector2() { X = this.X + 1, Y = this.Z });
+                neighbors.Add(new Vector2() { X = this.X - 1, Z = this.Z });
+                neighbors.Add(new Vector2() { X = this.X, Z = this.Z + 1 });
+                neighbors.Add(new Vector2() { X = this.X + 1, Z = this.Z });
             }
             return neighbors;
 

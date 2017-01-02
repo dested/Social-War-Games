@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common.Game;
 using Common.GameLogic.Models;
 using Common.Utils.Mongo;
 using MongoDB.Bson;
@@ -32,8 +33,11 @@ namespace Common.Data
         {
             public string EntityId { get; set; }
             public abstract bool Equates(VoteAction argAction);
+
+            [JsonConverter(typeof(StringEnumConverter))]
+            [BsonRepresentation(BsonType.String)]
             public abstract VoteActionType ActionType { get; }
-            public abstract void Complete(MongoGameState.GameState gameState);
+            public abstract bool Complete(GameManager gameManager);
         }
         public class MoveVoteAction : VoteAction
         {
@@ -47,11 +51,39 @@ namespace Common.Data
                 return X == action.X && Z == action.Z;
             }
 
-            public override void Complete(MongoGameState.GameState gameState)
+            public override bool Complete(GameManager gameManager)
             {
-                var entity = gameState.Entities.First(a => a.Id == EntityId);
+                var entity = gameManager.GameState.Entities.First(a => a.Id == EntityId);
+
+                if (gameManager.GameState.Entities.Any(a => a.X == X && a.Z == Z))
+                {
+                    return false;
+                }
+
+
+                var chex = gameManager.GameBoard.GetHexagon(entity.X, entity.Z);
+                var fhex = gameManager.GameBoard.GetHexagon(X, Z);
+
+                var path = gameManager.GameBoard.PathFind(chex, fhex);
+
+
                 entity.X = this.X;
                 entity.Z = this.Z;
+
+                foreach (var p in path)
+                {
+                    p.Faction = entity.FactionId;
+                    foreach (var neighbor in p.GetNeighbors())
+                    {
+                        var hex = gameManager.GameBoard.GetHexagon(neighbor.X, neighbor.Z);
+                        if (hex != null)
+                        {
+                            hex.Faction = entity.FactionId;
+                        }
+                    }
+                }
+                return true;
+
             }
         }
         public class AttackVoteAction : VoteAction
@@ -65,8 +97,9 @@ namespace Common.Data
                 if (action == null) return false;
                 return X == action.X && Z == action.Z;
             }
-            public override void Complete(MongoGameState.GameState gameState)
+            public override bool Complete(GameManager gameManager)
             {
+                return true;
 
             }
 
@@ -84,8 +117,9 @@ namespace Common.Data
                 if (action == null) return false;
                 return X == action.X && Z == action.Z && Unit == action.Unit;
             }
-            public override void Complete(MongoGameState.GameState gameState)
+            public override bool Complete(GameManager gameManager)
             {
+                return true;
 
             }
 

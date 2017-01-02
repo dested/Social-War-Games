@@ -29,6 +29,7 @@ namespace Common.Utils.Nancy
 
             pipelines.OnError.AddItemToEndOfPipeline((context, exception) =>
             {
+                Response response;
                 MongoServerLog.AddServerLog("Error", exception, context.Request.Path);
                 if (exception is RequestException)
                 {
@@ -40,16 +41,19 @@ namespace Common.Utils.Nancy
                             var hyRequestValidationException = (RequestValidationException)hyException;
                             negotiator = new Negotiator(context);
                             negotiator.ValidationError(hyRequestValidationException.Errors);
-                            return container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
+                            response= container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
+                            break;
                         case RequestExceptionType.ServerError:
                             var hyServerErrorException = (ServerErrorException)hyException;
                             negotiator = new Negotiator(context);
                             negotiator.ServerError(hyServerErrorException.Errors);
-                            return container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
+                            response= container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
+                            break;
                         case RequestExceptionType.Unauthorized:
                             negotiator = new Negotiator(context);
                             negotiator.Unauthorized();
-                            return container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
+                            response= container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
+                            break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
@@ -58,8 +62,12 @@ namespace Common.Utils.Nancy
                 {
                     var negotiator = new Negotiator(context);
                     negotiator.ServerError(exception.Message);
-                    return container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
+                    response= container.Resolve<IResponseNegotiator>().NegotiateResponse(negotiator, context);
                 }
+
+                return response.WithHeader("Access-Control-Allow-Origin", "*")
+                                .WithHeader("Access-Control-Allow-Methods", "POST,GET")
+                                .WithHeader("Access-Control-Allow-Headers", "Accept, Origin, Content-type");
             });
         }
 

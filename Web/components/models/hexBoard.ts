@@ -32,15 +32,15 @@ export interface GameMetricVoteAction {
     entityId: string;
     actionType: string;
 }
-export interface GameMetricMoveVoteAction {
+export interface GameMetricMoveVoteAction extends GameMetricVoteAction {
     x: number;
     z: number;
 }
-export interface GameMetricAttackVoteAction {
+export interface GameMetricAttackVoteAction extends GameMetricVoteAction {
     x: number;
     z: number;
 }
-export interface GameMetricSpawnVoteAction {
+export interface GameMetricSpawnVoteAction extends GameMetricVoteAction {
     x: number;
     z: number;
     unit: string;

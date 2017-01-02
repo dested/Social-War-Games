@@ -3,8 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Common.Data;
+using Common.GameLogic;
 using Common.Utils.Mongo;
 using Newtonsoft.Json;
 
@@ -15,6 +17,7 @@ namespace Common.Game
         public Dictionary<string, int> UserVotes = new Dictionary<string, int>();
         public List<TrackedVote> TrackedVotes = new List<TrackedVote>();
         public MongoGameState.GameState GameState { get; set; }
+        public GameBoard GameBoard { get; set; }
         public bool Locked { get; set; }
 
         private object locker = new object();
@@ -26,6 +29,7 @@ namespace Common.Game
         public void UpdateGameState(bool getVotes)
         {
             GameState = MongoGameState.Collection.GetOneSync(a => !a.Initial);
+            this.GameBoard = new GameBoard(GameState.Terrain, GameState.FactionData);
             if (getVotes)
             {
                 var votes = MongoGameVote.Collection.GetAllSync(a => a.Generation == GameState.Generation);
@@ -35,6 +39,7 @@ namespace Common.Game
                 }
             }
         }
+
 
         public bool AddVote(MongoGameVote.GameVote vote)
         {
@@ -81,27 +86,36 @@ namespace Common.Game
                 sw.Start();
                 Console.WriteLine("Ticking");
                 if (TrackedVotes.Count == 0) return;
-                MongoServerLog.AddServerLog("Master.vote", JsonConvert.SerializeObject(TrackedVotes), null);
-
+                List<TrackedVote> completedVotes = new List<TrackedVote>();
                 foreach (var unitVotes in TrackedVotes.GroupBy(a => a.Action.EntityId))
                 {
-                    var vote = unitVotes.OrderByDescending(a => a.Votes).First();
-                    vote.Action.Complete(GameState);
+                    foreach (var vote in unitVotes.OrderByDescending(a => a.Votes))
+                    {
+                        if (vote.Action.Complete(this))
+                        {
+                            completedVotes.Add(vote);
+                            break;
+                        }
+                    }
                 }
 
                 MongoTickResult.TickResult result = new MongoTickResult.TickResult();
                 result.Generation = GameState.Generation;
                 result.Generated = DateTime.UtcNow;
-                result.Votes = TrackedVotes;
+                result.Votes = completedVotes;
+                result.UsersVoted = UserVotes.Count;
                 result.InsertSync();
 
                 GameState.Generation += 1;
                 GameState.LastGeneration = DateTime.UtcNow;
+                GameState.FactionData = this.GameBoard.ToFactionData(this.GameState.Terrain);
                 GameState.UpdateSync();
-
                 sw.Stop();
 
-                Console.WriteLine($"{sw.ElapsedMilliseconds}ms Votes: {TrackedVotes.Sum(a => a.Votes)} Actions: {TrackedVotes.Count} Generation: {GameState.Generation}");
+
+
+                var formattableString = $"{sw.ElapsedMilliseconds}ms Votes: {TrackedVotes.Sum(a => a.Votes)} Actions: {TrackedVotes.Count}  Users Participated: {UserVotes.Count} Generation: {GameState.Generation}";
+                MongoServerLog.AddServerLog("Master.vote", formattableString, null);
                 Reset();
             }
         }

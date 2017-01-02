@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Common.Data;
 using Common.HexUtils;
 
@@ -7,38 +8,42 @@ namespace Common.GameLogic
 {
     public class GameBoard
     {
+        public MongoGameState.GameState GameState { get; set; }
         public List<GridHexagon> HexList { get; }
         private Dictionary<int, GridHexagon> HexBoard { get; }
         public Size BoardSize { get; set; }
-        public GameBoard(MongoGameState.Terrain board)
+        public GameBoard(MongoGameState.Terrain board, string factionData)
         {
             BoardSize = new Size();
             HexList = new List<GridHexagon>();
             HexBoard = new Dictionary<int, GridHexagon>();
             var str = board.BoardStr;
-            this.SetSize(board.Width, board.Height);
+            SetSize(board.Width, board.Height);
 
-            var zs = str.Split('|');
-            for (var z = 0; z < board.Height; z++)
+            foreach (var vectorHex in str.ToHexMap())
             {
-                var yItem = zs[z].ToCharArray();
-                for (var x = 0; x < board.Width; x++)
-                {
-                    var xItem = int.Parse(yItem[x].ToString());
+                var gridHexagon = new GridHexagon();
+                gridHexagon.X = vectorHex.X;
+                gridHexagon.Y = 0;
+                gridHexagon.Z = vectorHex.Z;
+                gridHexagon.Height = vectorHex.Item;
+                Add(gridHexagon);
+            }
 
-                    var gridHexagon = new GridHexagon();
-                    gridHexagon.X = x;
-                    gridHexagon.Y = 0;
-                    gridHexagon.Z = z;
-                    gridHexagon.Height = xItem == 0 ? 0 : xItem;
-                    this.Add(gridHexagon);
+            if (factionData != null)
+            {
+                foreach (var vectorHex in factionData.ToHexMap())
+                {
+                    GetHexagon(vectorHex.X, vectorHex.Z).Faction = vectorHex.Item;
                 }
             }
         }
 
         public GridHexagon GetHexagon(int x, int z)
         {
-            return this.HexBoard[x + z * 5000];
+            GridHexagon hex;
+            this.HexBoard.TryGetValue(x + z * 5000, out hex);
+            return hex;
         }
         public void SetSize(int width, int height)
         {
@@ -120,7 +125,7 @@ namespace Common.GameLogic
                     List<Vector2> neighbours = node.Item.GetNeighbors();
                     for (i = 0, j = neighbours.Count; i < j; i++)
                     {
-                        var n = GetHexagon(neighbours[i].X, neighbours[i].Y);
+                        var n = GetHexagon(neighbours[i].X, neighbours[i].Z);
                         if (n == null) continue;
                         if (Math.Abs((node.Item.Y + node.Item.Height) - (n.Y + n.Height)) >= 2)
                             continue;
@@ -143,6 +148,22 @@ namespace Common.GameLogic
         {
             this.HexList.Add(hexagon);
             this.HexBoard[hexagon.X + hexagon.Z * 5000] = hexagon;
+        }
+
+        public string ToFactionData(MongoGameState.Terrain terrain)
+        {
+            StringBuilder sb = new StringBuilder(terrain.BoardStr.Length);
+            int curZ = 0;
+            foreach (var gridHexagon in HexList)
+            {
+                if (gridHexagon.Z != curZ)
+                {
+                    sb.Append("|");
+                    curZ = gridHexagon.Z;
+                }
+                sb.Append(gridHexagon.Faction.ToString());
+            }
+            return sb.ToString();
         }
     }
 }

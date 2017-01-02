@@ -1,10 +1,29 @@
 using System;
+using System.Collections.Generic;
 using Common.GameLogic;
 
 namespace Common.HexUtils
 {
-    public class HexUtils
+    public static class HexUtils
     {
+        public static IEnumerable<VectorHex> ToHexMap(this string hex)
+        {
+            var zs = hex.Split('|');
+            for (var z = 0; z < zs.Length; z++)
+            {
+                var yItem = zs[z].ToCharArray();
+                for (var x = 0; x < yItem.Length; x++)
+                {
+                    var xItem = int.Parse(yItem[x].ToString());
+                    yield return new VectorHex()
+                    {
+                        X = x,
+                        Z = z,
+                        Item = xItem
+                    };
+                }
+            }
+        }
         public static int Distance(GridHexagon p1, GridHexagon p2)
         {
             var x1 = p1.X;
