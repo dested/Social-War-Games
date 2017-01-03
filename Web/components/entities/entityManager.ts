@@ -145,12 +145,12 @@ export abstract class BaseEntity {
 
     public onAnimationComplete(tile: GridHexagon): void {
         let neighbors = tile.getNeighbors();
-        tile.faction = this.faction;
+        tile.setFaction(this.faction);
         for (let j = 0; j < neighbors.length; j++) {
             let ne = neighbors[j];
             let tile = this.entityManager.hexBoard.getHexAtSpot(ne.x, ne.z);
             if (!tile)continue;
-            tile.faction = this.faction;
+            tile.setFaction(this.faction);
         }
         this.x = tile.getRealX();
         this.z = tile.getRealZ();

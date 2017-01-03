@@ -9,7 +9,8 @@ namespace MasterVoteServer
     {
         public static void Main()
         {
-            MasterVoteServerLogic.startNewGame();
+//            MasterVoteServerLogic.startNewGame();
+//            return;
             MongoServerLog.AddServerLog("Master.Start", "1", "1");
             var logic=MasterVoteServerLogic.GetServerLogic();
             while (true)

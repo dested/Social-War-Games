@@ -48,7 +48,7 @@ export class DataService {
         }
     }
 
-    static compressor = new window.Compressor();
+    static compressor = new Compressor();
 
     static async  getGameState(): Promise<GameState> {
         try {

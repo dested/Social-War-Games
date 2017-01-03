@@ -1,24 +1,23 @@
 ﻿import {GridHexagonConstants} from "../hexLibraries/gridHexagonConstants";
-import {HexagonColor, DrawingUtils} from "../utils/drawingUtilities";
+import {HexagonColorUtils} from "../utils/drawingUtilities";
 import {GameState} from "../models/hexBoard";
 import {GridHexagon} from "./gridHexagon";
 import {
     EntityManager,
     HeliEntity,
-    BaseEntity,
     MainBaseEntity
 } from "../entities/entityManager";
-import {ColorUtils} from "../utils/color";
 import {Vector3, HexUtils, Node} from "./hexUtils";
 import {AssetManager} from "./assetManager";
+import {ViewPort} from "../gameManager";
 
 export class HexBoard {
-    viewPort = {x: 0, y: 0, width: 400, height: 400, padding: GridHexagonConstants.width * 2};
     hexList: GridHexagon[] = [];
     hexBlock: {[key: number]: GridHexagon} = {};
     boardSize = {width: 0, height: 0};
     entityManager: EntityManager;
     generation: number = -1;
+    private visibleHexList: GridHexagon[];
 
     constructor() {
         this.entityManager = new EntityManager(this);
@@ -102,34 +101,6 @@ export class HexBoard {
     }
 
 
-    resize(width: number, height: number) {
-        this.viewPort.width = width;
-        this.viewPort.height = height;
-    }
-
-
-    offsetView(x: number, y: number) {
-        this.viewPort.x += x;
-        this.viewPort.y += y;
-        this.constrainViewPort();
-    }
-
-    setView(x: number, y: number) {
-        this.viewPort.x = x;
-        this.viewPort.y = y;
-        this.constrainViewPort();
-        localStorage.setItem("lastX", this.viewPort.x.toString());
-        localStorage.setItem("lastY", this.viewPort.y.toString());
-    }
-
-    constrainViewPort() {
-        this.viewPort.x = Math.max(this.viewPort.x, 0 - this.viewPort.padding);
-        this.viewPort.y = Math.max(this.viewPort.y, 0 - this.viewPort.padding);
-        const size = this.gameDimensions();
-        this.viewPort.x = Math.min(this.viewPort.x, size.width + this.viewPort.padding - this.viewPort.width);
-        this.viewPort.y = Math.min(this.viewPort.y, size.height + this.viewPort.padding - this.viewPort.height)
-    }
-
     initialize(state: GameState) {
         this.generation = state.generation;
         let terrain = state.terrain;
@@ -148,7 +119,7 @@ export class HexBoard {
                 gridHexagon.z = z;
                 gridHexagon.height = result;
                 gridHexagon.setTexture(tile);
-                gridHexagon.setBaseColor(HexBoard.otherColors);
+                gridHexagon.setBaseColor(HexagonColorUtils.baseColors);
                 gridHexagon.buildPaths();
                 this.addHexagon(gridHexagon);
             }
@@ -159,18 +130,7 @@ export class HexBoard {
 
         this.reorderHexList();
 
-        let lx = localStorage.getItem("lastX");
-        let ly = localStorage.getItem("lastY");
-
-        if (lx && ly) {
-            this.setView(parseInt(lx), parseInt(ly))
-        }
     }
-
-
-    static otherColors: HexagonColor[];
-    static factionHexColors: HexagonColor[][];
-    static factionColors: string[];
 
 
     public updateFactionEntities(state: GameState) {
@@ -184,7 +144,7 @@ export class HexBoard {
             for (let x = 0; x < state.terrain.width; x++) {
                 const faction = parseInt(yItem[x]);
                 let hex = this.getHexAtSpot(x, z);
-                hex.faction = faction;
+                hex.setFaction(faction);
             }
         }
 
@@ -214,7 +174,7 @@ export class HexBoard {
                         break;
                     }
                 }
-                gridHexagon.faction = stateEntity.factionId;
+                gridHexagon.setFaction(stateEntity.factionId);
                 entity.setId(stateEntity.id);
                 entity.setHealth(stateEntity.health);
                 entity.setTile(gridHexagon);
@@ -226,96 +186,39 @@ export class HexBoard {
         }
     }
 
-    getHexAtPoint(clickX, clickY): GridHexagon {
-        let lastClick: GridHexagon = null;
-        clickX += this.viewPort.x;
-        clickY += this.viewPort.y;
 
-        for (let i = 0; i < this.hexList.length; i++) {
-            const gridHexagon = this.hexList[i];
-            const x = GridHexagonConstants.width * 3 / 4 * gridHexagon.x;
-            let z = gridHexagon.z * GridHexagonConstants.height() + ((gridHexagon.x % 2 === 1) ? (-GridHexagonConstants.height() / 2) : 0);
-            z -= gridHexagon.getDepthHeight();
-            z += gridHexagon.y * GridHexagonConstants.depthHeight();
-            if (DrawingUtils.pointInPolygon(clickX - x, clickY - z, GridHexagonConstants.hexagonTopPolygon())) {
-                lastClick = gridHexagon;
-            }
-            if (DrawingUtils.pointInPolygon(clickX - x, clickY - z, GridHexagonConstants.hexagonDepthLeftPolygon((gridHexagon.height + 1) * GridHexagonConstants.depthHeight()))) {
-                lastClick = gridHexagon;
-            }
-            if (DrawingUtils.pointInPolygon(clickX - x, clickY - z, GridHexagonConstants.hexagonDepthBottomPolygon((gridHexagon.height + 1) * GridHexagonConstants.depthHeight()))) {
-                lastClick = gridHexagon;
-            }
-            if (DrawingUtils.pointInPolygon(clickX - x, clickY - z, GridHexagonConstants.hexagonDepthRightPolygon((gridHexagon.height + 1) * GridHexagonConstants.depthHeight()))) {
-                lastClick = gridHexagon;
-            }
-        }
-
-        return lastClick;
-    }
-
-
-    drawBoard(context: CanvasRenderingContext2D): void {
-        context.save();
-        context.translate(-this.viewPort.x, -this.viewPort.y);
+    drawBoard(context: CanvasRenderingContext2D, viewPort: ViewPort): void {
         context.lineWidth = 1;
-        for (let i = 0; i < this.hexList.length; i++) {
-            const gridHexagon = this.hexList[i];
-            if (this.shouldDraw(gridHexagon)) {
-                this.drawHexagon(context, gridHexagon);
-                let entities = this.entityManager.getEntitiesAtTile(gridHexagon);
-                if (entities) {
-                    for (let j = 0; j < entities.length; j++) {
-                        entities[j].draw(context);
-                    }
+        for (let i = 0; i < this.visibleHexList.length; i++) {
+            const gridHexagon = this.visibleHexList[i];
+            this.drawHexagon(context, gridHexagon);
+            let entities = this.entityManager.getEntitiesAtTile(gridHexagon);
+            if (entities) {
+                for (let j = 0; j < entities.length; j++) {
+                    entities[j].draw(context);
                 }
             }
         }
-        context.restore();
     }
 
-    shouldDraw(gridHexagon: GridHexagon): boolean {
 
-        const x = gridHexagon.getRealX();
-        const y = gridHexagon.getRealZ();
-
-        return x > this.viewPort.x - this.viewPort.padding &&
-            x < this.viewPort.x + this.viewPort.width + this.viewPort.padding &&
-            y > this.viewPort.y - this.viewPort.padding &&
-            y < this.viewPort.y + this.viewPort.height + this.viewPort.padding;
-
-
+    resetVisibleHexList(viewPort: ViewPort): void {
+        let visibleHexList = [];
+        for (let i = 0; i < this.hexList.length; i++) {
+            const gridHexagon = this.hexList[i];
+            if (gridHexagon.shouldDraw(viewPort)) {
+                visibleHexList.push(gridHexagon);
+            }
+        }
+        this.visibleHexList = visibleHexList;
     }
+
 
     drawHexagon(context: CanvasRenderingContext2D, gridHexagon: GridHexagon): void {
-
         const x = gridHexagon.getRealX();
         const y = gridHexagon.getRealZ();
         gridHexagon.draw(context, x, y);
     }
 
-    centerOnHex(gridHexagon: GridHexagon): void {
-        const x = gridHexagon.getRealX();
-        const y = gridHexagon.getRealZ();
-        this.setView(x - this.viewPort.width / 2, y - this.viewPort.height / 2);
-    }
-
-    public static setupColors() {
-        this.otherColors = [new HexagonColor('#AFFFFF')];
-        for (let i = 0; i < 6; i++) {
-            this.otherColors.push(new HexagonColor(DrawingUtils.colorLuminance('#AFF000', (i / 6))));
-        }
-        this.factionColors = ["#4953FF", "#FF4F66", "#3DFF53"];
-        this.factionHexColors = [];
-
-        for (let f = 0; f < this.factionColors.length; f++) {
-            this.factionHexColors[f] = [];
-            this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.otherColors[0].color, this.factionColors[f], 0.9)));
-            for (let i = 0; i < 6; i++) {
-                this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.otherColors[i + 1].color, DrawingUtils.colorLuminance(this.factionColors[f], (i / 6)), 0.9)));
-            }
-        }
-
-    }
 
 }

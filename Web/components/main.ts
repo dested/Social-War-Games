@@ -4,14 +4,15 @@
 
 import {AssetManager} from "./hexLibraries/AssetManager";
 import {GameManager} from "./gameManager";
+import {PageManager} from "./pageManager";
 
 export class Main {
-    static gameManager: GameManager;
+    static pageManager: PageManager;
 
     static run() {
         this.loadAssets(() => {
-            this.gameManager = new GameManager();
-            this.gameManager.init();
+            this.pageManager = new PageManager();
+            this.pageManager.init();
         });
 
     }

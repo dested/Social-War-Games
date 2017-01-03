@@ -80,6 +80,10 @@ namespace VoteServer.Logic
                         case "Move":
                             var hex1 = board.GetHexagon(unit.X, unit.Z);
                             var hex2 = board.GetHexagon(model.X, model.Z);
+                            if (hex1 == null || hex2 == null)
+                            {
+                                return new PostVoteResponse();
+                            }
                             var distance = HexUtils.Distance(hex1, hex2);
 
                             if (distance > 5)
@@ -100,7 +104,7 @@ namespace VoteServer.Logic
                             };
                             await Task.WhenAll(
                                 gameVote.Insert(),
-                                logic.GameListener.SendGameVote(model.Generation,new GameVoteMessage() {Vote = gameVote})
+                                logic.GameListener.SendGameVote(model.Generation, new GameVoteMessage() { Vote = gameVote })
                             );
                             break;
                         default:

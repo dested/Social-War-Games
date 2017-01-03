@@ -67,8 +67,8 @@ namespace ServerSlammer
                     count++;
                     var p = rand.Next(0, board.GameState.Entities.Count);
                     ent = board.GameState.Entities[p];
-                    px = ent.X + rand.Next(-5, 5);
-                    pz = ent.Z + rand.Next(-5, 5);
+                    px = ent.X + rand.Next(-5, 6);
+                    pz = ent.Z + rand.Next(-5, 6);
                     if (px == 0 && pz == 0) continue;
                     if (board.GetHexagon(px, pz) == null) continue;
                     if (board.GetHexagon(ent.X, ent.Z) == null) continue;
