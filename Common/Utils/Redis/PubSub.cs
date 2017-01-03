@@ -25,14 +25,14 @@ namespace Common.Utils.Redis
 
         public async Task Publish<T>(string channel, T message)
         {
-            await subscriber.PublishAsync(channel, Json.Serialize(message));
+            await subscriber.PublishAsync(channel, Json.Serialize(message,true));
         }
 
         public void Subscribe<T>(string channel, Action<T> callback)
         {
             subscriber.Subscribe(channel, (_channel, value) =>
             {
-                callback(Json.Deserialize<T>(value));
+                callback(Json.Deserialize<T>(value, true));
             });
         }
         public void Unsubscribe(string channel)

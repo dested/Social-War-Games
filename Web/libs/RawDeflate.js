@@ -2571,7 +2571,7 @@ function Compressor() {
         return $_top.Base64.toBase64($_top.RawDeflate.deflate($_top.Base64.utob(str)));
     };
     var DecompressText = function (str) {
-        return $_top.Base64.btou($_top.RawInflate.inflate($_top.Base64.fromBase64(str)));
+        return JSON.parse($_top.RawInflate.inflate($_top.Base64.fromBase64(str)));
     };
     this.CompressText = CompressText;
     this.DecompressText = DecompressText;

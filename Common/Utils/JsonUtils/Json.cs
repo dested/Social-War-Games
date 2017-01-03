@@ -3,20 +3,22 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Common.Utils.JsonUtils
 {
     public static class Json
     {
-        public static T Deserialize<T>(byte[] bytes)
+        public static T Deserialize<T>(byte[] bytes, bool fullTypes)
         {
             var settings = new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.All,
+                TypeNameHandling = fullTypes ? TypeNameHandling.All : TypeNameHandling.None,
                 Converters = new List<JsonConverter>()
                     {
                         new ObjectIdJsonConverter()
-                    }
+                    },
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
 
 
@@ -25,22 +27,23 @@ namespace Common.Utils.JsonUtils
             return JsonConvert.DeserializeObject<T>(res, settings);
         }
 
-        public static byte[] Serialize<T>(T t)
+        public static byte[] Serialize<T>(T t, bool fullTypes)
         {
             var settings = new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.All,
+                TypeNameHandling = fullTypes?TypeNameHandling.All:TypeNameHandling.None,
                 Converters = new List<JsonConverter>()
                 {
                     new ObjectIdJsonConverter()
-                }
+                },
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
             var res = JsonConvert.SerializeObject(t, settings);
 
             return Deflate(res);
         }
 
-        private static byte[] Deflate(string str)
+        public static byte[] Deflate(string str)
         {
             var data = Encoding.UTF8.GetBytes(str);
             if (null == data || data.Length < 1) return null;
@@ -64,7 +67,7 @@ namespace Common.Utils.JsonUtils
             }
         }
 
-        private static string Inflate(byte[] data)
+        public static string Inflate(byte[] data)
         {
             if (null == data || data.Length < 1) return null;
             //write into a new memory stream wrapped by a deflate stream

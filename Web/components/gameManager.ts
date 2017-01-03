@@ -160,7 +160,6 @@ export class GameManager {
 
             this.animationManager.reset();
             this.animationManager.setVotes(result.votes);
-            this.animationManager.start();
             this.animationManager.onComplete(() => {
                 console.log('getting new game state 2');
                 DataService.getGameState().then(state => {
@@ -169,6 +168,7 @@ export class GameManager {
                     this.checking = false;
                 });
             });
+            this.animationManager.start();
 
         }
         this.checking = false;

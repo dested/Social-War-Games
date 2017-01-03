@@ -17,7 +17,9 @@ export class DataService {
             if (!response.ok) // or check for response.status
                 throw new Error(response.statusText);
             let json = await response.json();
-            return json.data.metrics;
+            var m =this.compressor.DecompressText(json.data);
+
+            return m.metrics;
         } catch (ex) {
             console.log('Fetch Error :-S', ex);
             return ex;
@@ -46,6 +48,7 @@ export class DataService {
         }
     }
 
+    static compressor = new window.Compressor();
 
     static async  getGameState(): Promise<GameState> {
         try {
@@ -58,7 +61,10 @@ export class DataService {
             if (!response.ok) // or check for response.status
                 throw new Error(response.statusText);
             let json = await response.json();
-            return json.data.state;
+
+            var m =this.compressor.DecompressText(json.data);
+
+            return m.state;
         } catch (ex) {
             console.log('Fetch Error :-S', ex);
             return ex;
@@ -77,7 +83,10 @@ export class DataService {
             if (!response.ok) // or check for response.status
                 throw new Error(response.statusText);
             let json = await response.json();
-            return json.data.metrics;
+
+            var m =this.compressor.DecompressText(json.data);
+
+            return m.metrics;
         } catch (ex) {
             console.log('Fetch Error :-S', ex);
             return ex;

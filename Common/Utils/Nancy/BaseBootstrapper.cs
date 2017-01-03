@@ -1,5 +1,9 @@
 ﻿using System;
+using System.IO;
+using System.IO.Compression;
+using System.Text;
 using Common.Data;
+using Common.Utils.JsonUtils;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.Json;
@@ -23,8 +27,7 @@ namespace Common.Utils.Nancy
             pipelines.AfterRequest.AddItemToEndOfPipeline((ctx) =>
             {
                 count++;
-
-//                Console.WriteLine("Request made: " + ctx.Request.Path + " " + ctx.Request.Method);
+                //                Console.WriteLine("Request made: " + ctx.Request.Path + " " + ctx.Request.Method);
                 ctx.Response.WithHeader("Access-Control-Allow-Origin", "*")
                                 .WithHeader("Access-Control-Allow-Methods", "POST,GET")
                                 .WithHeader("Access-Control-Allow-Headers", "Accept, Origin, Content-type");

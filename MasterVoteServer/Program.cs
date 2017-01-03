@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Common.Data;
+using Common.Utils.JsonUtils;
 
 namespace MasterVoteServer
 {

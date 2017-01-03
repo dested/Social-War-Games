@@ -7,6 +7,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Common.Utils.Nancy
 {
+/*
     public class JsonNetSerializer : ISerializer
     {
         private readonly JsonSerializer _serializer;
@@ -44,4 +45,5 @@ namespace Common.Utils.Nancy
 
         public IEnumerable<string> Extensions { get; private set; }
     }
+*/
 }

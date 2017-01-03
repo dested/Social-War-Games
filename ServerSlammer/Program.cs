@@ -29,14 +29,12 @@ namespace ServerSlammer
             int workerThreads, complete;
             ThreadPool.GetMinThreads(out workerThreads, out complete);
 
-            Console.WriteLine(workerThreads);
-
             // Comment out this line to see the difference...
             // WIth this commented out, the second iteration will be immediate
             ThreadPool.SetMinThreads(100, complete);
 
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 16; i++)
             {
                 Task.Factory.StartNew(runGame);
             }
@@ -117,10 +115,11 @@ namespace ServerSlammer
                     new ObjectIdJsonConverter()
                 }
             };
+            var ds=JsonConvert.DeserializeObject<STResponse<string>>(response.Content, settings);
             Console.WriteLine("Got state");
 
-            var state = JsonConvert.DeserializeObject<STResponse<GetStateResponse>>(response.Content, settings);
-            return state.Data.State;
+            var state = Json.Deserialize<GetStateResponse>(Convert.FromBase64String(ds.Data), false);
+            return state.State;
         }
 
         private static bool Vote(PostVoteRequest vote)

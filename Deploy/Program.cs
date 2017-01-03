@@ -22,9 +22,10 @@ namespace Deploy
 
         static void Main(string[] args)
         {
-             
+            UploadWeb();
 
-            
+
+            return;
             //SetupServer("ec2-35-165-5-132.us-west-2.compute.amazonaws.com");
             //SetupServer("ec2-35-162-125-29.us-west-2.compute.amazonaws.com");
 
@@ -48,7 +49,7 @@ namespace Deploy
                 files.AddRange(new DirectoryInfo("../../../UserServer/bin/Debug/").GetFiles());
             }
             files = files
-                .Where(a => a.Extension != ".xml" && a.Extension != ".pdb")
+                .Where(a => a.Extension != ".xml" && a.Extension != ".pdb" && a.Extension != ".config")
                 .GroupBy(a => a.Name).Select(a => a.First())
                 .ToList();
 
@@ -57,7 +58,6 @@ namespace Deploy
                 Task.Run(() => UploadFiles("ec2-35-165-5-132.us-west-2.compute.amazonaws.com", files)),
                 Task.Run(() => UploadFiles("ec2-35-162-125-29.us-west-2.compute.amazonaws.com", files))
             );
-//            UploadWeb();
             //            StartApplication("ec2-35-160-122-186.us-west-2.compute.amazonaws.com", "MasterVoteServer");
             //            StartApplication("ec2-35-165-5-132.us-west-2.compute.amazonaws.com", "VoteServer");
             //            StartApplication("ec2-35-162-125-29.us-west-2.compute.amazonaws.com", "VoteServer");
