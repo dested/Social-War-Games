@@ -4,7 +4,7 @@ import {AssetManager, Asset} from "./AssetManager";
 import {HexagonColor, DrawingUtils} from "../utils/drawingUtilities";
 import {GridHexagonConstants} from "./gridHexagonConstants";
 import {HexBoard} from "./hexBoard";
-import {BaseSprite} from "../sprites/spriteManager";
+import {BaseEntity} from "../entities/entityManager";
 
 export class GridHexagon {
 
@@ -24,26 +24,39 @@ export class GridHexagon {
     private baseColor: HexagonColor[];
     private highlightColor: HexagonColor;
     private texture: Asset;
-    private sprite: BaseSprite;
+    private entities: BaseEntity[] = [];
 
 
     getRealX(): number {
         return GridHexagonConstants.width * 3 / 4 * this.x;
     }
 
-    getRealY(): number {
-        let y = this.z * GridHexagonConstants.height() + ((this.x % 2 === 1) ? (-GridHexagonConstants.height() / 2) : 0);
-        y -= this.getDepthHeight();
-        y += this.y * GridHexagonConstants.depthHeight();
-        return y;
+    getRealZ(): number {
+        let z = this.z * GridHexagonConstants.height() + ((this.x % 2 === 1) ? (-GridHexagonConstants.height() / 2) : 0);
+        z -= this.getDepthHeight();
+        z += this.y * GridHexagonConstants.depthHeight();
+        return z;
     }
 
     getDepthHeight(): number {
         return Math.max(1, (this.height + this.heightOffset) * GridHexagonConstants.depthHeight());
     }
 
-    setSprite(sprite: BaseSprite) {
-        this.sprite = sprite;
+    getEntities() {
+        return this.entities;
+    }
+
+    getEntityById(id: string) {
+        return this.entities.filter(a => a.id == id)[0];
+    }
+
+    addEntity(entity: BaseEntity) {
+        this.entities.push(entity);
+    }
+
+    removeEntity(entity: BaseEntity) {
+        this.entities.splice(this.entities.indexOf(entity), 1);
+
     }
 
     setBaseColor(baseColor: HexagonColor[]): void {
@@ -79,11 +92,11 @@ export class GridHexagon {
 
 
     private  getDrawingColor(): HexagonColor {
-        let spriteColor = (this.sprite && new HexagonColor("#f0c2bc"));
+        let entityColor = (this.entities.length > 0 && new HexagonColor("#f0c2bc"));
         let highlightColor = this.highlightColor;
-        let factionColor = (this.faction > 0 && HexBoard.factionHexColors[this.faction-1][this.height]);
+        let factionColor = (this.faction > 0 && HexBoard.factionHexColors[this.faction - 1][this.height]);
         let baseColor = (this.baseColor && this.baseColor[this.height]);
-        return spriteColor || highlightColor || factionColor || baseColor;
+        return entityColor || highlightColor || factionColor || baseColor;
     }
 
     drawLeftDepth(context: CanvasRenderingContext2D): void {
@@ -292,6 +305,7 @@ export class GridHexagon {
         }
         return p2d;
     }
+
 
 }
 

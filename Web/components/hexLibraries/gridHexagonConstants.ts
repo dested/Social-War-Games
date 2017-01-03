@@ -1,4 +1,4 @@
-﻿import {Point} from "../utils";
+﻿import {Point} from "../utils/utils";
 import {GridHexagon} from "./gridHexagon";
 import {Main} from "../main";
 

@@ -3,8 +3,8 @@ declare let fetch;
 
 export class DataService {
 
-    // private static voteServer: string = 'https://vote.socialwargames.com/';
-    private static voteServer: string = 'http://localhost:3568/';
+    private static voteServer: string = 'https://vote.socialwargames.com/';
+    // private static voteServer: string = 'http://localhost:3568/';
 
     static async getGameMetrics(): Promise<GameMetrics> {
         try {
@@ -33,8 +33,12 @@ export class DataService {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(vote)
-            }); ;
+            });
             let json = await response.json();
+            if (json.meta.errors) {
+                console.log(json.meta.errors);
+                return null;
+            }
             return json.data;
         } catch (ex) {
             console.error(ex);

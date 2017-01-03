@@ -1,4 +1,4 @@
-import {Point} from "../utils";
+import {Point} from "./utils";
 export class HexagonColor {
     color = "";
     darkBorder = "";

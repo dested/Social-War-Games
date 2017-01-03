@@ -8,11 +8,15 @@ namespace MasterVoteServer
     {
         public static void Main()
         {
-//            MasterVoteServerLogic.startNewGame();
+            MasterVoteServerLogic.startNewGame();
             MongoServerLog.AddServerLog("Master.Start", "1", "1");
-            MasterVoteServerLogic.GetServerLogic();
-            Console.WriteLine("Press enter to die");
-            Console.ReadLine();
+            var logic=MasterVoteServerLogic.GetServerLogic();
+            while (true)
+            {
+                Console.WriteLine("Press enter to die");
+                Console.ReadLine();
+                logic.gameTick(null);
+            }
 
         }
     }

@@ -23,7 +23,8 @@ namespace Deploy
         static void Main(string[] args)
         {
              
-            //SetupServer("ec2-35-162-6-177.us-west-2.compute.amazonaws.com");
+
+            
             //SetupServer("ec2-35-165-5-132.us-west-2.compute.amazonaws.com");
             //SetupServer("ec2-35-162-125-29.us-west-2.compute.amazonaws.com");
 
@@ -52,7 +53,6 @@ namespace Deploy
                 .ToList();
 
             Task.WaitAll(
-                Task.Run(() => UploadFiles("ec2-35-162-6-177.us-west-2.compute.amazonaws.com", files)),
                 Task.Run(() => UploadFiles("ec2-35-160-122-186.us-west-2.compute.amazonaws.com", files)),
                 Task.Run(() => UploadFiles("ec2-35-165-5-132.us-west-2.compute.amazonaws.com", files)),
                 Task.Run(() => UploadFiles("ec2-35-162-125-29.us-west-2.compute.amazonaws.com", files))

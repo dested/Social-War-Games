@@ -25,6 +25,7 @@ namespace ServerSlammer
         static void Main(string[] args)
         {
 
+
             int workerThreads, complete;
             ThreadPool.GetMinThreads(out workerThreads, out complete);
 
@@ -35,7 +36,7 @@ namespace ServerSlammer
             ThreadPool.SetMinThreads(100, complete);
 
 
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < 2; i++)
             {
                 Task.Factory.StartNew(runGame);
             }
@@ -99,8 +100,8 @@ namespace ServerSlammer
 
         private static MongoGameState.GameState GetState()
         {
-            var client = new RestClient("http://localhost:3568");
-//            var client = new RestClient("https://vote.socialwargames.com");
+//            var client = new RestClient("http://localhost:3568");
+            var client = new RestClient("https://vote.socialwargames.com");
 
             var request = new RestRequest("api/game/state", Method.GET);
 
@@ -124,8 +125,8 @@ namespace ServerSlammer
 
         private static bool Vote(PostVoteRequest vote)
         {
-            var client = new RestClient("http://localhost:3568");
-            //            var client = new RestClient("https://vote.socialwargames.com");
+//            var client = new RestClient("http://localhost:3568");
+                        var client = new RestClient("https://vote.socialwargames.com");
 
             var request = new RestRequest("api/game/vote", Method.POST);
 

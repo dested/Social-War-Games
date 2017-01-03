@@ -36,7 +36,7 @@ export interface Vector3 {
 
 export class HexUtils {
 
-    static distance(p1:Vector3, p2:Vector3) {
+    static distance(p1: Vector3, p2: Vector3) {
         const x1 = p1.x;
         const y1 = p1.z;
 
@@ -108,7 +108,7 @@ export class HexUtils {
     }
 }
 
-enum Direction{
+export enum Direction{
     TopLeft = 0,
     Top = 1,
     TopRight = 2,

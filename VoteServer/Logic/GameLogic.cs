@@ -98,12 +98,10 @@ namespace VoteServer.Logic
                                     Z = model.Z
                                 }
                             };
-                            await gameVote.Insert();
-
-                            await logic.GameListener.SendGameVote(model.Generation, new GameVoteMessage()
-                            {
-                                Vote = gameVote
-                            });
+                            await Task.WhenAll(
+                                gameVote.Insert(),
+                                logic.GameListener.SendGameVote(model.Generation,new GameVoteMessage() {Vote = gameVote})
+                            );
                             break;
                         default:
                             throw new RequestValidationException("Action not found");

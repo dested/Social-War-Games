@@ -45,7 +45,7 @@ namespace MasterVoteServer
             });
         }
 
-        private void gameTick(object state)
+        public void gameTick(object state)
         {
             timer.Dispose();
             Task.WaitAll(GameListener.SendStopVote(new StopVoteMessage()));

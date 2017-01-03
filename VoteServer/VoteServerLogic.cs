@@ -33,6 +33,7 @@ namespace VoteServer
             GameListener.OnNewRound((messageRound) =>
             {
                 GameManager.GameState = messageRound.State;
+                GameManager.Reset();
                 GameListener.OnGameVote(GameManager.GameState.Generation, (messageVote) =>
                 {
                     GameManager.AddVote(messageVote.Vote);
