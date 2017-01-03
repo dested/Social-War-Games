@@ -73,7 +73,8 @@ namespace ServerSlammer
                     if (board.GetHexagon(px, pz) == null) continue;
                     if (board.GetHexagon(ent.X, ent.Z) == null) continue;
 
-                    if (HexUtils.Distance(board.GetHexagon(px, pz), board.GetHexagon(ent.X, ent.Z)) <= 5)
+                    var distance = HexUtils.Distance(board.GetHexagon(px, pz), board.GetHexagon(ent.X, ent.Z));
+                    if (distance <= 5)
                     {
                         break;
 
@@ -98,7 +99,7 @@ namespace ServerSlammer
 
         private static MongoGameState.GameState GetState()
         {
-//            var client = new RestClient("http://localhost:3568");
+            //            var client = new RestClient("http://localhost:3568");
             var client = new RestClient("https://vote.socialwargames.com");
 
             var request = new RestRequest("api/game/state", Method.GET);
@@ -115,7 +116,7 @@ namespace ServerSlammer
                     new ObjectIdJsonConverter()
                 }
             };
-            var ds=JsonConvert.DeserializeObject<STResponse<string>>(response.Content, settings);
+            var ds = JsonConvert.DeserializeObject<STResponse<string>>(response.Content, settings);
             Console.WriteLine("Got state");
 
             var state = Json.Deserialize<GetStateResponse>(Convert.FromBase64String(ds.Data), false);
@@ -124,8 +125,8 @@ namespace ServerSlammer
 
         private static bool Vote(PostVoteRequest vote)
         {
-//            var client = new RestClient("http://localhost:3568");
-                        var client = new RestClient("https://vote.socialwargames.com");
+            //            var client = new RestClient("http://localhost:3568");
+            var client = new RestClient("https://vote.socialwargames.com");
 
             var request = new RestRequest("api/game/vote", Method.POST);
 
@@ -146,6 +147,12 @@ namespace ServerSlammer
             return state.Data.GenerationMismatch;
         }
     }
+    public class PostVoteResponse
+    {
+        public bool IssueVoting { get; set; }
+        public bool GenerationMismatch { get; set; }
+    }
+
     public class STResponse<T>
     {
         public STResponse(T data)

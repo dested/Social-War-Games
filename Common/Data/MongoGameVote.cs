@@ -34,8 +34,6 @@ namespace Common.Data
             public string EntityId { get; set; }
             public abstract bool Equates(VoteAction argAction);
 
-            [JsonConverter(typeof(StringEnumConverter))]
-            [BsonRepresentation(BsonType.String)]
             public abstract VoteActionType ActionType { get; }
             public abstract bool Complete(GameManager gameManager);
         }
@@ -43,6 +41,8 @@ namespace Common.Data
         {
             public int X { get; set; }
             public int Z { get; set; }
+            [JsonConverter(typeof(StringEnumConverter))]
+            [BsonRepresentation(BsonType.String)]
             public override VoteActionType ActionType { get; } = VoteActionType.Move;
             public override bool Equates(VoteAction a)
             {
@@ -90,6 +90,8 @@ namespace Common.Data
         {
             public int X { get; set; }
             public int Z { get; set; }
+            [JsonConverter(typeof(StringEnumConverter))]
+            [BsonRepresentation(BsonType.String)]
             public override VoteActionType ActionType { get; } = VoteActionType.Attack;
             public override bool Equates(VoteAction a)
             {
@@ -110,6 +112,8 @@ namespace Common.Data
             public int X { get; set; }
             public int Z { get; set; }
             public string Unit { get; set; }
+            [JsonConverter(typeof(StringEnumConverter))]
+            [BsonRepresentation(BsonType.String)]
             public override VoteActionType ActionType { get; } = VoteActionType.Spawn;
             public override bool Equates(VoteAction a)
             {

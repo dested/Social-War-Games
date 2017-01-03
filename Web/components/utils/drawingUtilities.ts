@@ -1,5 +1,4 @@
 import {Point} from "./utils";
-import {ColorUtils} from "./color";
 export class HexagonColor {
 
 
@@ -72,35 +71,3 @@ export class DrawingUtils {
 }
 
 
-export class HexagonColorUtils{
-
-    static baseColors: HexagonColor[];
-    static factionHexColors: HexagonColor[][];
-    static factionColors: string[];
-
-    static entityHexColor = new HexagonColor("#f0c2bc");
-
-    static baseColor = new HexagonColor('#FFFFFF');
-    static highlightColor = new HexagonColor('#00F9FF');
-    static selectedHighlightColor = new HexagonColor('#6B90FF');
-    static moveHighlightColor = new HexagonColor('#BE9EFF');
-    static attackHighlightColor = new HexagonColor('#91F9CF');
-
-    public static setupColors() {
-        this.baseColors = [new HexagonColor('#AFFFFF')];
-        for (let i = 0; i < 6; i++) {
-            this.baseColors.push(new HexagonColor(DrawingUtils.colorLuminance('#AFF000', (i / 6))));
-        }
-        this.factionColors = ["#4953FF", "#FF4F66", "#00FF43"];
-        this.factionHexColors = [];
-
-        for (let f = 0; f < this.factionColors.length; f++) {
-            this.factionHexColors[f] = [];
-            this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.baseColors[0].color, this.factionColors[f], 0.6)));
-            for (let i = 0; i < 6; i++) {
-                this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.baseColors[i + 1].color, DrawingUtils.colorLuminance(this.factionColors[f], (i / 6)), 0.6)));
-            }
-        }
-
-    }
-}

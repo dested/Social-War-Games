@@ -1,11 +1,12 @@
 import {BaseEntity} from "./entities/entityManager";
-import {HexagonColorUtils, DrawingUtils} from "./utils/drawingUtilities";
+import {DrawingUtils} from "./utils/drawingUtilities";
 import {HexUtils} from "./hexLibraries/hexUtils";
 import {GridHexagon} from "./hexLibraries/gridHexagon";
 import {HexBoard} from "./hexLibraries/hexBoard";
 import {DataService} from "./dataServices";
 import {AnimationManager} from "./animationManager";
 import {GridHexagonConstants} from "./hexLibraries/gridHexagonConstants";
+import {HexagonColorUtils} from "./utils/hexagonColorUtils";
 export class GameManager {
     hexBoard: HexBoard;
     animationManager: AnimationManager;
@@ -23,7 +24,7 @@ export class GameManager {
 
         let state = await DataService.getGameState();
         this.hexBoard.initialize(state);
-
+        await this.checkState();
 
         let lx = localStorage.getItem("lastX");
         let ly = localStorage.getItem("lastY");
@@ -38,7 +39,7 @@ export class GameManager {
 
         setInterval(async() => {
             await this.checkState();
-        }, 1 * 1000);
+        }, 5 * 1000);
 
     }
 
@@ -56,15 +57,31 @@ export class GameManager {
     private selectedHex: GridHexagon;
 
 
+    private cantAct(): boolean {
+        return this.checking || !this.hexBoard || this.hexBoard.generation == -1 || this.animationManager.isRunning;
+    }
+
     private async checkState() {
-        if (this.checking || !this.hexBoard || this.hexBoard.generation == -1 || this.animationManager.isRunning)return;
-        console.log('checking generation');
+        if (this.cantAct())return;
+        // console.log('checking generation');
         this.checking = true;
         let metrics = await DataService.getGameMetrics();
-        console.log(`Gen - old: ${this.hexBoard.generation} new ${metrics.generation}`);
+
+        for (let i = 0; i < this.hexBoard.entityManager.entities.length; i++) {
+            let ent = this.hexBoard.entityManager.entities[i];
+            ent.resetVotes();
+        }
 
         if (this.hexBoard.generation != metrics.generation) {
+            console.log(`Gen - old: ${this.hexBoard.generation} new ${metrics.generation}`);
             let result = await DataService.getGenerationResult(this.hexBoard.generation);
+            for (let i = 0; i < this.hexBoard.hexList.length; i++) {
+                let hex = this.hexBoard.hexList[i];
+                hex.clearSecondaryVoteColor();
+                hex.clearHighlightColor();
+                hex.clearVoteColor();
+            }
+
             if (!result) {
                 console.log('getting new game state 1');
                 DataService.getGameState().then(state => {
@@ -88,6 +105,13 @@ export class GameManager {
             });
             this.animationManager.start();
 
+        } else {
+            for (let i = 0; i < metrics.votes.length; i++) {
+                let vote = metrics.votes[i];
+                let action = vote.action;
+                let entity = this.hexBoard.entityManager.getEntityById(action.entityId);
+                entity.pushVote(vote);
+            }
         }
         this.checking = false;
 
@@ -97,13 +121,17 @@ export class GameManager {
     startAction(item: GridHexagon) {
         let radius = 5;
         let spots = this.findAvailableSpots(radius, item);
+        let ent = item.getEntities()[0];
+
         for (let i = 0; i < spots.length; i++) {
             let spot = spots[i];
             let entities = this.hexBoard.entityManager.getEntitiesAtTile(spot);
-            if (spot == item || !entities || entities.length == 0) continue;
+            if (spot == item || (entities && entities.length > 0)) continue;
             let path = this.hexBoard.pathFind(item, spot);
             if (path.length > 1 && path.length <= radius + 1) {
                 spot.setHighlightColor(HexagonColorUtils.moveHighlightColor);
+
+                ent.setSecondaryVoteColor(spot);
                 // spot.setHeightOffset(.25);
             }
         }
@@ -122,7 +150,8 @@ export class GameManager {
     }
 
     private async randomTap() {
-        if (this.animationManager.isRunning) {
+
+        if (this.cantAct()) {
             setTimeout(() => {
                 this.randomTap()
             }, Math.random() * 1000 + 100);
@@ -145,25 +174,42 @@ export class GameManager {
                 break;
             }
         }
-        let result = await DataService.vote({
-            entityId: ent.id,
-            action: 'Move',
-            userId: 'foo',
-            generation: this.hexBoard.generation,
-            x: px,
-            z: pz
-        });
-        if (result && result.generationMismatch) {
-            await this.checkState();
-        }
+        await this.vote(ent, 'Move', px, pz);
         setTimeout(() => {
             this.randomTap()
         }, Math.random() * 1000 + 100);
     }
 
+    private async vote(entity: BaseEntity, action: string, px: number, pz: number) {
+        let result = await DataService.vote({
+            entityId: entity.id,
+            action: action,
+            userId: 'foo',
+            generation: this.hexBoard.generation,
+            x: px,
+            z: pz
+        });
+        if (result) {
+            if (result.generationMismatch) {
+                await this.checkState();
+            } else if (result.issueVoting) {
+                console.log('issue voting');
+            } else {
+                entity.resetVotes();
+                for (let i = 0; i < result.votes.length; i++) {
+                    let vote = result.votes[i];
+                    entity.pushVote(vote);
+
+                }
+            }
+        }
+    }
+
 
     async tapHex(x: number, y: number) {
-
+        if (this.cantAct()) {
+            return;
+        }
         /* if (this.menuManager.tap(x, y)) {
          return;
          }
@@ -173,6 +219,7 @@ export class GameManager {
         for (let i = 0; i < this.hexBoard.hexList.length; i++) {
             let h = this.hexBoard.hexList[i];
             h.clearHighlightColor();
+            h.clearSecondaryVoteColor();
         }
 
         let item = this.getHexAtPoint(x, y);
@@ -181,8 +228,8 @@ export class GameManager {
 
         if (this.selectedHex) {
             let distance = HexUtils.distance(this.selectedHex, item);
-            console.log(distance);
-            if (distance > 5) {
+            if (distance > 5 || distance == 0) {
+                this.selectedHex = null;
                 return;
             }
             let entities = this.hexBoard.entityManager.getEntitiesAtTile(this.selectedHex);
@@ -191,14 +238,7 @@ export class GameManager {
                 return;
             }
             let entity = entities[0];
-            await DataService.vote({
-                entityId: entity.id,
-                action: 'Move',
-                userId: 'foo',
-                generation: this.hexBoard.generation,
-                x: item.x,
-                z: item.z
-            });
+            await this.vote(entity, 'Move', item.x, item.z);
 
             this.selectedHex = null;
             return;

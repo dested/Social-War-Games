@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 namespace Common.Utils.JsonUtils
@@ -16,7 +17,8 @@ namespace Common.Utils.JsonUtils
                 TypeNameHandling = fullTypes ? TypeNameHandling.All : TypeNameHandling.None,
                 Converters = new List<JsonConverter>()
                     {
-                        new ObjectIdJsonConverter()
+                        new ObjectIdJsonConverter(),
+                    new StringEnumConverter()
                     },
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
@@ -31,10 +33,11 @@ namespace Common.Utils.JsonUtils
         {
             var settings = new JsonSerializerSettings
             {
-                TypeNameHandling = fullTypes?TypeNameHandling.All:TypeNameHandling.None,
+                TypeNameHandling = fullTypes ? TypeNameHandling.All : TypeNameHandling.None,
                 Converters = new List<JsonConverter>()
                 {
-                    new ObjectIdJsonConverter()
+                    new ObjectIdJsonConverter(),
+                    new StringEnumConverter()
                 },
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };

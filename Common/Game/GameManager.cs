@@ -15,7 +15,7 @@ namespace Common.Game
     public class GameManager
     {
         public Dictionary<string, int> UserVotes = new Dictionary<string, int>();
-        public List<TrackedVote> TrackedVotes = new List<TrackedVote>();
+        public ConcurrentBag<TrackedVote> TrackedVotes = new ConcurrentBag<TrackedVote>();
         public MongoGameState.GameState GameState { get; set; }
         public GameBoard GameBoard { get; set; }
         public bool Locked { get; set; }
@@ -123,7 +123,7 @@ namespace Common.Game
 
         public void Reset()
         {
-            TrackedVotes.Clear();
+            TrackedVotes=new ConcurrentBag<TrackedVote>();
             UserVotes.Clear();
         }
 

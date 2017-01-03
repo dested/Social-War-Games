@@ -69,7 +69,7 @@ export class AnimationManager {
         setTimeout(() => {
             for (let i = 0; i < frames.length; i++) {
                 let frame = frames[i];
-                frame.entity.onAnimationComplete(this.hexBoard.getHexAtSpot(frame.endX || frame.startX, frame.endZ || frame.startZ));
+                frame.entity.onAnimationComplete(frame,this.hexBoard.getHexAtSpot(frame.endX || frame.startX, frame.endZ || frame.startZ));
             }
             this.start();
         }, duration)

@@ -62,7 +62,8 @@ namespace VoteServer.Logic
             }
 
             var unit = gameState.GetUnitById(model.EntityId);
-            if (unit == null) throw new ValidationException("Unit not found");
+            if (unit == null)
+                return new PostVoteResponse() { IssueVoting = true };
 
             switch (unit.EntityType)
             {
@@ -82,13 +83,13 @@ namespace VoteServer.Logic
                             var hex2 = board.GetHexagon(model.X, model.Z);
                             if (hex1 == null || hex2 == null)
                             {
-                                return new PostVoteResponse();
+                                return new PostVoteResponse() { IssueVoting = true };
                             }
                             var distance = HexUtils.Distance(hex1, hex2);
 
                             if (distance > 5)
                             {
-                                throw new ValidationException("Distance must be less than 5");
+                                return new PostVoteResponse() { IssueVoting = true }; ;
                             }
                             MongoGameVote.GameVote gameVote = new MongoGameVote.GameVote()
                             {
@@ -113,7 +114,10 @@ namespace VoteServer.Logic
                     break;
                 default: throw new RequestValidationException("Action not found");
             }
-            return new PostVoteResponse();
+            return new PostVoteResponse()
+            {
+                Votes = logic.GameManager.TrackedVotes.Where(a => a.Action.EntityId == model.EntityId).ToArray()
+            };
         }
     }
 }

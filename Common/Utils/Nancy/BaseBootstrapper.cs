@@ -18,6 +18,8 @@ namespace Common.Utils.Nancy
         {
             JsonSettings.MaxJsonLength = Int32.MaxValue;
             JsonSettings.RetainCasing = false;
+
+            JsonSettings.PrimitiveConverters.Add(new JavaScriptEnumConverter());
         }
 
         public static int count = 0;

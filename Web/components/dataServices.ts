@@ -17,11 +17,10 @@ export class DataService {
             if (!response.ok) // or check for response.status
                 throw new Error(response.statusText);
             let json = await response.json();
-            var m =this.compressor.DecompressText(json.data);
-
+            var m = this.compressor.DecompressText(json.data);
             return m.metrics;
         } catch (ex) {
-            console.log('Fetch Error :-S', ex);
+            console.error('Fetch Error :-S', ex);
             return ex;
         }
     }
@@ -38,9 +37,10 @@ export class DataService {
             });
             let json = await response.json();
             if (json.meta.errors) {
-                console.log(json.meta.errors);
+                console.error(json.meta.errors);
                 return null;
             }
+
             return json.data;
         } catch (ex) {
             console.error(ex);
@@ -62,11 +62,11 @@ export class DataService {
                 throw new Error(response.statusText);
             let json = await response.json();
 
-            var m =this.compressor.DecompressText(json.data);
+            var m = this.compressor.DecompressText(json.data);
 
             return m.state;
         } catch (ex) {
-            console.log('Fetch Error :-S', ex);
+            console.error('Fetch Error :-S', ex);
             return ex;
         }
 
@@ -84,11 +84,11 @@ export class DataService {
                 throw new Error(response.statusText);
             let json = await response.json();
 
-            var m =this.compressor.DecompressText(json.data);
+            var m = this.compressor.DecompressText(json.data);
 
             return m.metrics;
         } catch (ex) {
-            console.log('Fetch Error :-S', ex);
+            console.error('Fetch Error :-S', ex);
             return ex;
         }
 

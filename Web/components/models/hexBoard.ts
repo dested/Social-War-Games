@@ -1,5 +1,7 @@
-export interface VoteResponse{
-    generationMismatch:boolean;
+export interface VoteResponse {
+    generationMismatch: boolean;
+    issueVoting: boolean;
+    votes: GameMetricsVote[];
 }
 export interface GameState {
     id: string;

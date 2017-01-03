@@ -1,5 +1,4 @@
 ﻿import {GridHexagonConstants} from "../hexLibraries/gridHexagonConstants";
-import {HexagonColorUtils} from "../utils/drawingUtilities";
 import {GameState} from "../models/hexBoard";
 import {GridHexagon} from "./gridHexagon";
 import {
@@ -10,6 +9,7 @@ import {
 import {Vector3, HexUtils, Node} from "./hexUtils";
 import {AssetManager} from "./assetManager";
 import {ViewPort} from "../gameManager";
+import {HexagonColorUtils} from "../utils/hexagonColorUtils";
 
 export class HexBoard {
     hexList: GridHexagon[] = [];
@@ -145,6 +145,7 @@ export class HexBoard {
                 const faction = parseInt(yItem[x]);
                 let hex = this.getHexAtSpot(x, z);
                 hex.setFaction(faction);
+
             }
         }
 

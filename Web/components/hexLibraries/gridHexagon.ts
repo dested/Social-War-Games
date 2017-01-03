@@ -1,11 +1,11 @@
 ﻿///<reference path="../typings/path2d.d.ts"/>
 
-import {AssetManager, Asset} from "./AssetManager";
-import {HexagonColor, DrawingUtils, HexagonColorUtils} from "../utils/drawingUtilities";
+import {Asset} from "./AssetManager";
+import {HexagonColor, DrawingUtils} from "../utils/drawingUtilities";
 import {GridHexagonConstants} from "./gridHexagonConstants";
-import {HexBoard} from "./hexBoard";
 import {BaseEntity} from "../entities/entityManager";
 import {ViewPort} from "../gameManager";
+import {HexagonColorUtils} from "../utils/hexagonColorUtils";
 
 export class GridHexagon {
 
@@ -22,6 +22,8 @@ export class GridHexagon {
     private faction: number = 0;
     private baseColor: HexagonColor[];
     private highlightColor: HexagonColor;
+    private voteColor: HexagonColor;
+    private secondaryVoteColor: HexagonColor;
     private texture: Asset;
     private entities: BaseEntity[] = [];
     private drawCache: HTMLCanvasElement;
@@ -33,10 +35,9 @@ export class GridHexagon {
 
     getRealZ(): number {
         let height = GridHexagonConstants.height();
-        let z = (this.z * height + ((this.x % 2 === 1) ? (-height / 2) : 0))
+        return (this.z * height + ((this.x % 2 === 1) ? (-height / 2) : 0))
             - this.getDepthHeight()
             + this.y * GridHexagonConstants.depthHeight();
-        return z;
     }
 
     getDepthHeight(): number {
@@ -76,6 +77,27 @@ export class GridHexagon {
         this.invalidateColor();
     }
 
+
+    setVoteColor(voteColor: HexagonColor): void {
+        this.voteColor = voteColor;
+        this.invalidateColor();
+    }
+
+    clearVoteColor(): void {
+        this.voteColor = null;
+        this.invalidateColor();
+    }
+
+    setSecondaryVoteColor(voteColor: HexagonColor): void {
+        this.secondaryVoteColor = voteColor;
+        this.invalidateColor();
+    }
+
+    clearSecondaryVoteColor(): void {
+        this.secondaryVoteColor = null;
+        this.invalidateColor();
+    }
+
     clearHighlightColor(): void {
         this.highlightColor = null;
         this.invalidateColor();
@@ -105,10 +127,12 @@ export class GridHexagon {
 
     private invalidateColor() {
         let entityColor = (this.entities.length > 0 && HexagonColorUtils.entityHexColor);
+        let voteColor = this.voteColor;
+        let secondaryVoteColor = this.secondaryVoteColor;
         let highlightColor = this.highlightColor;
         let factionColor = (this.faction > 0 && HexagonColorUtils.factionHexColors[this.faction - 1][this.height]);
         let baseColor = (this.baseColor && this.baseColor[this.height]);
-        this.currentDrawColor = entityColor || highlightColor || factionColor || baseColor;
+        this.currentDrawColor = voteColor || secondaryVoteColor || entityColor || highlightColor || factionColor || baseColor;
         if (this.currentDrawColor && this.texture)
             this.drawCache = GridHexagon.getCacheImage(this.getDepthHeight(), this.currentDrawColor, this.texture.name)
     }
@@ -327,6 +351,7 @@ export class GridHexagon {
 
 
     }
+
 }
 
 

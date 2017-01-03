@@ -1,10 +1,7 @@
-import {BaseEntity} from "./entities/entityManager";
-import {HexagonColorUtils} from "./utils/drawingUtilities";
 import {MenuManager} from "./hexLibraries/menuManager";
 import {HexUtils} from "./hexLibraries/hexUtils";
-import {GridHexagon} from "./hexLibraries/gridHexagon";
-import {DataService} from "./dataServices";
 import {GameManager} from "./gameManager";
+import {HexagonColorUtils} from "./utils/hexagonColorUtils";
 declare let Hammer;
 export class PageManager {
     private menuManager: MenuManager;

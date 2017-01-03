@@ -3,9 +3,10 @@ import {HexBoard} from "../hexLibraries/hexBoard";
 import {GridHexagonConstants} from "../hexLibraries/gridHexagonConstants";
 import {GridHexagon} from "../hexLibraries/gridHexagon";
 import {Vector3, HexUtils} from "../hexLibraries/hexUtils";
-import {GameMetricVoteAction, GameMetricMoveVoteAction, GameEntity} from "../models/hexBoard";
+import {GameMetricVoteAction, GameMetricMoveVoteAction, GameEntity, GameMetricsVote} from "../models/hexBoard";
 import {AnimationFrame, AnimationFrameType} from "../animationManager";
 import {Help} from "../utils/help";
+import {HexagonColorUtils} from "../utils/hexagonColorUtils";
 export class EntityManager {
 
     constructor(public hexBoard: HexBoard) {
@@ -126,13 +127,7 @@ export abstract class BaseEntity {
         if (this.currentTick != -1) {
 
             let percent = this.currentTick / this.durationTicks;
-            if (percent === 1) {
-                this.currentTick = -1;
-                this.durationTicks = -1;
-                this.animateToHex = null;
-                this.animateFromHex = null;
-            }
-            else {
+            if (percent < 1) {
                 this.x = Help.lerp(this.animateFromHex.getRealX(), this.animateToHex.getRealX(), percent);
                 this.z = Help.lerp(this.animateFromHex.getRealZ(), this.animateToHex.getRealZ(), percent);
                 this.currentTick++;
@@ -143,7 +138,13 @@ export abstract class BaseEntity {
     public tick() {
     }
 
-    public onAnimationComplete(tile: GridHexagon): void {
+    public onAnimationComplete(frame: AnimationFrame, tile: GridHexagon): void {
+        if (frame.type == AnimationFrameType.Stop) {
+            this.currentTick = -1;
+            this.durationTicks = -1;
+            this.animateToHex = null;
+            this.animateFromHex = null;
+        }
         let neighbors = tile.getNeighbors();
         tile.setFaction(this.faction);
         for (let j = 0; j < neighbors.length; j++) {
@@ -162,6 +163,41 @@ export abstract class BaseEntity {
 
     abstract executeFrame(hexBoard: HexBoard, frame: AnimationFrame, duration: number): void;
 
+    private currentVotes: GameMetricsVote[] = [];
+
+    resetVotes() {
+        this.currentVotes.length = 0;
+        this.getTile().clearVoteColor();
+        this.getTile().clearSecondaryVoteColor();
+    }
+
+    pushVote(vote: GameMetricsVote) {
+        this.currentVotes.push(vote);
+        let votes = 0;
+        for (let i = 0; i < this.currentVotes.length; i++) {
+            votes += this.currentVotes[i].votes;
+        }
+
+        this.getTile().setVoteColor(HexagonColorUtils.voteColor[Math.min(votes, 10)]);
+    }
+
+    setSecondaryVoteColor(spot: GridHexagon) {
+        let votes = 0;
+        for (let i = 0; i < this.currentVotes.length; i++) {
+            let currentVote = this.currentVotes[i];
+            switch (currentVote.action.actionType) {
+                case "Move":
+                    let moveAction = <GameMetricMoveVoteAction> currentVote.action;
+                    if (moveAction.x == spot.x && moveAction.z == spot.z) {
+                        votes += currentVote.votes;
+                    }
+                    break;
+            }
+        }
+        if (votes > 0) {
+            spot.setSecondaryVoteColor(HexagonColorUtils.voteColor[Math.min(votes, 10)]);
+        }
+    }
 }
 
 export class SixDirectionEntity extends BaseEntity {

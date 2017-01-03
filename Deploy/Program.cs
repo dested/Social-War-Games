@@ -24,8 +24,7 @@ namespace Deploy
         {
             UploadWeb();
 
-
-            return;
+             
             //SetupServer("ec2-35-165-5-132.us-west-2.compute.amazonaws.com");
             //SetupServer("ec2-35-162-125-29.us-west-2.compute.amazonaws.com");
 

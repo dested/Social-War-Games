@@ -101,6 +101,7 @@
     <Compile Include="Utils\Nancy\BaseBootstrapper.cs" />
     <Compile Include="Utils\Nancy\DefaultMetaData.cs" />
     <Compile Include="Utils\Nancy\ErrorMetaData.cs" />
+    <Compile Include="Utils\Nancy\JavaScriptEnumConverter.cs" />
     <Compile Include="Utils\Nancy\JsonNetSerializer.cs" />
     <Compile Include="Utils\Nancy\JwtToken.cs" />
     <Compile Include="Utils\Nancy\MetaData.cs" />
