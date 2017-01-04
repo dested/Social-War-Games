@@ -10,15 +10,16 @@ export class GameController {
         let secondsTick = 0;
 
         GameService.setSecondsToNextGeneration = (seconds) => {
-            secondsTick = 100/(10*GameService.secondsPerGeneration);
-            $scope.timerPercent = 100 - (seconds / GameService.secondsPerGeneration * 100);
+            secondsTick = 100 / (10 * GameService.secondsPerGeneration);
+            $scope.timerPercent = Math.min(100 - (seconds / GameService.secondsPerGeneration * 100), 100);
         };
 
         $interval(() => {
-            $scope.timerPercent += secondsTick;
-            if ($scope.timerPercent > 100) {
-                $scope.timerPercent = 0;
+            if ($scope.timerPercent < 100) {
+                $scope.timerPercent += secondsTick;
             }
+            $scope.timerPercent = Math.min($scope.timerPercent, 100);
+            console.log($scope.timerPercent);
         }, 100)
     }
 }

@@ -21,6 +21,8 @@ namespace ServerSlammer
     {
         private static double count = 0;
         private static Timer timer;
+        //        private static string url= "http://localhost:3568";
+        private static string url = "https://vote.socialwargames.com";
 
         static void Main(string[] args)
         {
@@ -99,8 +101,7 @@ namespace ServerSlammer
 
         private static MongoGameState.GameState GetState()
         {
-            //            var client = new RestClient("http://localhost:3568");
-            var client = new RestClient("https://vote.socialwargames.com");
+            var client = new RestClient(url);
 
             var request = new RestRequest("api/game/state", Method.GET);
 
@@ -126,8 +127,7 @@ namespace ServerSlammer
 
         private static bool Vote(PostVoteRequest vote)
         {
-            //            var client = new RestClient("http://localhost:3568");
-            var client = new RestClient("https://vote.socialwargames.com");
+            var client = new RestClient(url);
 
             var request = new RestRequest("api/game/vote", Method.POST);
 

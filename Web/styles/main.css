@@ -34,6 +34,7 @@ body {
 }
 * {
   box-sizing: border-box;
+  user-select: none;
 }
 .game-ui {
   width: 100vw;

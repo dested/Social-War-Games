@@ -34,12 +34,10 @@ export class GameManager {
         if (lx && ly) {
             this.setView(parseInt(lx), parseInt(ly))
         }
-        /*
 
          setTimeout(() => {
          this.randomTap();
          }, 1000);
-         */
 
         setTimeout(async() => {
             await this.checkState();
@@ -124,7 +122,6 @@ export class GameManager {
             }
         }
         this.checking = false;
-
         setTimeout(async() => {
             await this.checkState();
         }, 1000 * (seconds > 5 ? 5 : seconds+1));

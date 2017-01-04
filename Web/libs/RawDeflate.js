@@ -1,8 +1,6 @@
 ﻿onmessage = function (e) {
     var compressor = new Compressor();
     var result = compressor.DecompressText(e.data.payload);
-    console.log('Message received from main script');
-    var workerResult = 'Result: ' + (e.data.payload);
     postMessage({key: e.data.key, payload: result});
 }
 
