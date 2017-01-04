@@ -45,4 +45,6 @@ add real bot support
 
 websocket support?
 add audio
+test adding a vote server in teh middle of a round
 
+add vote start vote end log server

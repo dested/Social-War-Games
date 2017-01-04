@@ -67,6 +67,10 @@ export class GridHexagon {
         return this.entities;
     }
 
+    hasEntities() {
+        return this.entities && this.entities.length > 0;
+    }
+
     getEntityById(id: string) {
         return this.entities.filter(a => a.id == id)[0];
     }
@@ -162,7 +166,7 @@ export class GridHexagon {
         this.currentDrawColor = voteColor || secondaryVoteColor || entityColor || highlightColor || factionColor || baseColor;
         this.currentFactionColor = factionColor || baseColor;
 
-        this.currentMiniColor = entityColor || (this.faction > 0 && HexagonColorUtils.factionHexColors[this.faction - 1][4]) || (this.baseColor && this.baseColor[4]);
+        this.currentMiniColor = voteColor || entityColor || factionColor || baseColor;
 
         if (this.currentDrawColor && this.texture) {
             this.drawCache = GridHexagon.getCacheImage(this.getDepthHeight(), this.currentDrawColor, this.currentDrawColorVote, this.texture.name);
@@ -265,12 +269,12 @@ export class GridHexagon {
     }
 
     drawTopMini(context: CanvasRenderingContext2D): void {
-        var color=DrawingUtils.makeTransparent(this.currentMiniColor.color, 1)
+        var color = this.currentMiniColor.color;
         context.fillStyle = color;
         context.fill(this.topMiniPath);
-        context.lineWidth = 3;
+/*        context.lineWidth = 3;
         context.strokeStyle = color;
-        context.stroke(this.topMiniPath);
+        context.stroke(this.topMiniPath);*/
     }
 
     private   envelope(): {width: number, height: number} {
@@ -292,8 +296,8 @@ export class GridHexagon {
         size.width = GridMiniHexagonConstants.width;
         size.height = GridMiniHexagonConstants.height();
 
-        size.width += 12;
-        size.height += 6;
+        size.width += 20;
+        size.height += 20;
 
         return size;
     }

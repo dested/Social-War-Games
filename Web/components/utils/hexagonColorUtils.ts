@@ -14,13 +14,14 @@ export class HexagonColorUtils {
     static moveHighlightColor = new HexagonColor('#BE9EFF');
     static attackHighlightColor = new HexagonColor('#91F9CF');
     static voteColor: HexagonColor[];
+    static miniBaseColor: HexagonColor=new HexagonColor('#DCDCDC');
 
     public static setupColors() {
         this.baseColors = [new HexagonColor('#AFFFFF')];
         for (let i = 0; i < 6; i++) {
             this.baseColors.push(new HexagonColor(DrawingUtils.colorLuminance('#AFF000', (i / 6))));
         }
-        this.factionColors = ["#4953FF", "#FF4F66", "#00FF43"];
+        this.factionColors = ["#444EF0", "#D24257", "#009900"];
         this.factionHexColors = [];
 
         this.voteColor = [];

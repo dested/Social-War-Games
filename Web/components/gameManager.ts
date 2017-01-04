@@ -30,7 +30,7 @@ export class GameManager {
         this.hexBoard.initialize(state);
 
         this.createMiniCanvas();
-        this.rebuildMiniBoard();
+        this.rebuildMiniBoard(false);
 
 
         await this.checkState();
@@ -101,8 +101,8 @@ export class GameManager {
             tapStart.x = tapStart.x || 0;
             tapStart.y = tapStart.y || 0;
 
-            let x = <number> ev.center.x - tapStart.x - rect.left-15;
-            let y = <number> ev.center.y - tapStart.y - rect.top-15;
+            let x = <number> ev.center.x - tapStart.x - rect.left - 15;
+            let y = <number> ev.center.y - tapStart.y - rect.top - 15;
             let item = this.getMiniHexAtPoint(x, y);
             if (item) {
                 console.log(x, y, item.x, item.z);
@@ -130,14 +130,21 @@ export class GameManager {
     private miniCanvas: HTMLCanvasElement;
     private miniContext: CanvasRenderingContext2D;
 
-    private rebuildMiniBoard() {
+    private rebuildMiniBoard(justEntities: boolean) {
         let size = this.hexBoard.gameDimensionsMini();
         this.miniContext.save();
-        this.miniContext.clearRect(0, 0, size.width + 20, size.height + 20);
+        if(!justEntities)
+            this.miniContext.clearRect(0, 0, size.width + 20, size.height + 20);
         this.miniContext.translate(10, 10);
         for (let i = 0; i < this.hexBoard.hexList.length; i++) {
             const gridHexagon = this.hexBoard.hexList[i];
-            gridHexagon.drawMini(this.miniContext, gridHexagon.getRealMiniX(), gridHexagon.getRealMiniZ());
+            if (justEntities) {
+                if (gridHexagon.hasEntities()) {
+                    gridHexagon.drawMini(this.miniContext, gridHexagon.getRealMiniX(), gridHexagon.getRealMiniZ());
+                }
+            } else {
+                gridHexagon.drawMini(this.miniContext, gridHexagon.getRealMiniX(), gridHexagon.getRealMiniZ());
+            }
 
         }
         this.miniContext.restore();
@@ -191,8 +198,8 @@ export class GameManager {
                 console.log('getting new game state 1');
                 DataService.getGameState().then(state => {
                     console.log('game updated3 ');
-                    this.hexBoard.updateFactionEntities(state)
-                    this.rebuildMiniBoard();
+                    this.hexBoard.updateFactionEntities(state);
+                    this.rebuildMiniBoard(false);
 
                     this.checking = false;
                 });
@@ -207,7 +214,7 @@ export class GameManager {
                 DataService.getGameState().then(state => {
                     console.log('game updated4 ');
                     this.hexBoard.updateFactionEntities(state);
-                    this.rebuildMiniBoard();
+                    this.rebuildMiniBoard(false);
 
                     this.checking = false;
                 });
@@ -221,6 +228,7 @@ export class GameManager {
                 let entity = this.hexBoard.entityManager.getEntityById(action.entityId);
                 entity.pushVote(vote);
             }
+            this.rebuildMiniBoard(true);
         }
         this.checking = false;
         setTimeout(async() => {

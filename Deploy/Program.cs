@@ -53,10 +53,10 @@ namespace Deploy
                 .ToList();
 
             Task.WaitAll(
-//                Task.Run(() => UploadWeb()),
-                Task.Run(() => UploadFiles("ec2-35-160-122-186.us-west-2.compute.amazonaws.com", files)),
-                Task.Run(() => UploadFiles("ec2-35-165-5-132.us-west-2.compute.amazonaws.com", files)),
-                Task.Run(() => UploadFiles("ec2-35-162-125-29.us-west-2.compute.amazonaws.com", files))
+                Task.Run(() => UploadWeb())
+//                Task.Run(() => UploadFiles("ec2-35-160-122-186.us-west-2.compute.amazonaws.com", files)),
+//                Task.Run(() => UploadFiles("ec2-35-165-5-132.us-west-2.compute.amazonaws.com", files)),
+//                Task.Run(() => UploadFiles("ec2-35-162-125-29.us-west-2.compute.amazonaws.com", files))
             );
             //            StartApplication("ec2-35-160-122-186.us-west-2.compute.amazonaws.com", "MasterVoteServer");
             //            StartApplication("ec2-35-165-5-132.us-west-2.compute.amazonaws.com", "VoteServer");

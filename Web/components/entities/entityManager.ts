@@ -29,7 +29,6 @@ export class EntityManager {
         return this.entitiesMap[item.x + item.z * 5000];
     }
 
-
     addEntity(entity: BaseEntity) {
         this.entities.push(entity);
         this.entityKeys[entity.id] = entity;
