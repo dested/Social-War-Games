@@ -2,7 +2,7 @@
 
 import {Asset} from "./AssetManager";
 import {HexagonColor, DrawingUtils} from "../utils/drawingUtilities";
-import {GridHexagonConstants} from "./gridHexagonConstants";
+import {GridHexagonConstants, GridMiniHexagonConstants} from "./gridHexagonConstants";
 import {BaseEntity} from "../entities/entityManager";
 import {ViewPort} from "../gameManager";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
@@ -14,6 +14,9 @@ export class GridHexagon {
     private leftDepthPath: Path2D = null;
     private bottomDepthPath: Path2D = null;
     private rightDepthPath: Path2D = null;
+
+    private topMiniPath: Path2D = null;
+
 
     public x = 0;
     public y = 0;
@@ -28,9 +31,11 @@ export class GridHexagon {
     private texture: Asset;
     private entities: BaseEntity[] = [];
     private drawCache: HTMLCanvasElement;
+    private drawMiniCache: HTMLCanvasElement;
     private currentDrawColorVote: HexagonColor;
     private currentDrawColor: HexagonColor;
     private currentFactionColor: HexagonColor;
+    private currentMiniColor: HexagonColor;
 
 
     getRealX(): number {
@@ -42,6 +47,16 @@ export class GridHexagon {
         return (this.z * height + ((this.x % 2 === 1) ? (-height / 2) : 0))
             - this.getDepthHeight()
             + this.y * GridHexagonConstants.depthHeight();
+    }
+
+    getRealMiniX(): number {
+        return (GridMiniHexagonConstants.width * 3 / 4 * this.x);
+    }
+
+    getRealMiniZ(): number {
+        let height = GridMiniHexagonConstants.height();
+        return (this.z * height + ((this.x % 2 === 1) ? (-height / 2) : 0))
+            + this.y * GridMiniHexagonConstants.depthHeight();
     }
 
     getDepthHeight(): number {
@@ -117,16 +132,22 @@ export class GridHexagon {
         if (this.heightOffset != heightOffset) {
             this.heightOffset = heightOffset;
             this.buildPaths();
+            this.buildMiniPaths();
         }
     }
 
-    buildPaths(): void {
+    public buildPaths(): void {
         const depthHeight = this.getDepthHeight();
         this.topPath = GridHexagon.buildPath(GridHexagonConstants.hexagonTopPolygon());
         // this.topPathInner = GridHexagon.buildPath(GridHexagonConstants.hexagonTopInnerPolygon());
         this.leftDepthPath = GridHexagon.buildPath(GridHexagonConstants.hexagonDepthLeftPolygon(depthHeight));
         this.bottomDepthPath = GridHexagon.buildPath(GridHexagonConstants.hexagonDepthBottomPolygon(depthHeight));
         this.rightDepthPath = GridHexagon.buildPath(GridHexagonConstants.hexagonDepthRightPolygon(depthHeight));
+    }
+
+    public buildMiniPaths(): void {
+        this.topMiniPath = GridHexagon.buildPath(GridMiniHexagonConstants.hexagonTopPolygon());
+        // this.topPathInner = GridHexagon.buildPath(GridHexagonConstants.hexagonTopInnerPolygon());
     }
 
 
@@ -141,8 +162,12 @@ export class GridHexagon {
         this.currentDrawColor = voteColor || secondaryVoteColor || entityColor || highlightColor || factionColor || baseColor;
         this.currentFactionColor = factionColor || baseColor;
 
-        if (this.currentDrawColor && this.texture)
-            this.drawCache = GridHexagon.getCacheImage(this.getDepthHeight(), this.currentDrawColor,this.currentDrawColorVote, this.texture.name)
+        this.currentMiniColor = (this.faction > 0 && HexagonColorUtils.factionHexColors[this.faction - 1][4]) || (this.baseColor && this.baseColor[4]);
+
+        if (this.currentDrawColor && this.texture) {
+            this.drawCache = GridHexagon.getCacheImage(this.getDepthHeight(), this.currentDrawColor, this.currentDrawColorVote, this.texture.name);
+            this.drawMiniCache = GridHexagon.getMiniCacheImage(this.currentMiniColor)
+        }
     }
 
 
@@ -176,7 +201,6 @@ export class GridHexagon {
 
             context.fillStyle = context.createPattern(this.texture.image, 'repeat');
             context.fillRect(-GridHexagonConstants.width / 2, -GridHexagonConstants.height() / 2, GridHexagonConstants.width * 2, GridHexagonConstants.height() * 2); // context.fillRect(x, y, width, height);
-
             context.fillStyle = DrawingUtils.makeTransparent(this.currentDrawColor.dark2, 0.75);
             context.fill(this.bottomDepthPath);
         }
@@ -221,29 +245,34 @@ export class GridHexagon {
 
                 context.fillStyle = context.createPattern(this.texture.image, 'repeat');
                 context.fillRect(-GridHexagonConstants.width / 2, -GridHexagonConstants.height() / 2, GridHexagonConstants.width, GridHexagonConstants.height()); // context.fillRect(x, y, width, height);
-
                 context.fillStyle = DrawingUtils.makeTransparent(this.currentDrawColor.color, 0.6);
                 context.fill(this.topPath);
 
-              /*  if (this.currentDrawColorVote !== this.currentDrawColor) {
-                    context.save();
-                    context.scale(0.4, 0.4);
-                    context.clip(this.topPath);
-                    context.fillStyle = DrawingUtils.makeTransparent(this.currentDrawColorVote.color, 0.6);
-                    context.fill(this.topPath);
-                    context.restore();
-                }*/
+                /*  if (this.currentDrawColorVote !== this.currentDrawColor) {
+                 context.save();
+                 context.scale(0.4, 0.4);
+                 context.clip(this.topPath);
+                 context.fillStyle = DrawingUtils.makeTransparent(this.currentDrawColorVote.color, 0.6);
+                 context.fill(this.topPath);
+                 context.restore();
+                 }*/
             }
             context.restore();
-            context.lineWidth = 1;
-
             context.strokeStyle = this.currentDrawColor.darkBorder;
             context.stroke(this.topPath);
         }
         context.restore();
     }
 
-    envelope(): {width: number, height: number} {
+    drawTopMini(context: CanvasRenderingContext2D): void {
+        context.fillStyle = DrawingUtils.makeTransparent(this.currentMiniColor.color, 1);
+        context.fill(this.topMiniPath);
+        context.lineWidth = 3;
+        context.strokeStyle = this.currentMiniColor.color;
+        context.stroke(this.topMiniPath);
+    }
+
+    private   envelope(): {width: number, height: number} {
         const size = {width: 0, height: 0};
         size.width = GridHexagonConstants.width;
         size.height = GridHexagonConstants.height();
@@ -257,10 +286,53 @@ export class GridHexagon {
         return size;
     }
 
+    private envelopeMini(): {width: number, height: number} {
+        const size = {width: 0, height: 0};
+        size.width = GridMiniHexagonConstants.width;
+        size.height = GridMiniHexagonConstants.height();
+
+        size.width += 12;
+        size.height += 6;
+
+        return size;
+    }
+
     static hexCenter = {x: (GridHexagonConstants.width / 2 + 6), y: (GridHexagonConstants.height() / 2 + 6)};
+    static hexCenterMini = {
+        x: (GridMiniHexagonConstants.width / 2 + 6),
+        y: (GridMiniHexagonConstants.height() / 2 + 6)
+    };
 
     draw(context: CanvasRenderingContext2D, offsetX: number, offsetY: number): void {
-        context.drawImage(this.drawCache || this.prepDraw(GridHexagon.hexCenter), offsetX - GridHexagon.hexCenter.x, offsetY - GridHexagon.hexCenter.y);
+        if (this.drawCache) {
+            context.drawImage(this.drawCache, offsetX - GridHexagon.hexCenter.x, offsetY - GridHexagon.hexCenter.y);
+        } else {
+            let cacheImage = GridHexagon.getCacheImage(this.getDepthHeight(), this.currentDrawColor, this.currentDrawColorVote, this.texture.name);
+            if (cacheImage) {
+                this.drawCache = cacheImage
+            } else {
+                this.prepDraw();
+            }
+            this.draw(context, offsetX, offsetY);
+        }
+
+
+        context.drawImage(this.drawCache || this.prepDraw(), offsetX - GridHexagon.hexCenter.x, offsetY - GridHexagon.hexCenter.y);
+    }
+
+    drawMini(context: CanvasRenderingContext2D, offsetX: number, offsetY: number) {
+
+        if (this.drawMiniCache) {
+            context.drawImage(this.drawMiniCache, offsetX - GridHexagon.hexCenterMini.x, offsetY - GridHexagon.hexCenterMini.y);
+        } else {
+            let miniCacheImage = GridHexagon.getMiniCacheImage(this.currentMiniColor);
+            if (miniCacheImage) {
+                this.drawMiniCache = miniCacheImage
+            } else {
+                this.prepMiniDraw();
+            }
+            this.drawMini(context, offsetX, offsetY);
+        }
     }
 
     getNeighbors(): {x: number, z: number}[] {
@@ -288,13 +360,24 @@ export class GridHexagon {
 
     static caches: {[key: string]: HTMLCanvasElement} = {};
 
-    static getCacheImage(height: number, hexColor: HexagonColor,hexColorVote: HexagonColor, texture: string): HTMLCanvasElement {
+    static getCacheImage(height: number, hexColor: HexagonColor, hexColorVote: HexagonColor, texture: string): HTMLCanvasElement {
         const c = `${height}-${hexColor.color}-${hexColorVote.color}-${texture}`;
         return GridHexagon.caches[c]
     }
 
-    static setCacheImage(height: number, hexColor: HexagonColor,hexColorVote: HexagonColor, texture: string, img: HTMLCanvasElement) {
+    static setCacheImage(height: number, hexColor: HexagonColor, hexColorVote: HexagonColor, texture: string, img: HTMLCanvasElement) {
         const c = `${height}-${hexColor.color}-${hexColorVote.color}-${texture}`;
+        GridHexagon.caches[c] = img;
+    }
+
+
+    static getMiniCacheImage(hexColor: HexagonColor): HTMLCanvasElement {
+        const c = `m${hexColor.color}`;
+        return GridHexagon.caches[c]
+    }
+
+    static setMiniCacheImage(hexColor: HexagonColor, img: HTMLCanvasElement) {
+        const c = `m${hexColor.color}`;
         GridHexagon.caches[c] = img;
     }
 
@@ -308,7 +391,8 @@ export class GridHexagon {
     }
 
 
-    private prepDraw(center) {
+    private prepDraw() {
+
         const can = document.createElement('canvas');
         const ctx = can.getContext('2d');
 
@@ -318,7 +402,7 @@ export class GridHexagon {
         ctx.save();
 
 
-        ctx.translate(center.x, center.y);
+        ctx.translate(GridHexagon.hexCenter.x, GridHexagon.hexCenter.y);
         if (this.getDepthHeight() > 1) {
             this.drawLeftDepth(ctx);
             this.drawBottomDepth(ctx);
@@ -335,13 +419,39 @@ export class GridHexagon {
 
         ctx.restore();
 
-        GridHexagon.setCacheImage(this.getDepthHeight(), this.currentDrawColor,this.currentDrawColorVote, this.texture.name, can);
+        GridHexagon.setCacheImage(this.getDepthHeight(), this.currentDrawColor, this.currentDrawColorVote, this.texture.name, can);
         this.drawCache = can;
         /*       ctx.strokeStyle='black';
          ctx.lineWidth=1;
          ctx.strokeRect(0,0,can.width,can.height);*/
         return can;
     }
+
+
+    private prepMiniDraw() {
+        const can = document.createElement('canvas');
+        const ctx = can.getContext('2d');
+
+        const size = this.envelopeMini();
+        can.width = size.width;
+        can.height = size.height;
+        ctx.save();
+
+
+        ctx.translate(GridHexagon.hexCenterMini.x, GridHexagon.hexCenterMini.y);
+        this.drawTopMini(ctx);
+
+
+        ctx.restore();
+
+        GridHexagon.setMiniCacheImage(this.currentMiniColor, can);
+        this.drawMiniCache = can;
+        /*       ctx.strokeStyle='black';
+         ctx.lineWidth=1;
+         ctx.strokeRect(0,0,can.width,can.height);*/
+        return can;
+    }
+
 
     shouldDraw(viewPort: ViewPort): boolean {
 
@@ -361,6 +471,7 @@ export class GridHexagon {
 
 
     }
+
 
 }
 
