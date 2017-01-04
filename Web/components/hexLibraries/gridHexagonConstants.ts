@@ -45,18 +45,13 @@ export class GridMiniHexagonConstants {
         return Math.sqrt(3) / 2 * this.width * this.heightSkew;
     }
 
-    static depthHeight() {
-        return this.height() * this.depthHeightSkew;
-    };
-
     static hexagonTopPolygon() {
         return [new Point(-this.width / 2, 0), new Point(-this.width / 4, -this.height() / 2), new Point(this.width / 4, -this.height() / 2), new Point(this.width / 2, 0), new Point(this.width / 4, this.height() / 2), new Point(-this.width / 4, this.height() / 2), new Point(-this.width / 2, 0)];
     };
 
 
     static width = 10;
-    static heightSkew = .7;
-    static depthHeightSkew = .3;
+    static heightSkew = 0.7;
 
 }
 

@@ -5,9 +5,11 @@ import {GridHexagon} from "./hexLibraries/gridHexagon";
 import {HexBoard} from "./hexLibraries/hexBoard";
 import {DataService} from "./dataServices";
 import {AnimationManager} from "./animationManager";
-import {GridHexagonConstants} from "./hexLibraries/gridHexagonConstants";
+import {GridHexagonConstants, GridMiniHexagonConstants} from "./hexLibraries/gridHexagonConstants";
 import {HexagonColorUtils} from "./utils/hexagonColorUtils";
 import {GameService} from "./ui/gameService";
+declare let Hammer;
+
 export class GameManager {
     hexBoard: HexBoard;
     animationManager: AnimationManager;
@@ -26,6 +28,11 @@ export class GameManager {
         let state = await DataService.getGameState();
         GameService.secondsPerGeneration = state.tickIntervalSeconds;
         this.hexBoard.initialize(state);
+
+        this.createMiniCanvas();
+        this.rebuildMiniBoard();
+
+
         await this.checkState();
 
         let lx = localStorage.getItem("lastX");
@@ -35,14 +42,105 @@ export class GameManager {
             this.setView(parseInt(lx), parseInt(ly))
         }
 
-         setTimeout(() => {
-         this.randomTap();
-         }, 1000);
+        setTimeout(() => {
+            this.randomTap();
+        }, 1000);
 
         setTimeout(async() => {
             await this.checkState();
         }, 5 * 1000);
 
+    }
+
+    private createMiniCanvas() {
+        let size = this.hexBoard.gameDimensionsMini();
+
+        let canvas = document.createElement("canvas");
+        canvas.width = size.width + 20;
+        canvas.height = size.height + 20;
+        let context = canvas.getContext("2d");
+
+        this.miniCanvas = canvas;
+        this.miniContext = context;
+
+        let leftBubble = document.getElementById('leftBubble');
+
+        leftBubble.appendChild(this.miniCanvas);
+
+        let mc = new Hammer.Manager(leftBubble);
+        mc.add(new Hammer.Pan({threshold: 0, pointers: 0}));
+        mc.add(new Hammer.Tap());
+        let tapStart = {x: 0, y: 0};
+        mc.on('panstart', (ev) => {
+            tapStart.x = parseInt(canvas.style.marginLeft.replace("px", ''));
+            tapStart.y = parseInt(canvas.style.marginTop.replace("px", ''));
+            tapStart.x = tapStart.x || 0;
+            tapStart.y = tapStart.y || 0;
+            return true;
+        });
+
+        mc.on('panmove', (ev) => {
+            let width = leftBubble.clientWidth;
+            let height = leftBubble.clientHeight;
+
+            let rx = (tapStart.x + ev.deltaX);
+            let ry = (tapStart.y + ev.deltaY);
+
+            if (rx < width * 2 / 5 && rx > -size.width + width * 2 / 5) {
+                canvas.style.marginLeft = rx + "px";
+            }
+            if (ry < height * 2 / 5 && ry > -size.height + height * 2 / 5) {
+                canvas.style.marginTop = ry + "px";
+            }
+        });
+        mc.on('tap', (ev) => {
+            let rect = leftBubble.getBoundingClientRect();
+
+            tapStart.x = parseInt(canvas.style.marginLeft.replace("px", ''));
+            tapStart.y = parseInt(canvas.style.marginTop.replace("px", ''));
+            tapStart.x = tapStart.x || 0;
+            tapStart.y = tapStart.y || 0;
+
+            let x = <number> ev.center.x - tapStart.x - rect.left-15;
+            let y = <number> ev.center.y - tapStart.y - rect.top-15;
+            let item = this.getMiniHexAtPoint(x, y);
+            if (item) {
+                console.log(x, y, item.x, item.z);
+                this.centerOnHex(item);
+            }
+        });
+    }
+
+
+    getMiniHexAtPoint(clickX, clickY): GridHexagon {
+        let lastClick: GridHexagon = null;
+
+        for (let i = 0; i < this.hexBoard.hexList.length; i++) {
+            const gridHexagon = this.hexBoard.hexList[i];
+            const x = GridMiniHexagonConstants.width * 3 / 4 * gridHexagon.x;
+            let z = gridHexagon.z * GridMiniHexagonConstants.height() + ((gridHexagon.x % 2 === 1) ? (-GridMiniHexagonConstants.height() / 2) : 0);
+            if (DrawingUtils.pointInPolygon(clickX - x, clickY - z, GridMiniHexagonConstants.hexagonTopPolygon())) {
+                lastClick = gridHexagon;
+            }
+        }
+
+        return lastClick;
+    }
+
+    private miniCanvas: HTMLCanvasElement;
+    private miniContext: CanvasRenderingContext2D;
+
+    private rebuildMiniBoard() {
+        let size = this.hexBoard.gameDimensionsMini();
+        this.miniContext.save();
+        this.miniContext.clearRect(0, 0, size.width + 20, size.height + 20);
+        this.miniContext.translate(10, 10);
+        for (let i = 0; i < this.hexBoard.hexList.length; i++) {
+            const gridHexagon = this.hexBoard.hexList[i];
+            gridHexagon.drawMini(this.miniContext, gridHexagon.getRealMiniX(), gridHexagon.getRealMiniZ());
+
+        }
+        this.miniContext.restore();
     }
 
     draw(context: CanvasRenderingContext2D) {
@@ -72,7 +170,6 @@ export class GameManager {
         let seconds = (+metrics.nextGenerationDate - +new Date()) / 1000;
 
 
-
         GameService.setSecondsToNextGeneration(seconds);
 
         for (let i = 0; i < this.hexBoard.entityManager.entities.length; i++) {
@@ -94,7 +191,9 @@ export class GameManager {
                 console.log('getting new game state 1');
                 DataService.getGameState().then(state => {
                     console.log('game updated3 ');
-                    this.hexBoard.updateFactionEntities(state);
+                    this.hexBoard.updateFactionEntities(state)
+                    this.rebuildMiniBoard();
+
                     this.checking = false;
                 });
                 return;
@@ -108,6 +207,8 @@ export class GameManager {
                 DataService.getGameState().then(state => {
                     console.log('game updated4 ');
                     this.hexBoard.updateFactionEntities(state);
+                    this.rebuildMiniBoard();
+
                     this.checking = false;
                 });
             });
@@ -124,7 +225,7 @@ export class GameManager {
         this.checking = false;
         setTimeout(async() => {
             await this.checkState();
-        }, 1000 * (seconds+2 > 5 ? 5 : seconds+2));
+        }, 1000 * (seconds + 2 > 5 ? 5 : seconds + 2));
     }
 
     startAction(item: GridHexagon) {

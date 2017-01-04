@@ -10,7 +10,6 @@ import {Vector3, HexUtils, Node} from "./hexUtils";
 import {AssetManager} from "./assetManager";
 import {ViewPort} from "../gameManager";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
-declare let Hammer;
 
 export class HexBoard {
     hexList: GridHexagon[] = [];
@@ -115,7 +114,6 @@ export class HexBoard {
         let terrain = state.terrain;
         const str = terrain.boardStr;
         this.setSize(terrain.width, terrain.height);
-        this.createMiniCanvas();
         let tile = AssetManager.assets['tile'];
 
         let ys = str.split('|');
@@ -196,7 +194,6 @@ export class HexBoard {
             }
         }
 
-        this.rebuildMiniBoard();
     }
 
 
@@ -228,58 +225,8 @@ export class HexBoard {
         this.visibleHexList = visibleHexList;
     }
 
-    private createMiniCanvas() {
-        let size = this.gameDimensionsMini();
 
-        let canvas = document.createElement("canvas");
-        canvas.width = size.width + 20;
-        canvas.height = size.height + 20;
-        let context = canvas.getContext("2d");
 
-        this.miniCanvas = canvas;
-        this.miniContext = context;
 
-        let leftBubble = document.getElementById('leftBubble');
-        leftBubble.appendChild(this.miniCanvas);
-        var width = leftBubble.clientWidth;
-        var height = leftBubble.clientHeight;
-        let mc = new Hammer.Manager(leftBubble);
-        mc.add(new Hammer.Pan({threshold: 0, pointers: 0}));
-        let tapStart = {x: 0, y: 0};
-        mc.on('panstart', (ev) => {
-            tapStart.x = parseInt(canvas.style.marginLeft.replace("px", ''));
-            tapStart.y = parseInt(canvas.style.marginTop.replace("px", ''));
-            tapStart.x = tapStart.x || 0;
-            tapStart.y = tapStart.y || 0;
-            return true;
-        });
 
-        mc.on('panmove', (ev) => {
-            let rx = (tapStart.x + ev.deltaX);
-            let ry = (tapStart.y + ev.deltaY);
-
-            if (rx < width * 2 / 5 && rx > -size.width + width * 2 / 5) {
-                canvas.style.marginLeft = rx + "px";
-            }
-            if (ry < height * 2 / 5 && ry > -size.height + height * 2 / 5) {
-                canvas.style.marginTop = ry + "px";
-            }
-        });
-    }
-
-    private miniCanvas: HTMLCanvasElement;
-    private miniContext: CanvasRenderingContext2D;
-
-    private rebuildMiniBoard() {
-        let size = this.gameDimensionsMini();
-        this.miniContext.save();
-        this.miniContext.clearRect(0, 0, size.width + 20, size.height + 20);
-        this.miniContext.translate(10, 10);
-        for (let i = 0; i < this.hexList.length; i++) {
-            const gridHexagon = this.hexList[i];
-            gridHexagon.drawMini(this.miniContext, gridHexagon.getRealMiniX(), gridHexagon.getRealMiniZ());
-
-        }
-        this.miniContext.restore();
-    }
 }

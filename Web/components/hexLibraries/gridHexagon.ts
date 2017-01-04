@@ -56,7 +56,7 @@ export class GridHexagon {
     getRealMiniZ(): number {
         let height = GridMiniHexagonConstants.height();
         return (this.z * height + ((this.x % 2 === 1) ? (-height / 2) : 0))
-            + this.y * GridMiniHexagonConstants.depthHeight();
+            + this.y * 0;
     }
 
     getDepthHeight(): number {
@@ -162,7 +162,7 @@ export class GridHexagon {
         this.currentDrawColor = voteColor || secondaryVoteColor || entityColor || highlightColor || factionColor || baseColor;
         this.currentFactionColor = factionColor || baseColor;
 
-        this.currentMiniColor = (this.faction > 0 && HexagonColorUtils.factionHexColors[this.faction - 1][4]) || (this.baseColor && this.baseColor[4]);
+        this.currentMiniColor = entityColor || (this.faction > 0 && HexagonColorUtils.factionHexColors[this.faction - 1][4]) || (this.baseColor && this.baseColor[4]);
 
         if (this.currentDrawColor && this.texture) {
             this.drawCache = GridHexagon.getCacheImage(this.getDepthHeight(), this.currentDrawColor, this.currentDrawColorVote, this.texture.name);
@@ -265,10 +265,11 @@ export class GridHexagon {
     }
 
     drawTopMini(context: CanvasRenderingContext2D): void {
-        context.fillStyle = DrawingUtils.makeTransparent(this.currentMiniColor.color, 1);
+        var color=DrawingUtils.makeTransparent(this.currentMiniColor.color, 1)
+        context.fillStyle = color;
         context.fill(this.topMiniPath);
         context.lineWidth = 3;
-        context.strokeStyle = this.currentMiniColor.color;
+        context.strokeStyle = color;
         context.stroke(this.topMiniPath);
     }
 
