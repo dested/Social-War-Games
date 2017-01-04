@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Common.Data;
 using Common.Game;
@@ -7,6 +8,7 @@ namespace VoteServer.Modules.Models
     public class GetStateResponse
     {
         public MongoGameState.GameState State { get; set; }
+        public DateTime NextGeneration { get; set; }
     }
     public class GetMetricsResponse
     {
@@ -18,5 +20,6 @@ namespace VoteServer.Modules.Models
         public int Generation { get; set; }
         public TrackedVote[] Votes { get; set; }
         public int UsersVoted { get; set; }
+        public DateTime NextGeneration { get; set; }
     }
 }

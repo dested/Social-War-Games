@@ -22,7 +22,7 @@ namespace Deploy
 
         static void Main(string[] args)
         {
-            UploadWeb();
+//            UploadWeb();
 
              
             //SetupServer("ec2-35-165-5-132.us-west-2.compute.amazonaws.com");

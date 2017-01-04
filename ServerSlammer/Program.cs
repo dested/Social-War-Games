@@ -116,6 +116,7 @@ namespace ServerSlammer
                     new ObjectIdJsonConverter()
                 }
             };
+            Console.WriteLine("Get state");
             var ds = JsonConvert.DeserializeObject<STResponse<string>>(response.Content, settings);
             Console.WriteLine("Got state");
 
@@ -142,7 +143,9 @@ namespace ServerSlammer
                     new ObjectIdJsonConverter()
                 }
             };
+            Console.WriteLine("voting");
             var state = JsonConvert.DeserializeObject<STResponse<PostVoteResponse>>(response.Content, settings);
+            Console.WriteLine("voted");
 
             return state.Data.GenerationMismatch;
         }

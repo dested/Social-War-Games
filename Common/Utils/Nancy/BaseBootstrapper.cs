@@ -22,19 +22,27 @@ namespace Common.Utils.Nancy
             JsonSettings.PrimitiveConverters.Add(new JavaScriptEnumConverter());
         }
 
-        public static int count = 0;
+        public static int start = 0;
+        public static int finish = 0;
 
         protected override void RequestStartup(TinyIoCContainer container, IPipelines pipelines, NancyContext requestContext)
         {
+            pipelines.BeforeRequest.AddItemToStartOfPipeline((a) =>
+            {
+                start++;
+                return null;
+            });
+
             pipelines.AfterRequest.AddItemToEndOfPipeline((ctx) =>
             {
-                count++;
+                finish++;
                 //                Console.WriteLine("Request made: " + ctx.Request.Path + " " + ctx.Request.Method);
                 ctx.Response.WithHeader("Access-Control-Allow-Origin", "*")
                                 .WithHeader("Access-Control-Allow-Methods", "POST,GET")
                                 .WithHeader("Access-Control-Allow-Headers", "Accept, Origin, Content-type");
 
             });
+      
 
             pipelines.OnError.AddItemToEndOfPipeline((context, exception) =>
             {

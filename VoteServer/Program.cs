@@ -20,8 +20,9 @@ namespace VoteServer
             sw.Start();
             timer = new Timer((s) =>
               {
-                  Console.WriteLine(BaseBootstrapper.count  + " Requests");
-                  BaseBootstrapper.count = 0;
+                  Console.WriteLine($"{BaseBootstrapper.start} Started - {BaseBootstrapper.finish} Finished   Diff: {BaseBootstrapper.finish - BaseBootstrapper.start}");
+                  BaseBootstrapper.start = 0;
+                  BaseBootstrapper.finish = 0;
                   sw.Restart();
               }, null, 1000, 1000);
 

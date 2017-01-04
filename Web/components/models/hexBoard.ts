@@ -9,6 +9,7 @@ export interface GameState {
     terrain: Terrain;
     entities: GameEntity[];
     generation: number;
+    tickIntervalSeconds:number;
     factionData: string;
 }
 export interface Terrain {
@@ -28,6 +29,8 @@ export interface GameMetrics {
     generation: number;
     usersVoted: number;
     votes: GameMetricsVote[];
+    nextGeneration: string;
+    nextGenerationDate: Date;
 }
 export interface GameMetricsVote {
     votes: number;

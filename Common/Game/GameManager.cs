@@ -49,7 +49,7 @@ namespace Common.Game
                 var details = vote.Action;
                 if (GameState.Generation != vote.Generation)
                 {
-                    Console.WriteLine("Bad generation "+GameState.Generation+" "+vote.Generation);
+                    Console.WriteLine("Bad generation " + GameState.Generation + " " + vote.Generation);
                     return false;
                 }
 
@@ -85,9 +85,16 @@ namespace Common.Game
             {
                 var sw = new Stopwatch();
                 sw.Start();
-                Console.WriteLine("Ticking");
-                if (TrackedVotes.Count == 0) return;
+                if (TrackedVotes.Count == 0)
+                {
+                    Console.WriteLine("Ticking No Data");
+                    GameState.LastGeneration = DateTime.UtcNow;
+                    GameState.UpdateSync();
+                    return;
+                }
                 List<TrackedVote> completedVotes = new List<TrackedVote>();
+                Console.WriteLine("Ticking " + TrackedVotes.Count);
+
                 foreach (var unitVotes in TrackedVotes.GroupBy(a => a.Action.EntityId))
                 {
                     foreach (var vote in unitVotes.OrderByDescending(a => a.Votes))
@@ -115,7 +122,7 @@ namespace Common.Game
 
 
 
-                var formattableString = $"{sw.ElapsedMilliseconds}ms Votes: {TrackedVotes.Sum(a => a.Votes)} Actions: {TrackedVotes.Count}  Users Participated: {UserVotes.Count} Generation: {GameState.Generation-1}";
+                var formattableString = $"{sw.ElapsedMilliseconds}ms Votes: {TrackedVotes.Sum(a => a.Votes)} Actions: {TrackedVotes.Count}  Users Participated: {UserVotes.Count} Generation: {GameState.Generation - 1}";
                 MongoServerLog.AddServerLog("Master.vote", formattableString, null);
                 Reset();
             }
@@ -123,7 +130,7 @@ namespace Common.Game
 
         public void Reset()
         {
-            TrackedVotes=new ConcurrentBag<TrackedVote>();
+            TrackedVotes = new ConcurrentBag<TrackedVote>();
             UserVotes.Clear();
         }
 

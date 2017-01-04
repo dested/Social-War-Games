@@ -1,10 +1,11 @@
-﻿/// <reference path="./typings/Compress.d.ts" />
-/// <reference path="./node_modules/@types/core-js/index.d.ts" />
-/// <reference path="./node_modules/@types/whatwg-fetch/index.d.ts" />
+﻿/// <reference path="./typings/index.d.ts" />
 
 import {AssetManager} from "./hexLibraries/AssetManager";
 import {GameManager} from "./gameManager";
 import {PageManager} from "./pageManager";
+import {GameController} from "./ui/gameController";
+declare const angular:angular.IAngularStatic;
+
 
 export class Main {
     static pageManager: PageManager;
@@ -62,4 +63,9 @@ export class Main {
 
 Main.run();
 
+
+angular.module('swg', []).controller('GameController', GameController);
+angular.element(function () {
+    angular.bootstrap(document.getElementById('game-ui'), ['swg']);
+});
 

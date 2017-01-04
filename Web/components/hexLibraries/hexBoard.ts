@@ -41,6 +41,7 @@ export class HexBoard {
         this.hexBlock[hexagon.x + hexagon.z * 5000] = hexagon;
     }
 
+
     reorderHexList() {
         this.hexList = HexUtils.orderBy(this.hexList, m => (m.z - m.y) * 1000 + (m.x % 2) * -200 + m.height);
     }

@@ -1,15 +1,16 @@
 {
-  "name": "social-war-games",
+  "name": "components",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "dependencies": {
+    "@types/angular": "^1.5.22",
+    "angular": "^1.6.1"
+  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@types/core-js": "^0.9.34",
-    "@types/whatwg-fetch": "0.0.32"
-  }
+  "license": "ISC"
 }

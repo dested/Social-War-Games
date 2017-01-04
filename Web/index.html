@@ -2,29 +2,33 @@
 
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <title>Social War Games</title>
-    <link rel="stylesheet" href="styles/main.css" type="text/css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles/main.css" type="text/css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 <body class="checkered stripes">
-    <canvas id="hex" style="position:absolute;"></canvas>
-    <canvas id="menu" style="position:absolute;"></canvas>
-    <div id="overlay" style="position:absolute;"></div>
+<canvas id="hex" style="position:absolute;"></canvas>
+<canvas id="menu" style="position:absolute;"></canvas>
+<div id="overlay" style="position:absolute;"></div>
 <!--<input type="range" value="50" min="1" max="200" style="position:absolute;height:50px;left:0;width:100vw;" id="ranger">-->
-    <script src="libs/jquery-1.12.3.js"></script>
-    <script src="libs/fpsmeter.min.js"></script>
-    <script src="libs/system.js"></script>
-    <script src="libs/Promise.js"></script>
-    <script src="libs/typescript.js"></script>
-    <script src="libs/RawDeflate.js"></script>
-    <script src="libs/hammer.js"></script>
-    <script src="libs/preventPull.js"></script>
+<script src="libs/jquery-1.12.3.js"></script>
+<script src="libs/fpsmeter.min.js"></script>
+<script src="libs/system.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
+<script src="libs/Promise.js"></script>
+<script src="libs/typescript.js"></script>
+<script src="libs/RawDeflate.js"></script>
+<script src="libs/hammer.js"></script>
+<script src="libs/preventPull.js"></script>
 
-    <script src="js/app.js"></script>
+<script src="js/app.js"></script>
+<div id="game-ui" >
+    <div ng-include="'/templates/game-ui.html'"></div>
+</div>
 
-    <script>
-        System.import('main');
-    </script>
+<script>
+    System.import('main');
+</script>
 </body>
 </html>

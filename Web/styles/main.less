@@ -1,29 +1,25 @@
 html,
-body
-{
+body {
   height: 100%;
   margin: 0;
   padding: 0;
   width: 100%;
 }
 
-body
-{
+body {
   height: 100%;
   position: relative;
   width: 100%;
   overflow: hidden;
 }
 
-.center
-{
+.center {
   display: block;
   margin-left: auto;
   margin-right: auto;
 }
 
-body
-{
+body {
   background-color: #012611;
   font-family: 'Telex', sans-serif !important;
 
@@ -32,11 +28,81 @@ body
   height: 100vh;
   width: 100vw;
 }
+
 .checkered {
   background-color: #CCC;
   background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
 }
+
 .stripes {
   background-size: 10px 10px;
   /* Controls the size of the stripes */
+}
+*{
+  box-sizing:border-box;
+
+}
+
+.game-ui {
+
+  width: 100vw;
+  position: absolute;
+  height: 25vh;
+  bottom: 0;
+
+
+  .countdown-container {
+    left: 24.6%;
+    width: 50.8%;
+    position: absolute;
+    height: 5%;
+    bottom: 40%;
+    background: rgba(189, 189, 189, 0.68);
+
+    .countdown-container-ticker {
+      height:100%;
+      background: rgba(0, 157, 0, 0.8);
+    }
+  }
+
+  .label{
+    font-size: 24px;
+    font-weight: bold;
+    color: #434343;
+  }
+
+
+  .left-bubble {
+    left: 0;
+    width: 25%;
+    border-top-right-radius: 70%;
+    border-top: 10px solid black;
+    border-right: 4px solid black;
+    position: absolute;
+    height: 100%;
+    bottom: 0;
+    background: rgba(0, 255, 0, 0.74);
+  }
+  .center {
+    padding:10px;
+    left: 24.8%;
+    width: 50.4%;
+    position: absolute;
+    height: 40%;
+    bottom: 0;
+    background: rgba(255, 0, 0, 0.74);
+    border-top: solid 4px black;
+  }
+
+  .right-bubble {
+    left: 75%;
+    width: 25%;
+    border-top-left-radius: 70%;
+    border-top: 10px solid black;
+    border-left: 4px solid black;
+    position: absolute;
+    height: 100%;
+    bottom: 0;
+    background: rgba(0, 0, 255, 0.74);
+  }
 }

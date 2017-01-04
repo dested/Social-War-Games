@@ -1,10 +1,33 @@
 import {GameState, GameMetrics, VoteResponse} from "./models/hexBoard";
-declare let fetch;
+
+
+let rawDeflateWorker = new Worker("/libs/RawDeflate.js");
+
+export class WorkerService {
+    static payloads: {[key: string]: (payload: any) => void}={};
+
+    static start() {
+        rawDeflateWorker.onmessage = (ev) => {
+            let p = WorkerService.payloads[ev.data.key];
+            delete WorkerService.payloads[ev.data.key];
+            if (p) p(ev.data.payload);
+        };
+    }
+
+    static deflate(data: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let key = (Math.random() * 1000000).toFixed(0);
+            WorkerService.payloads[key] = resolve;
+            rawDeflateWorker.postMessage({key: key, payload: data});
+        })
+    }
+}
+WorkerService.start();
 
 export class DataService {
 
-    private static voteServer: string = 'https://vote.socialwargames.com/';
-    // private static voteServer: string = 'http://localhost:3568/';
+    // private static voteServer: string = 'https://vote.socialwargames.com/';
+    private static voteServer: string = 'http://localhost:3568/';
 
     static async getGameMetrics(): Promise<GameMetrics> {
         try {
@@ -17,7 +40,9 @@ export class DataService {
             if (!response.ok) // or check for response.status
                 throw new Error(response.statusText);
             let json = await response.json();
-            var m = this.compressor.DecompressText(json.data);
+
+            var m = await WorkerService.deflate(json.data);
+            m.metrics.nextGenerationDate = new Date(m.metrics.nextGeneration);
             return m.metrics;
         } catch (ex) {
             console.error('Fetch Error :-S', ex);
@@ -62,7 +87,7 @@ export class DataService {
                 throw new Error(response.statusText);
             let json = await response.json();
 
-            var m = this.compressor.DecompressText(json.data);
+            var m = await WorkerService.deflate(json.data);
 
             return m.state;
         } catch (ex) {
@@ -83,8 +108,7 @@ export class DataService {
             if (!response.ok) // or check for response.status
                 throw new Error(response.statusText);
             let json = await response.json();
-
-            var m = this.compressor.DecompressText(json.data);
+            var m = await WorkerService.deflate(json.data);
 
             return m.metrics;
         } catch (ex) {

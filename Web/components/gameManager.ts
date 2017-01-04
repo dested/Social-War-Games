@@ -7,6 +7,7 @@ import {DataService} from "./dataServices";
 import {AnimationManager} from "./animationManager";
 import {GridHexagonConstants} from "./hexLibraries/gridHexagonConstants";
 import {HexagonColorUtils} from "./utils/hexagonColorUtils";
+import {GameService} from "./ui/gameService";
 export class GameManager {
     hexBoard: HexBoard;
     animationManager: AnimationManager;
@@ -23,6 +24,7 @@ export class GameManager {
         this.animationManager = new AnimationManager(this.hexBoard);
 
         let state = await DataService.getGameState();
+        GameService.secondsPerGeneration = state.tickIntervalSeconds;
         this.hexBoard.initialize(state);
         await this.checkState();
 
@@ -32,12 +34,14 @@ export class GameManager {
         if (lx && ly) {
             this.setView(parseInt(lx), parseInt(ly))
         }
+        /*
 
-        setTimeout(() => {
-            this.randomTap();
-        }, 1000);
+         setTimeout(() => {
+         this.randomTap();
+         }, 1000);
+         */
 
-        setInterval(async() => {
+        setTimeout(async() => {
             await this.checkState();
         }, 5 * 1000);
 
@@ -63,9 +67,15 @@ export class GameManager {
 
     private async checkState() {
         if (this.cantAct())return;
-        // console.log('checking generation');
+        console.log('checking generation');
         this.checking = true;
         let metrics = await DataService.getGameMetrics();
+        console.log('got generation');
+        let seconds = (+metrics.nextGenerationDate - +new Date()) / 1000;
+
+
+
+        GameService.setSecondsToNextGeneration(seconds);
 
         for (let i = 0; i < this.hexBoard.entityManager.entities.length; i++) {
             let ent = this.hexBoard.entityManager.entities[i];
@@ -115,7 +125,9 @@ export class GameManager {
         }
         this.checking = false;
 
-
+        setTimeout(async() => {
+            await this.checkState();
+        }, 1000 * (seconds > 5 ? 5 : seconds+1));
     }
 
     startAction(item: GridHexagon) {

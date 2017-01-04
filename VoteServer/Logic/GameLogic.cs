@@ -31,7 +31,8 @@ namespace VoteServer.Logic
                 {
                     Generation = logic.GameManager.GameState.Generation,
                     Votes = logic.GameManager.TrackedVotes.ToArray(),
-                    UsersVoted = logic.GameManager.UserVotes.Count
+                    UsersVoted = logic.GameManager.UserVotes.Count,
+                    NextGeneration = logic.GameManager.GameState.LastGeneration.AddSeconds(logic.GameManager.GameState.TickIntervalSeconds)
                 }
             };
         }

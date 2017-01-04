@@ -1,10 +1,19 @@
-﻿/*
-* $Id: base64.js,v 1.2 2011/12/27 14:34:49 dankogai Exp dankogai $
-*
-*  Licensed under the MIT license.
-*  http://www.opensource.org/licenses/mit-license.php
-*
-*/
+﻿onmessage = function (e) {
+    var compressor = new Compressor();
+    var result = compressor.DecompressText(e.data.payload);
+    console.log('Message received from main script');
+    var workerResult = 'Result: ' + (e.data.payload);
+    postMessage({key: e.data.key, payload: result});
+}
+
+
+/*
+ * $Id: base64.js,v 1.2 2011/12/27 14:34:49 dankogai Exp dankogai $
+ *
+ *  Licensed under the MIT license.
+ *  http://www.opensource.org/licenses/mit-license.php
+ *
+ */
 
 
 var $_top;
@@ -21,7 +30,7 @@ if (typeof global != 'undefined') {
     if (global.Base64) return;
 
     var b64chars
-    = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+        = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
     var b64tab = function (bin) {
         var t = {};
         for (var i = 0, l = bin.length; i < l; i++) t[bin.charAt(i)] = i;
@@ -30,12 +39,12 @@ if (typeof global != 'undefined') {
 
     var sub_toBase64 = function (m) {
         var n = (m.charCodeAt(0) << 16)
-          | (m.charCodeAt(1) << 8)
-          | (m.charCodeAt(2));
+            | (m.charCodeAt(1) << 8)
+            | (m.charCodeAt(2));
         return b64chars.charAt(n >>> 18)
-         + b64chars.charAt((n >>> 12) & 63)
-         + b64chars.charAt((n >>> 6) & 63)
-         + b64chars.charAt(n & 63);
+            + b64chars.charAt((n >>> 12) & 63)
+            + b64chars.charAt((n >>> 6) & 63)
+            + b64chars.charAt(n & 63);
     };
 
     var toBase64 = function (bin) {
@@ -44,7 +53,8 @@ if (typeof global != 'undefined') {
         while (bin.length % 3) {
             bin += '\0';
             padlen++;
-        };
+        }
+        ;
         var b64 = bin.replace(/[\x00-\xFF]{3}/g, sub_toBase64);
         if (!padlen) return b64;
         b64 = b64.substr(0, b64.length - padlen);
@@ -60,8 +70,8 @@ if (typeof global != 'undefined') {
             | (b64tab[m.charAt(2)] << 6)
             | (b64tab[m.charAt(3)]);
         return String.fromCharCode(n >> 16)
-        + String.fromCharCode((n >> 8) & 0xff)
-        + String.fromCharCode(n & 0xff);
+            + String.fromCharCode((n >> 8) & 0xff)
+            + String.fromCharCode(n & 0xff);
     };
 
     var fromBase64 = function (b64) {
@@ -84,11 +94,11 @@ if (typeof global != 'undefined') {
     var sub_char_nonascii = function (m) {
         var n = m.charCodeAt(0);
         return n < 0x800 ? String.fromCharCode(0xc0 | (n >>> 6))
-                     + String.fromCharCode(0x80 | (n & 0x3f))
-        : String.fromCharCode(0xe0 | ((n >>> 12) & 0x0f))
-                     + String.fromCharCode(0x80 | ((n >>> 6) & 0x3f))
-                     + String.fromCharCode(0x80 | (n & 0x3f))
-        ;
+            + String.fromCharCode(0x80 | (n & 0x3f))
+            : String.fromCharCode(0xe0 | ((n >>> 12) & 0x0f))
+            + String.fromCharCode(0x80 | ((n >>> 6) & 0x3f))
+            + String.fromCharCode(0x80 | (n & 0x3f))
+            ;
     };
 
     var utob = function (uni) {
@@ -96,7 +106,7 @@ if (typeof global != 'undefined') {
     };
 
     var re_bytes_nonascii
-    = /[\xC0-\xDF][\x80-\xBF]|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF7][\x80-\xBF]{3}/g;
+        = /[\xC0-\xDF][\x80-\xBF]|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF7][\x80-\xBF]{3}/g;
 
     var sub_bytes_nonascii = function (m) {
         var c0 = m.charCodeAt(0);
@@ -106,8 +116,8 @@ if (typeof global != 'undefined') {
         } else {
             var c2 = m.charCodeAt(2);
             return String.fromCharCode(
-            ((c0 & 0x0f) << 12) | ((c1 & 0x3f) << 6) | (c2 & 0x3f)
-        );
+                ((c0 & 0x0f) << 12) | ((c1 & 0x3f) << 6) | (c2 & 0x3f)
+            );
         }
     };
 
@@ -121,7 +131,9 @@ if (typeof global != 'undefined') {
         btoa: btoa,
         utob: utob,
         btou: btou,
-        encode: function (u) { return btoa(utob(u)) },
+        encode: function (u) {
+            return btoa(utob(u))
+        },
         encodeURI: function (u) {
             return btoa(utob(u)).replace(/[+\/]/g, function (m0) {
                 return m0 == '+' ? '-' : '_';
@@ -135,33 +147,26 @@ if (typeof global != 'undefined') {
     };
 
 
-
 })($_top);
 
 
-
-
-
-
-
-
 /*
-* $Id: rawdeflate.js,v 0.3 2009/03/01 19:05:05 dankogai Exp dankogai $
-*
-* Original:
-*   http://www.onicos.com/staff/iz/amuse/javascript/expert/deflate.txt
-*/
+ * $Id: rawdeflate.js,v 0.3 2009/03/01 19:05:05 dankogai Exp dankogai $
+ *
+ * Original:
+ *   http://www.onicos.com/staff/iz/amuse/javascript/expert/deflate.txt
+ */
 
 (function (global) {
 
     /* Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
-    * Version: 1.0.1
-    * LastModified: Dec 25 1999
-    */
+     * Version: 1.0.1
+     * LastModified: Dec 25 1999
+     */
 
     /* Interface:
-    * data = zip_deflate(src);
-    */
+     * data = zip_deflate(src);
+     */
 
     /* constant parameters */
     var zip_WSIZE = 32768; 	// Sliding Window size
@@ -218,7 +223,7 @@ if (typeof global != 'undefined') {
     var zip_REPZ_11_138 = 18;
     var zip_HEAP_SIZE = 2 * zip_L_CODES + 1;
     var zip_H_SHIFT = parseInt((zip_HASH_BITS + zip_MIN_MATCH - 1) /
-			   zip_MIN_MATCH);
+        zip_MIN_MATCH);
 
     /* variables */
     var zip_free_queue;
@@ -295,10 +300,10 @@ if (typeof global != 'undefined') {
     }
 
     /* Values for max_lazy_match, good_match and max_chain_length, depending on
-    * the desired pack level (0..9). The values given below have been tuned to
-    * exclude worst case performance for pathological files. Better values may be
-    * found for specific files.
-    */
+     * the desired pack level (0..9). The values given below have been tuned to
+     * exclude worst case performance for pathological files. Better values may be
+     * found for specific files.
+     */
     var zip_DeflateConfiguration = function (a, b, c, d) {
         this.good_length = a; // reduce lazy search above this match length
         this.max_lazy = b;    // do not perform lazy search above this match length
@@ -315,24 +320,24 @@ if (typeof global != 'undefined') {
 
     /* constant tables */
     var zip_extra_lbits = new Array(
-    0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0);
+        0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0);
     var zip_extra_dbits = new Array(
-    0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13);
+        0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13);
     var zip_extra_blbits = new Array(
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 7);
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 7);
     var zip_bl_order = new Array(
-    16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15);
+        16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15);
     var zip_configuration_table = new Array(
-	new zip_DeflateConfiguration(0, 0, 0, 0),
-	new zip_DeflateConfiguration(4, 4, 8, 4),
-	new zip_DeflateConfiguration(4, 5, 16, 8),
-	new zip_DeflateConfiguration(4, 6, 32, 32),
-	new zip_DeflateConfiguration(4, 4, 16, 16),
-	new zip_DeflateConfiguration(8, 16, 32, 32),
-	new zip_DeflateConfiguration(8, 16, 128, 128),
-	new zip_DeflateConfiguration(8, 32, 128, 256),
-	new zip_DeflateConfiguration(32, 128, 258, 1024),
-	new zip_DeflateConfiguration(32, 258, 258, 4096));
+        new zip_DeflateConfiguration(0, 0, 0, 0),
+        new zip_DeflateConfiguration(4, 4, 8, 4),
+        new zip_DeflateConfiguration(4, 5, 16, 8),
+        new zip_DeflateConfiguration(4, 6, 32, 32),
+        new zip_DeflateConfiguration(4, 4, 16, 16),
+        new zip_DeflateConfiguration(8, 16, 32, 32),
+        new zip_DeflateConfiguration(8, 16, 128, 128),
+        new zip_DeflateConfiguration(8, 32, 128, 256),
+        new zip_DeflateConfiguration(32, 128, 258, 1024),
+        new zip_DeflateConfiguration(32, 258, 258, 4096));
 
 
     /* routines (deflate) */
@@ -441,10 +446,10 @@ if (typeof global != 'undefined') {
     }
 
     /* put_byte is used for the compressed output, put_ubyte for the
-    * uncompressed output. However unlzw() uses window for its
-    * suffix table instead of its output buffer, so it does not use put_ubyte
-    * (to be cleaned up).
-    */
+     * uncompressed output. However unlzw() uses window for its
+     * suffix table instead of its output buffer, so it does not use put_ubyte
+     * (to be cleaned up).
+     */
     var zip_put_byte = function (c) {
         zip_outbuf[zip_outoff + zip_outcnt++] = c;
         if (zip_outoff + zip_outcnt == zip_OUTBUFSIZ)
@@ -464,17 +469,17 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Insert string s in the dictionary and set match_head to the previous head
-    * of the hash chain (the most recent string with same hash key). Return
-    * the previous length of the hash chain.
-    * IN  assertion: all calls to to INSERT_STRING are made with consecutive
-    *    input characters and the first MIN_MATCH bytes of s are valid
-    *    (except for the last MIN_MATCH-1 bytes of the input file).
-    */
+     * Insert string s in the dictionary and set match_head to the previous head
+     * of the hash chain (the most recent string with same hash key). Return
+     * the previous length of the hash chain.
+     * IN  assertion: all calls to to INSERT_STRING are made with consecutive
+     *    input characters and the first MIN_MATCH bytes of s are valid
+     *    (except for the last MIN_MATCH-1 bytes of the input file).
+     */
     var zip_INSERT_STRING = function () {
         zip_ins_h = ((zip_ins_h << zip_H_SHIFT)
-		 ^ (zip_window[zip_strstart + zip_MIN_MATCH - 1] & 0xff))
-	& zip_HASH_MASK;
+            ^ (zip_window[zip_strstart + zip_MIN_MATCH - 1] & 0xff))
+            & zip_HASH_MASK;
         zip_hash_head = zip_head1(zip_ins_h);
         zip_prev[zip_strstart & zip_WMASK] = zip_hash_head;
         zip_head2(zip_ins_h, zip_strstart);
@@ -486,37 +491,37 @@ if (typeof global != 'undefined') {
     }
 
     /* Mapping from a distance to a distance code. dist is the distance - 1 and
-    * must not have side effects. dist_code[256] and dist_code[257] are never
-    * used.
-    */
+     * must not have side effects. dist_code[256] and dist_code[257] are never
+     * used.
+     */
     var zip_D_CODE = function (dist) {
         return (dist < 256 ? zip_dist_code[dist]
-	    : zip_dist_code[256 + (dist >> 7)]) & 0xff;
+                : zip_dist_code[256 + (dist >> 7)]) & 0xff;
     }
 
     /* ==========================================================================
-    * Compares to subtrees, using the tree depth as tie breaker when
-    * the subtrees have equal frequency. This minimizes the worst case length.
-    */
+     * Compares to subtrees, using the tree depth as tie breaker when
+     * the subtrees have equal frequency. This minimizes the worst case length.
+     */
     var zip_SMALLER = function (tree, n, m) {
         return tree[n].fc < tree[m].fc ||
-      (tree[n].fc == tree[m].fc && zip_depth[n] <= zip_depth[m]);
+            (tree[n].fc == tree[m].fc && zip_depth[n] <= zip_depth[m]);
     }
 
     /* ==========================================================================
-    * read string data
-    */
+     * read string data
+     */
     var zip_read_buff = function (buff, offset, n) {
         var i;
         for (i = 0; i < n && zip_deflate_pos < zip_deflate_data.length; i++)
             buff[offset + i] =
-	    zip_deflate_data.charCodeAt(zip_deflate_pos++) & 0xff;
+                zip_deflate_data.charCodeAt(zip_deflate_pos++) & 0xff;
         return i;
     }
 
     /* ==========================================================================
-    * Initialize the "longest match" routines for a new file
-    */
+     * Initialize the "longest match" routines for a new file
+     */
     var zip_lm_init = function () {
         var j;
 
@@ -527,7 +532,7 @@ if (typeof global != 'undefined') {
         /* prev will be initialized on the fly */
 
         /* Set the default configuration parameters:
-        */
+         */
         zip_max_lazy_match = zip_configuration_table[zip_compr_level].max_lazy;
         zip_good_match = zip_configuration_table[zip_compr_level].good_length;
         if (!zip_FULL_SEARCH)
@@ -545,14 +550,14 @@ if (typeof global != 'undefined') {
         }
         zip_eofile = false;
         /* Make sure that we always have enough lookahead. This is important
-        * if input comes from a device such as a tty.
-        */
+         * if input comes from a device such as a tty.
+         */
         while (zip_lookahead < zip_MIN_LOOKAHEAD && !zip_eofile)
             zip_fill_window();
 
         /* If lookahead < MIN_MATCH, ins_h is garbage, but this is
-        * not important since only literal bytes will be emitted.
-        */
+         * not important since only literal bytes will be emitted.
+         */
         zip_ins_h = 0;
         for (j = 0; j < zip_MIN_MATCH - 1; j++) {
             //      UPDATE_HASH(ins_h, window[j]);
@@ -561,13 +566,13 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Set match_start to the longest match starting at the given string and
-    * return its length. Matches shorter or equal to prev_length are discarded,
-    * in which case the result is equal to prev_length and match_start is
-    * garbage.
-    * IN assertions: cur_match is the head of the hash chain for the current
-    *   string (strstart) and its distance is <= MAX_DIST, and prev_length >= 1
-    */
+     * Set match_start to the longest match starting at the given string and
+     * return its length. Matches shorter or equal to prev_length are discarded,
+     * in which case the result is equal to prev_length and match_start is
+     * garbage.
+     * IN assertions: cur_match is the head of the hash chain for the current
+     *   string (strstart) and its distance is <= MAX_DIST, and prev_length >= 1
+     */
     var zip_longest_match = function (cur_match) {
         var chain_length = zip_max_chain_length; // max hash chain length
         var scanp = zip_strstart; // current string
@@ -576,8 +581,8 @@ if (typeof global != 'undefined') {
         var best_len = zip_prev_length; // best match length so far
 
         /* Stop when cur_match becomes <= limit. To simplify the code,
-        * we prevent matches with the string of window index 0.
-        */
+         * we prevent matches with the string of window index 0.
+         */
         var limit = (zip_strstart > zip_MAX_DIST ? zip_strstart - zip_MAX_DIST : zip_NIL);
 
         var strendp = zip_strstart + zip_MAX_MATCH;
@@ -595,37 +600,37 @@ if (typeof global != 'undefined') {
             matchp = cur_match;
 
             /* Skip to next match if the match length cannot increase
-            * or if the match length is less than 2:
-            */
+             * or if the match length is less than 2:
+             */
             if (zip_window[matchp + best_len] != scan_end ||
-	   zip_window[matchp + best_len - 1] != scan_end1 ||
-	   zip_window[matchp] != zip_window[scanp] ||
-	   zip_window[++matchp] != zip_window[scanp + 1]) {
+                zip_window[matchp + best_len - 1] != scan_end1 ||
+                zip_window[matchp] != zip_window[scanp] ||
+                zip_window[++matchp] != zip_window[scanp + 1]) {
                 continue;
             }
 
             /* The check at best_len-1 can be removed because it will be made
-            * again later. (This heuristic is not always a win.)
-            * It is not necessary to compare scan[2] and match[2] since they
-            * are always equal when the other bytes match, given that
-            * the hash keys are equal and that HASH_BITS >= 8.
-            */
+             * again later. (This heuristic is not always a win.)
+             * It is not necessary to compare scan[2] and match[2] since they
+             * are always equal when the other bytes match, given that
+             * the hash keys are equal and that HASH_BITS >= 8.
+             */
             scanp += 2;
             matchp++;
 
             /* We check for insufficient lookahead only every 8th comparison;
-            * the 256th check will be made at strstart+258.
-            */
+             * the 256th check will be made at strstart+258.
+             */
             do {
             } while (zip_window[++scanp] == zip_window[++matchp] &&
-		zip_window[++scanp] == zip_window[++matchp] &&
-		zip_window[++scanp] == zip_window[++matchp] &&
-		zip_window[++scanp] == zip_window[++matchp] &&
-		zip_window[++scanp] == zip_window[++matchp] &&
-		zip_window[++scanp] == zip_window[++matchp] &&
-		zip_window[++scanp] == zip_window[++matchp] &&
-		zip_window[++scanp] == zip_window[++matchp] &&
-		scanp < strendp);
+            zip_window[++scanp] == zip_window[++matchp] &&
+            zip_window[++scanp] == zip_window[++matchp] &&
+            zip_window[++scanp] == zip_window[++matchp] &&
+            zip_window[++scanp] == zip_window[++matchp] &&
+            zip_window[++scanp] == zip_window[++matchp] &&
+            zip_window[++scanp] == zip_window[++matchp] &&
+            zip_window[++scanp] == zip_window[++matchp] &&
+            scanp < strendp);
 
             len = zip_MAX_MATCH - (strendp - scanp);
             scanp = strendp - zip_MAX_MATCH;
@@ -643,19 +648,19 @@ if (typeof global != 'undefined') {
                 scan_end = zip_window[scanp + best_len];
             }
         } while ((cur_match = zip_prev[cur_match & zip_WMASK]) > limit
-	    && --chain_length != 0);
+        && --chain_length != 0);
 
         return best_len;
     }
 
     /* ==========================================================================
-    * Fill the window when the lookahead becomes insufficient.
-    * Updates strstart and lookahead, and sets eofile if end of input file.
-    * IN assertion: lookahead < MIN_LOOKAHEAD && strstart + lookahead > 0
-    * OUT assertions: at least one byte has been read, or eofile is set;
-    *    file reads are performed for at least two bytes (required for the
-    *    translate_eol option).
-    */
+     * Fill the window when the lookahead becomes insufficient.
+     * Updates strstart and lookahead, and sets eofile if end of input file.
+     * IN assertion: lookahead < MIN_LOOKAHEAD && strstart + lookahead > 0
+     * OUT assertions: at least one byte has been read, or eofile is set;
+     *    file reads are performed for at least two bytes (required for the
+     *    translate_eol option).
+     */
     var zip_fill_window = function () {
         var n, m;
 
@@ -663,17 +668,17 @@ if (typeof global != 'undefined') {
         var more = zip_window_size - zip_lookahead - zip_strstart;
 
         /* If the window is almost full and there is insufficient lookahead,
-        * move the upper half to the lower one to make room in the upper half.
-        */
+         * move the upper half to the lower one to make room in the upper half.
+         */
         if (more == -1) {
             /* Very unlikely, but possible on 16 bit machine if strstart == 0
-            * and lookahead == 1 (input done one byte at time)
-            */
+             * and lookahead == 1 (input done one byte at time)
+             */
             more--;
         } else if (zip_strstart >= zip_WSIZE + zip_MAX_DIST) {
             /* By the IN assertion, the window is not empty so we can't confuse
-            * more == 0 with more == 64K on a 16 bit machine.
-            */
+             * more == 0 with more == 64K on a 16 bit machine.
+             */
             //	Assert(window_size == (ulg)2*WSIZE, "no sliding with BIG_MEM");
 
             //	System.arraycopy(window, WSIZE, window, 0, WSIZE);
@@ -681,7 +686,8 @@ if (typeof global != 'undefined') {
                 zip_window[n] = zip_window[n + zip_WSIZE];
 
             zip_match_start -= zip_WSIZE;
-            zip_strstart -= zip_WSIZE; /* we now have strstart >= MAX_DIST: */
+            zip_strstart -= zip_WSIZE;
+            /* we now have strstart >= MAX_DIST: */
             zip_block_start -= zip_WSIZE;
 
             for (n = 0; n < zip_HASH_SIZE; n++) {
@@ -690,8 +696,8 @@ if (typeof global != 'undefined') {
             }
             for (n = 0; n < zip_WSIZE; n++) {
                 /* If n is not on any hash chain, prev[n] is garbage but
-                * its value will never be used.
-                */
+                 * its value will never be used.
+                 */
                 m = zip_prev[n];
                 zip_prev[n] = (m >= zip_WSIZE ? m - zip_WSIZE : zip_NIL);
             }
@@ -708,29 +714,29 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Processes a new input file and return its compressed length. This
-    * function does not perform lazy evaluationof matches and inserts
-    * new strings in the dictionary only for unmatched strings or for short
-    * matches. It is used only for the fast compression options.
-    */
+     * Processes a new input file and return its compressed length. This
+     * function does not perform lazy evaluationof matches and inserts
+     * new strings in the dictionary only for unmatched strings or for short
+     * matches. It is used only for the fast compression options.
+     */
     var zip_deflate_fast = function () {
         while (zip_lookahead != 0 && zip_qhead == null) {
             var flush; // set if current block must be flushed
 
             /* Insert the string window[strstart .. strstart+2] in the
-            * dictionary, and set hash_head to the head of the hash chain:
-            */
+             * dictionary, and set hash_head to the head of the hash chain:
+             */
             zip_INSERT_STRING();
 
             /* Find the longest match, discarding those <= prev_length.
-            * At this point we have always match_length < MIN_MATCH
-            */
+             * At this point we have always match_length < MIN_MATCH
+             */
             if (zip_hash_head != zip_NIL &&
-	   zip_strstart - zip_hash_head <= zip_MAX_DIST) {
+                zip_strstart - zip_hash_head <= zip_MAX_DIST) {
                 /* To simplify the code, we prevent matches with the string
-                * of window index 0 (in particular we have to avoid a match
-                * of the string with itself at the start of the input file).
-                */
+                 * of window index 0 (in particular we have to avoid a match
+                 * of the string with itself at the start of the input file).
+                 */
                 zip_match_length = zip_longest_match(zip_hash_head);
                 /* longest_match() sets match_start */
                 if (zip_match_length > zip_lookahead)
@@ -740,22 +746,22 @@ if (typeof global != 'undefined') {
                 //	    check_match(strstart, match_start, match_length);
 
                 flush = zip_ct_tally(zip_strstart - zip_match_start,
-				 zip_match_length - zip_MIN_MATCH);
+                    zip_match_length - zip_MIN_MATCH);
                 zip_lookahead -= zip_match_length;
 
                 /* Insert new strings in the hash table only if the match length
-                * is not too large. This saves time but degrades compression.
-                */
+                 * is not too large. This saves time but degrades compression.
+                 */
                 if (zip_match_length <= zip_max_lazy_match) {
                     zip_match_length--; // string at strstart already in hash table
                     do {
                         zip_strstart++;
                         zip_INSERT_STRING();
                         /* strstart never exceeds WSIZE-MAX_MATCH, so there are
-                        * always MIN_MATCH bytes ahead. If lookahead < MIN_MATCH
-                        * these bytes are garbage, but it does not matter since
-                        * the next lookahead bytes will be emitted as literals.
-                        */
+                         * always MIN_MATCH bytes ahead. If lookahead < MIN_MATCH
+                         * these bytes are garbage, but it does not matter since
+                         * the next lookahead bytes will be emitted as literals.
+                         */
                     } while (--zip_match_length != 0);
                     zip_strstart++;
                 } else {
@@ -782,10 +788,10 @@ if (typeof global != 'undefined') {
             }
 
             /* Make sure that we always have enough lookahead, except
-            * at the end of the input file. We need MAX_MATCH bytes
-            * for the next match, plus MIN_MATCH bytes to insert the
-            * string following the next match.
-            */
+             * at the end of the input file. We need MAX_MATCH bytes
+             * for the next match, plus MIN_MATCH bytes to insert the
+             * string following the next match.
+             */
             while (zip_lookahead < zip_MIN_LOOKAHEAD && !zip_eofile)
                 zip_fill_window();
         }
@@ -795,23 +801,23 @@ if (typeof global != 'undefined') {
         /* Process the input block. */
         while (zip_lookahead != 0 && zip_qhead == null) {
             /* Insert the string window[strstart .. strstart+2] in the
-            * dictionary, and set hash_head to the head of the hash chain:
-            */
+             * dictionary, and set hash_head to the head of the hash chain:
+             */
             zip_INSERT_STRING();
 
             /* Find the longest match, discarding those <= prev_length.
-            */
+             */
             zip_prev_length = zip_match_length;
             zip_prev_match = zip_match_start;
             zip_match_length = zip_MIN_MATCH - 1;
 
             if (zip_hash_head != zip_NIL &&
-	   zip_prev_length < zip_max_lazy_match &&
-	   zip_strstart - zip_hash_head <= zip_MAX_DIST) {
+                zip_prev_length < zip_max_lazy_match &&
+                zip_strstart - zip_hash_head <= zip_MAX_DIST) {
                 /* To simplify the code, we prevent matches with the string
-                * of window index 0 (in particular we have to avoid a match
-                * of the string with itself at the start of the input file).
-                */
+                 * of window index 0 (in particular we have to avoid a match
+                 * of the string with itself at the start of the input file).
+                 */
                 zip_match_length = zip_longest_match(zip_hash_head);
                 /* longest_match() sets match_start */
                 if (zip_match_length > zip_lookahead)
@@ -819,37 +825,37 @@ if (typeof global != 'undefined') {
 
                 /* Ignore a length 3 match if it is too distant: */
                 if (zip_match_length == zip_MIN_MATCH &&
-	       zip_strstart - zip_match_start > zip_TOO_FAR) {
+                    zip_strstart - zip_match_start > zip_TOO_FAR) {
                     /* If prev_match is also MIN_MATCH, match_start is garbage
-                    * but we will ignore the current match anyway.
-                    */
+                     * but we will ignore the current match anyway.
+                     */
                     zip_match_length--;
                 }
             }
             /* If there was a match at the previous step and the current
-            * match is not better, output the previous match:
-            */
+             * match is not better, output the previous match:
+             */
             if (zip_prev_length >= zip_MIN_MATCH &&
-	   zip_match_length <= zip_prev_length) {
+                zip_match_length <= zip_prev_length) {
                 var flush; // set if current block must be flushed
 
                 //	    check_match(strstart - 1, prev_match, prev_length);
                 flush = zip_ct_tally(zip_strstart - 1 - zip_prev_match,
-				 zip_prev_length - zip_MIN_MATCH);
+                    zip_prev_length - zip_MIN_MATCH);
 
                 /* Insert in hash table all strings up to the end of the match.
-                * strstart-1 and strstart are already inserted.
-                */
+                 * strstart-1 and strstart are already inserted.
+                 */
                 zip_lookahead -= zip_prev_length - 1;
                 zip_prev_length -= 2;
                 do {
                     zip_strstart++;
                     zip_INSERT_STRING();
                     /* strstart never exceeds WSIZE-MAX_MATCH, so there are
-                    * always MIN_MATCH bytes ahead. If lookahead < MIN_MATCH
-                    * these bytes are garbage, but it does not matter since the
-                    * next lookahead bytes will always be emitted as literals.
-                    */
+                     * always MIN_MATCH bytes ahead. If lookahead < MIN_MATCH
+                     * these bytes are garbage, but it does not matter since the
+                     * next lookahead bytes will always be emitted as literals.
+                     */
                 } while (--zip_prev_length != 0);
                 zip_match_available = 0;
                 zip_match_length = zip_MIN_MATCH - 1;
@@ -860,9 +866,9 @@ if (typeof global != 'undefined') {
                 }
             } else if (zip_match_available != 0) {
                 /* If there was no match at the previous position, output a
-                * single literal. If there was a match but the current match
-                * is longer, truncate the previous match to a single literal.
-                */
+                 * single literal. If there was a match but the current match
+                 * is longer, truncate the previous match to a single literal.
+                 */
                 if (zip_ct_tally(0, zip_window[zip_strstart - 1] & 0xff)) {
                     zip_flush_block(0);
                     zip_block_start = zip_strstart;
@@ -871,18 +877,18 @@ if (typeof global != 'undefined') {
                 zip_lookahead--;
             } else {
                 /* There is no previous match to compare with, wait for
-                * the next step to decide.
-                */
+                 * the next step to decide.
+                 */
                 zip_match_available = 1;
                 zip_strstart++;
                 zip_lookahead--;
             }
 
             /* Make sure that we always have enough lookahead, except
-            * at the end of the input file. We need MAX_MATCH bytes
-            * for the next match, plus MIN_MATCH bytes to insert the
-            * string following the next match.
-            */
+             * at the end of the input file. We need MAX_MATCH bytes
+             * for the next match, plus MIN_MATCH bytes to insert the
+             * string following the next match.
+             */
             while (zip_lookahead < zip_MIN_LOOKAHEAD && !zip_eofile)
                 zip_fill_window();
         }
@@ -913,10 +919,10 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Same as above, but achieves better compression. We use a lazy
-    * evaluation for matches: a match is finally adopted only if there is
-    * no better match at the next window position.
-    */
+     * Same as above, but achieves better compression. We use a lazy
+     * evaluation for matches: a match is finally adopted only if there is
+     * no better match at the next window position.
+     */
     var zip_deflate_internal = function (buff, off, buff_size) {
         var n;
 
@@ -990,10 +996,10 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Allocate the match buffer, initialize the various tables and save the
-    * location of the internal file attribute (ascii/binary) and method
-    * (DEFLATE/STORE).
-    */
+     * Allocate the match buffer, initialize the various tables and save the
+     * location of the internal file attribute (ascii/binary) and method
+     * (DEFLATE/STORE).
+     */
     var zip_ct_init = function () {
         var n; // iterates over tree elements
         var bits; // bit counter
@@ -1031,22 +1037,22 @@ if (typeof global != 'undefined') {
         length = 0;
         for (code = 0; code < zip_LENGTH_CODES - 1; code++) {
             zip_base_length[code] = length;
-            for (n = 0; n < (1 << zip_extra_lbits[code]) ; n++)
+            for (n = 0; n < (1 << zip_extra_lbits[code]); n++)
                 zip_length_code[length++] = code;
         }
         // Assert (length == 256, "ct_init: length != 256");
 
         /* Note that the length 255 (match length 258) can be represented
-        * in two different ways: code 284 + 5 bits or code 285, so we
-        * overwrite length_code[255] to use the best encoding:
-        */
+         * in two different ways: code 284 + 5 bits or code 285, so we
+         * overwrite length_code[255] to use the best encoding:
+         */
         zip_length_code[length - 1] = code;
 
         /* Initialize the mapping dist (0..32K) -> dist code (0..29) */
         dist = 0;
         for (code = 0; code < 16; code++) {
             zip_base_dist[code] = dist;
-            for (n = 0; n < (1 << zip_extra_dbits[code]) ; n++) {
+            for (n = 0; n < (1 << zip_extra_dbits[code]); n++) {
                 zip_dist_code[dist++] = code;
             }
         }
@@ -1054,7 +1060,7 @@ if (typeof global != 'undefined') {
         dist >>= 7; // from now on, all distances are divided by 128
         for (; code < zip_D_CODES; code++) {
             zip_base_dist[code] = dist << 7;
-            for (n = 0; n < (1 << (zip_extra_dbits[code] - 7)) ; n++)
+            for (n = 0; n < (1 << (zip_extra_dbits[code] - 7)); n++)
                 zip_dist_code[256 + dist++] = code;
         }
         // Assert (dist == 256, "ct_init: 256+dist != 512");
@@ -1063,14 +1069,26 @@ if (typeof global != 'undefined') {
         for (bits = 0; bits <= zip_MAX_BITS; bits++)
             zip_bl_count[bits] = 0;
         n = 0;
-        while (n <= 143) { zip_static_ltree[n++].dl = 8; zip_bl_count[8]++; }
-        while (n <= 255) { zip_static_ltree[n++].dl = 9; zip_bl_count[9]++; }
-        while (n <= 279) { zip_static_ltree[n++].dl = 7; zip_bl_count[7]++; }
-        while (n <= 287) { zip_static_ltree[n++].dl = 8; zip_bl_count[8]++; }
+        while (n <= 143) {
+            zip_static_ltree[n++].dl = 8;
+            zip_bl_count[8]++;
+        }
+        while (n <= 255) {
+            zip_static_ltree[n++].dl = 9;
+            zip_bl_count[9]++;
+        }
+        while (n <= 279) {
+            zip_static_ltree[n++].dl = 7;
+            zip_bl_count[7]++;
+        }
+        while (n <= 287) {
+            zip_static_ltree[n++].dl = 8;
+            zip_bl_count[8]++;
+        }
         /* Codes 286 and 287 do not exist, but we must include them in the
-        * tree construction to get a canonical Huffman tree (longest code
-        * all ones)
-        */
+         * tree construction to get a canonical Huffman tree (longest code
+         * all ones)
+         */
         zip_gen_codes(zip_static_ltree, zip_L_CODES + 1);
 
         /* The static distance tree is trivial: */
@@ -1084,8 +1102,8 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Initialize a new block.
-    */
+     * Initialize a new block.
+     */
     var zip_init_block = function () {
         var n; // iterates over tree elements
 
@@ -1102,21 +1120,20 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Restore the heap property by moving down the tree starting at node k,
-    * exchanging a node with the smallest of its two sons if necessary, stopping
-    * when the heap property is re-established (each father smaller than its
-    * two sons).
-    */
-    var zip_pqdownheap = function (
-    tree, // the tree to restore
-    k) {	// node to move down
+     * Restore the heap property by moving down the tree starting at node k,
+     * exchanging a node with the smallest of its two sons if necessary, stopping
+     * when the heap property is re-established (each father smaller than its
+     * two sons).
+     */
+    var zip_pqdownheap = function (tree, // the tree to restore
+                                   k) {	// node to move down
         var v = zip_heap[k];
         var j = k << 1; // left son of k
 
         while (j <= zip_heap_len) {
             // Set j to the smallest of the two sons:
             if (j < zip_heap_len &&
-	   zip_SMALLER(tree, zip_heap[j + 1], zip_heap[j]))
+                zip_SMALLER(tree, zip_heap[j + 1], zip_heap[j]))
                 j++;
 
             // Exit if v is smaller than both sons
@@ -1134,15 +1151,15 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Compute the optimal bit lengths for a tree and update the total bit length
-    * for the current block.
-    * IN assertion: the fields freq and dad are set, heap[heap_max] and
-    *    above are the tree nodes sorted by increasing frequency.
-    * OUT assertions: the field len is set to the optimal bit length, the
-    *     array bl_count contains the frequencies for each bit length.
-    *     The length opt_len is updated; static_len is also updated if stree is
-    *     not null.
-    */
+     * Compute the optimal bit lengths for a tree and update the total bit length
+     * for the current block.
+     * IN assertion: the fields freq and dad are set, heap[heap_max] and
+     *    above are the tree nodes sorted by increasing frequency.
+     * OUT assertions: the field len is set to the optimal bit length, the
+     *     array bl_count contains the frequencies for each bit length.
+     *     The length opt_len is updated; static_len is also updated if stree is
+     *     not null.
+     */
     var zip_gen_bitlen = function (desc) { // the tree descriptor
         var tree = desc.dyn_tree;
         var extra = desc.extra_bits;
@@ -1161,8 +1178,8 @@ if (typeof global != 'undefined') {
             zip_bl_count[bits] = 0;
 
         /* In a first pass, compute the optimal bit lengths (which may
-        * overflow in the case of the bit length tree).
-        */
+         * overflow in the case of the bit length tree).
+         */
         tree[zip_heap[zip_heap_max]].dl = 0; // root of the heap
 
         for (h = zip_heap_max + 1; h < zip_HEAP_SIZE; h++) {
@@ -1201,16 +1218,16 @@ if (typeof global != 'undefined') {
             zip_bl_count[bits + 1] += 2; // move one overflow item as its brother
             zip_bl_count[max_length]--;
             /* The brother of the overflow item also moves one step up,
-            * but this does not affect bl_count[max_length]
-            */
+             * but this does not affect bl_count[max_length]
+             */
             overflow -= 2;
         } while (overflow > 0);
 
         /* Now recompute all bit lengths, scanning in increasing frequency.
-        * h is still equal to HEAP_SIZE. (It is simpler to reconstruct all
-        * lengths instead of fixing only the wrong ones. This idea is taken
-        * from 'ar' written by Haruhiko Okumura.)
-        */
+         * h is still equal to HEAP_SIZE. (It is simpler to reconstruct all
+         * lengths instead of fixing only the wrong ones. This idea is taken
+         * from 'ar' written by Haruhiko Okumura.)
+         */
         for (bits = max_length; bits != 0; bits--) {
             n = zip_bl_count[bits];
             while (n != 0) {
@@ -1227,31 +1244,31 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Generate the codes for a given tree and bit counts (which need not be
-    * optimal).
-    * IN assertion: the array bl_count contains the bit length statistics for
-    * the given tree and the field len is set for all tree elements.
-    * OUT assertion: the field code is set for all tree elements of non
-    *     zero code length.
-    */
+     * Generate the codes for a given tree and bit counts (which need not be
+     * optimal).
+     * IN assertion: the array bl_count contains the bit length statistics for
+     * the given tree and the field len is set for all tree elements.
+     * OUT assertion: the field code is set for all tree elements of non
+     *     zero code length.
+     */
     var zip_gen_codes = function (tree, // the tree to decorate
-		   max_code) {	// largest code with non zero frequency
+                                  max_code) {	// largest code with non zero frequency
         var next_code = new Array(zip_MAX_BITS + 1); // next code value for each bit length
         var code = 0; 	// running code value
         var bits; 		// bit index
         var n; 		// code index
 
         /* The distribution counts are first used to generate the code values
-        * without bit reversal.
-        */
+         * without bit reversal.
+         */
         for (bits = 1; bits <= zip_MAX_BITS; bits++) {
             code = ((code + zip_bl_count[bits - 1]) << 1);
             next_code[bits] = code;
         }
 
         /* Check that the bit counts in bl_count are consistent. The last code
-        * must be all ones.
-        */
+         * must be all ones.
+         */
         //    Assert (code + encoder->bl_count[MAX_BITS]-1 == (1<<MAX_BITS)-1,
         //	    "inconsistent bit counts");
         //    Tracev((stderr,"\ngen_codes: max_code %d ", max_code));
@@ -1269,13 +1286,13 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Construct one Huffman tree and assigns the code bit strings and lengths.
-    * Update the total bit length for the current block.
-    * IN assertion: the field freq is set for all tree elements.
-    * OUT assertions: the fields len and code are set to the optimal bit length
-    *     and corresponding code. The length opt_len is updated; static_len is
-    *     also updated if stree is not null. The field max_code is set.
-    */
+     * Construct one Huffman tree and assigns the code bit strings and lengths.
+     * Update the total bit length for the current block.
+     * IN assertion: the field freq is set for all tree elements.
+     * OUT assertions: the fields len and code are set to the optimal bit length
+     *     and corresponding code. The length opt_len is updated; static_len is
+     *     also updated if stree is not null. The field max_code is set.
+     */
     var zip_build_tree = function (desc) { // the tree descriptor
         var tree = desc.dyn_tree;
         var stree = desc.static_tree;
@@ -1285,9 +1302,9 @@ if (typeof global != 'undefined') {
         var node = elems; // next internal node of the tree
 
         /* Construct the initial heap, with least frequent element in
-        * heap[SMALLEST]. The sons of heap[n] are heap[2*n] and heap[2*n+1].
-        * heap[0] is not used.
-        */
+         * heap[SMALLEST]. The sons of heap[n] are heap[2*n] and heap[2*n+1].
+         * heap[0] is not used.
+         */
         zip_heap_len = 0;
         zip_heap_max = zip_HEAP_SIZE;
 
@@ -1300,10 +1317,10 @@ if (typeof global != 'undefined') {
         }
 
         /* The pkzip format requires that at least one distance code exists,
-        * and that at least one bit should be sent even if there is only one
-        * possible code. So to avoid special checks later on we force at least
-        * two codes of non zero frequency.
-        */
+         * and that at least one bit should be sent even if there is only one
+         * possible code. So to avoid special checks later on we force at least
+         * two codes of non zero frequency.
+         */
         while (zip_heap_len < 2) {
             var xnew = zip_heap[++zip_heap_len] = (max_code < 2 ? ++max_code : 0);
             tree[xnew].fc = 1;
@@ -1316,14 +1333,14 @@ if (typeof global != 'undefined') {
         desc.max_code = max_code;
 
         /* The elements heap[heap_len/2+1 .. heap_len] are leaves of the tree,
-        * establish sub-heaps of increasing lengths:
-        */
+         * establish sub-heaps of increasing lengths:
+         */
         for (n = zip_heap_len >> 1; n >= 1; n--)
             zip_pqdownheap(tree, n);
 
         /* Construct the Huffman tree by repeatedly combining the least two
-        * frequent nodes.
-        */
+         * frequent nodes.
+         */
         do {
             n = zip_heap[zip_SMALLEST];
             zip_heap[zip_SMALLEST] = zip_heap[zip_heap_len--];
@@ -1353,8 +1370,8 @@ if (typeof global != 'undefined') {
         zip_heap[--zip_heap_max] = zip_heap[zip_SMALLEST];
 
         /* At this point, the fields freq and dad are set. We can now
-        * generate the bit lengths.
-        */
+         * generate the bit lengths.
+         */
         zip_gen_bitlen(desc);
 
         // The field len is now set, we can generate the bit codes
@@ -1362,13 +1379,13 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Scan a literal or distance tree to determine the frequencies of the codes
-    * in the bit length tree. Updates opt_len to take into account the repeat
-    * counts. (The contribution of the bit length codes will be added later
-    * during the construction of bl_tree.)
-    */
+     * Scan a literal or distance tree to determine the frequencies of the codes
+     * in the bit length tree. Updates opt_len to take into account the repeat
+     * counts. (The contribution of the bit length codes will be added later
+     * during the construction of bl_tree.)
+     */
     var zip_scan_tree = function (tree, // the tree to be scanned
-		       max_code) {  // and its largest code of non zero frequency
+                                  max_code) {  // and its largest code of non zero frequency
         var n; 		// iterates over all tree elements
         var prevlen = -1; 	// last emitted length
         var curlen; 		// length of current code
@@ -1398,7 +1415,8 @@ if (typeof global != 'undefined') {
                 zip_bl_tree[zip_REPZ_3_10].fc++;
             else
                 zip_bl_tree[zip_REPZ_11_138].fc++;
-            count = 0; prevlen = curlen;
+            count = 0;
+            prevlen = curlen;
             if (nextlen == 0) {
                 max_count = 138;
                 min_count = 3;
@@ -1413,11 +1431,11 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Send a literal or distance tree in compressed form, using the codes in
-    * bl_tree.
-    */
+     * Send a literal or distance tree in compressed form, using the codes in
+     * bl_tree.
+     */
     var zip_send_tree = function (tree, // the tree to be scanned
-		   max_code) { // and its largest code of non zero frequency
+                                  max_code) { // and its largest code of non zero frequency
         var n; 		// iterates over all tree elements
         var prevlen = -1; 	// last emitted length
         var curlen; 		// length of current code
@@ -1426,7 +1444,8 @@ if (typeof global != 'undefined') {
         var max_count = 7; 	// max repeat count
         var min_count = 4; 	// min repeat count
 
-        /* tree[max_code+1].dl = -1; */  /* guard already set */
+        /* tree[max_code+1].dl = -1; */
+        /* guard already set */
         if (nextlen == 0) {
             max_count = 138;
             min_count = 3;
@@ -1438,7 +1457,9 @@ if (typeof global != 'undefined') {
             if (++count < max_count && curlen == nextlen) {
                 continue;
             } else if (count < min_count) {
-                do { zip_SEND_CODE(curlen, zip_bl_tree); } while (--count != 0);
+                do {
+                    zip_SEND_CODE(curlen, zip_bl_tree);
+                } while (--count != 0);
             } else if (curlen != 0) {
                 if (curlen != prevlen) {
                     zip_SEND_CODE(curlen, zip_bl_tree);
@@ -1470,9 +1491,9 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Construct the Huffman tree for the bit lengths and return the index in
-    * bl_order of the last bit length code to send.
-    */
+     * Construct the Huffman tree for the bit lengths and return the index in
+     * bl_order of the last bit length code to send.
+     */
     var zip_build_bl_tree = function () {
         var max_blindex;  // index of last bit length code of non zero freq
 
@@ -1483,13 +1504,13 @@ if (typeof global != 'undefined') {
         // Build the bit length tree:
         zip_build_tree(zip_bl_desc);
         /* opt_len now includes the length of the tree representations, except
-        * the lengths of the bit lengths codes and the 5+5+4 bits for the counts.
-        */
+         * the lengths of the bit lengths codes and the 5+5+4 bits for the counts.
+         */
 
         /* Determine the number of bit length codes to send. The pkzip format
-        * requires that at least 4 bit length codes be sent. (appnote.txt says
-        * 3 but the actual value used is 4.)
-        */
+         * requires that at least 4 bit length codes be sent. (appnote.txt says
+         * 3 but the actual value used is 4.)
+         */
         for (max_blindex = zip_BL_CODES - 1; max_blindex >= 3; max_blindex--) {
             if (zip_bl_tree[zip_bl_order[max_blindex]].dl != 0) break;
         }
@@ -1502,10 +1523,10 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Send the header for a block using dynamic Huffman trees: the counts, the
-    * lengths of the bit length codes, the literal tree and the distance tree.
-    * IN assertion: lcodes >= 257, dcodes >= 1, blcodes >= 4.
-    */
+     * Send the header for a block using dynamic Huffman trees: the counts, the
+     * lengths of the bit length codes, the literal tree and the distance tree.
+     * IN assertion: lcodes >= 257, dcodes >= 1, blcodes >= 4.
+     */
     var zip_send_all_trees = function (lcodes, dcodes, blcodes) { // number of codes for each tree
         var rank; // index in bl_order
 
@@ -1529,9 +1550,9 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Determine the best encoding for the current block: dynamic trees, static
-    * trees or store, and output the encoded block to the zip file.
-    */
+     * Determine the best encoding for the current block: dynamic trees, static
+     * trees or store, and output the encoded block to the zip file.
+     */
     var zip_flush_block = function (eof) { // true if this is the last block for a file
         var opt_lenb, static_lenb; // opt_len and static_len in bytes
         var max_blindex; // index of last bit length code of non zero freq
@@ -1549,12 +1570,12 @@ if (typeof global != 'undefined') {
         //    Tracev((stderr, "\ndist data: dyn %ld, stat %ld",
         //	    encoder->opt_len, encoder->static_len));
         /* At this point, opt_len and static_len are the total bit lengths of
-        * the compressed block data, excluding the tree representations.
-        */
+         * the compressed block data, excluding the tree representations.
+         */
 
         /* Build the bit length tree for the above two trees, and get the index
-        * in bl_order of the last bit length code to send.
-        */
+         * in bl_order of the last bit length code to send.
+         */
         max_blindex = zip_build_bl_tree();
 
         // Determine the best encoding. Compute first the block length in bytes
@@ -1569,26 +1590,28 @@ if (typeof global != 'undefined') {
         if (static_lenb <= opt_lenb)
             opt_lenb = static_lenb;
         if (stored_len + 4 <= opt_lenb // 4: two words for the lengths
-       && zip_block_start >= 0) {
+            && zip_block_start >= 0) {
             var i;
 
             /* The test buf != NULL is only necessary if LIT_BUFSIZE > WSIZE.
-            * Otherwise we can't have processed more than WSIZE input bytes since
-            * the last block flush, because compression would have been
-            * successful. If LIT_BUFSIZE <= WSIZE, it is never too late to
-            * transform a block into a stored block.
-            */
-            zip_send_bits((zip_STORED_BLOCK << 1) + eof, 3);  /* send block type */
-            zip_bi_windup(); 	 /* align on byte boundary */
+             * Otherwise we can't have processed more than WSIZE input bytes since
+             * the last block flush, because compression would have been
+             * successful. If LIT_BUFSIZE <= WSIZE, it is never too late to
+             * transform a block into a stored block.
+             */
+            zip_send_bits((zip_STORED_BLOCK << 1) + eof, 3);
+            /* send block type */
+            zip_bi_windup();
+            /* align on byte boundary */
             zip_put_short(stored_len);
             zip_put_short(~stored_len);
 
             // copy block
             /*
-            p = &window[block_start];
-            for(i = 0; i < stored_len; i++)
-            put_byte(p[i]);
-            */
+             p = &window[block_start];
+             for(i = 0; i < stored_len; i++)
+             put_byte(p[i]);
+             */
             for (i = 0; i < stored_len; i++)
                 zip_put_byte(zip_window[zip_block_start + i]);
 
@@ -1598,8 +1621,8 @@ if (typeof global != 'undefined') {
         } else {
             zip_send_bits((zip_DYN_TREES << 1) + eof, 3);
             zip_send_all_trees(zip_l_desc.max_code + 1,
-			   zip_d_desc.max_code + 1,
-			   max_blindex + 1);
+                zip_d_desc.max_code + 1,
+                max_blindex + 1);
             zip_compress_block(zip_dyn_ltree, zip_dyn_dtree);
         }
 
@@ -1610,12 +1633,11 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Save the match info and tally the frequency counts. Return true if
-    * the current block must be flushed.
-    */
-    var zip_ct_tally = function (
-	dist, // distance of matched string
-	lc) { // match length-MIN_MATCH or unmatched char (if dist==0)
+     * Save the match info and tally the frequency counts. Return true if
+     * the current block must be flushed.
+     */
+    var zip_ct_tally = function (dist, // distance of matched string
+                                 lc) { // match length-MIN_MATCH or unmatched char (if dist==0)
         zip_l_buf[zip_last_lit++] = lc;
         if (dist == 0) {
             // lc is the unmatched char
@@ -1656,23 +1678,22 @@ if (typeof global != 'undefined') {
             //	     encoder->last_lit, encoder->last_dist, in_length, out_length,
             //	     100L - out_length*100L/in_length));
             if (zip_last_dist < parseInt(zip_last_lit / 2) &&
-	   out_length < parseInt(in_length / 2))
+                out_length < parseInt(in_length / 2))
                 return true;
         }
         return (zip_last_lit == zip_LIT_BUFSIZE - 1 ||
-	    zip_last_dist == zip_DIST_BUFSIZE);
+        zip_last_dist == zip_DIST_BUFSIZE);
         /* We avoid equality with LIT_BUFSIZE because of wraparound at 64K
-        * on 16 bit machines and because stored blocks are restricted to
-        * 64K-1 bytes.
-        */
+         * on 16 bit machines and because stored blocks are restricted to
+         * 64K-1 bytes.
+         */
     }
 
     /* ==========================================================================
-    * Send the block data compressed using the given Huffman trees
-    */
-    var zip_compress_block = function (
-	ltree, // literal tree
-	dtree) {	// distance tree
+     * Send the block data compressed using the given Huffman trees
+     */
+    var zip_compress_block = function (ltree, // literal tree
+                                       dtree) {	// distance tree
         var dist; 	// distance of matched string
         var lc; 	// match length or unmatched char (if dist == 0)
         var lx = 0; 	// running index in l_buf
@@ -1687,7 +1708,8 @@ if (typeof global != 'undefined') {
                 flag = zip_flag_buf[fx++];
             lc = zip_l_buf[lx++] & 0xff;
             if ((flag & 1) == 0) {
-                zip_SEND_CODE(lc, ltree); /* send a literal byte */
+                zip_SEND_CODE(lc, ltree);
+                /* send a literal byte */
                 //	Tracecv(isgraph(lc), (stderr," '%c' ", lc));
             } else {
                 // Here, lc is the match length - MIN_MATCH
@@ -1717,17 +1739,16 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Send a value on a given number of bits.
-    * IN assertion: length <= 16 and value fits in length bits.
-    */
+     * Send a value on a given number of bits.
+     * IN assertion: length <= 16 and value fits in length bits.
+     */
     var zip_Buf_size = 16; // bit size of bi_buf
-    var zip_send_bits = function (
-	value, // value to send
-	length) {	// number of bits
+    var zip_send_bits = function (value, // value to send
+                                  length) {	// number of bits
         /* If not enough room in bi_buf, use (valid) bits from bi_buf and
-        * (16 - bi_valid) bits from value, leaving (width - (16-bi_valid))
-        * unused bits in value.
-        */
+         * (16 - bi_valid) bits from value, leaving (width - (16-bi_valid))
+         * unused bits in value.
+         */
         if (zip_bi_valid > zip_Buf_size - length) {
             zip_bi_buf |= (value << zip_bi_valid);
             zip_put_short(zip_bi_buf);
@@ -1740,13 +1761,12 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Reverse the first len bits of a code, using straightforward code (a faster
-    * method would use a table)
-    * IN assertion: 1 <= len <= 15
-    */
-    var zip_bi_reverse = function (
-	code, // the value to invert
-	len) {	// its bit length
+     * Reverse the first len bits of a code, using straightforward code (a faster
+     * method would use a table)
+     * IN assertion: 1 <= len <= 15
+     */
+    var zip_bi_reverse = function (code, // the value to invert
+                                   len) {	// its bit length
         var res = 0;
         do {
             res |= code & 1;
@@ -1757,8 +1777,8 @@ if (typeof global != 'undefined') {
     }
 
     /* ==========================================================================
-    * Write out any remaining bits in an incomplete byte.
-    */
+     * Write out any remaining bits in an incomplete byte.
+     */
     var zip_bi_windup = function () {
         if (zip_bi_valid > 8) {
             zip_put_short(zip_bi_buf);
@@ -1813,22 +1833,22 @@ if (typeof global != 'undefined') {
 
 
 /*
-* $Id: rawinflate.js,v 0.2 2009/03/01 18:32:24 dankogai Exp $
-*
-* original:
-* http://www.onicos.com/staff/iz/amuse/javascript/expert/inflate.txt
-*/
+ * $Id: rawinflate.js,v 0.2 2009/03/01 18:32:24 dankogai Exp $
+ *
+ * original:
+ * http://www.onicos.com/staff/iz/amuse/javascript/expert/inflate.txt
+ */
 
 (function (global) {
 
     /* Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
-    * Version: 1.0.0.1
-    * LastModified: Dec 25 1999
-    */
+     * Version: 1.0.0.1
+     * LastModified: Dec 25 1999
+     */
 
     /* Interface:
-    * data = zip_inflate(src);
-    */
+     * data = zip_inflate(src);
+     */
 
     /* constant parameters */
     var zip_WSIZE = 32768; 	// Sliding Window size
@@ -1863,27 +1883,27 @@ if (typeof global != 'undefined') {
 
     /* constant tables (inflate) */
     var zip_MASK_BITS = new Array(
-    0x0000,
-    0x0001, 0x0003, 0x0007, 0x000f, 0x001f, 0x003f, 0x007f, 0x00ff,
-    0x01ff, 0x03ff, 0x07ff, 0x0fff, 0x1fff, 0x3fff, 0x7fff, 0xffff);
+        0x0000,
+        0x0001, 0x0003, 0x0007, 0x000f, 0x001f, 0x003f, 0x007f, 0x00ff,
+        0x01ff, 0x03ff, 0x07ff, 0x0fff, 0x1fff, 0x3fff, 0x7fff, 0xffff);
     // Tables for deflate from PKZIP's appnote.txt.
     var zip_cplens = new Array( // Copy lengths for literal codes 257..285
-    3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
-    35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0);
+        3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
+        35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0);
     /* note: see note #13 above about the 258 in this list. */
     var zip_cplext = new Array( // Extra bits for literal codes 257..285
-    0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
-    3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 99, 99); // 99==invalid
+        0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+        3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 99, 99); // 99==invalid
     var zip_cpdist = new Array( // Copy offsets for distance codes 0..29
-    1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
-    257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
-    8193, 12289, 16385, 24577);
+        1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
+        257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
+        8193, 12289, 16385, 24577);
     var zip_cpdext = new Array( // Extra bits for distance codes
-    0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6,
-    7, 7, 8, 8, 9, 9, 10, 10, 11, 11,
-    12, 12, 13, 13);
+        0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6,
+        7, 7, 8, 8, 9, 9, 10, 10, 11, 11,
+        12, 12, 13, 13);
     var zip_border = new Array(  // Order of the bit length code lengths
-    16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15);
+        16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15);
     /* objects (inflate) */
 
     var zip_HuftList = function () {
@@ -1901,12 +1921,12 @@ if (typeof global != 'undefined') {
     }
 
     var zip_HuftBuild = function (b, // code lengths in bits (all assumed <= BMAX)
-		       n, // number of codes (assumed <= N_MAX)
-		       s, // number of simple-valued codes (0..s-1)
-		       d, // list of base values for non-simple codes
-		       e, // list of extra bits for non-simple codes
-		       mm	// maximum lookup bits
-		   ) {
+                                  n, // number of codes (assumed <= N_MAX)
+                                  s, // number of simple-valued codes (0..s-1)
+                                  d, // list of base values for non-simple codes
+                                  e, // list of extra bits for non-simple codes
+                                  mm	// maximum lookup bits
+    ) {
         this.BMAX = 16;   // maximum bit length of any code
         this.N_MAX = 288; // maximum number of codes in any set
         this.status = 0; // 0: success, 1: incomplete table, 2: bad input
@@ -1914,13 +1934,13 @@ if (typeof global != 'undefined') {
         this.m = 0; 	// maximum lookup bits, returns actual
 
         /* Given a list of code lengths and a maximum table size, make a set of
-        tables to decode that set of codes.	Return zero on success, one if
-        the given code set is incomplete (the tables are still built in this
-        case), two if the input is invalid (all zero length codes or an
-        oversubscribed set of lengths), and three if not enough memory.
-        The code with value 256 is special, and the tables are constructed
-        so that no bits beyond that code are fetched when that code is
-        decoded. */
+         tables to decode that set of codes.	Return zero on success, one if
+         the given code set is incomplete (the tables are still built in this
+         case), two if the input is invalid (all zero length codes or an
+         oversubscribed set of lengths), and three if not enough memory.
+         The code with value 256 is special, and the tables are constructed
+         so that no bits beyond that code are fetched when that code is
+         decoded. */
         {
             var a; 		// counter for codes of length k
             var c = new Array(this.BMAX + 1); // bit length count table
@@ -1960,7 +1980,8 @@ if (typeof global != 'undefined') {
 
             // Generate counts for each bit length
             el = n > 256 ? b[256] : this.BMAX; // set length of EOB code, if any
-            p = b; pidx = 0;
+            p = b;
+            pidx = 0;
             i = n;
             do {
                 c[p[pidx]]++; // assume all entries <= BMAX
@@ -2010,7 +2031,8 @@ if (typeof global != 'undefined') {
                 x[xp++] = (j += p[pidx++]);
 
             // Make a table of values in order of bit lengths
-            p = b; pidx = 0;
+            p = b;
+            pidx = 0;
             i = 0;
             do {
                 if ((j = p[pidx++]) != 0)
@@ -2020,7 +2042,8 @@ if (typeof global != 'undefined') {
 
             // Generate the Huffman codes and for each, make the table entries
             x[0] = i = 0; 	// first Huffman code is zero
-            p = v; pidx = 0; 	// grab values in bit order
+            p = v;
+            pidx = 0; 	// grab values in bit order
             h = -1; 		// no tables yet--level -1
             w = lx[0] = 0; 	// no bits decoded yet
             q = null; 		// ditto
@@ -2103,7 +2126,7 @@ if (typeof global != 'undefined') {
                     }
 
                     // backwards increment the k-bit code i
-                    for (j = 1 << (k - 1) ; (i & j) != 0; j >>= 1)
+                    for (j = 1 << (k - 1); (i & j) != 0; j >>= 1)
                         i ^= j;
                     i ^= j;
 
@@ -2120,7 +2143,8 @@ if (typeof global != 'undefined') {
 
             /* Return true (1) if we were given an incomplete table */
             this.status = ((y != 0 && g != 1) ? 1 : 0);
-        } /* end of constructor */
+        }
+        /* end of constructor */
     }
 
 
@@ -2150,7 +2174,7 @@ if (typeof global != 'undefined') {
 
     var zip_inflate_codes = function (buff, off, size) {
         /* inflate (decompress) the codes in a deflated (compressed) block.
-        Return an error code or zero if it all goes ok. */
+         Return an error code or zero if it all goes ok. */
         var e; 	// table entry flag/number of extra bits
         var t; 	// (zip_HuftNode) pointer to table entry
         var n;
@@ -2219,7 +2243,7 @@ if (typeof global != 'undefined') {
                 zip_copy_dist &= zip_WSIZE - 1;
                 zip_wp &= zip_WSIZE - 1;
                 buff[off + n++] = zip_slide[zip_wp++]
-		= zip_slide[zip_copy_dist++];
+                    = zip_slide[zip_copy_dist++];
             }
 
             if (n == size)
@@ -2256,7 +2280,7 @@ if (typeof global != 'undefined') {
             zip_wp &= zip_WSIZE - 1;
             zip_NEEDBITS(8);
             buff[off + n++] = zip_slide[zip_wp++] =
-	    zip_GETBITS(8);
+                zip_GETBITS(8);
             zip_DUMPBITS(8);
         }
 
@@ -2267,8 +2291,8 @@ if (typeof global != 'undefined') {
 
     var zip_inflate_fixed = function (buff, off, size) {
         /* decompress an inflated type 1 (fixed Huffman codes) block.  We should
-        either replace this with a custom decoder, or at least precompute the
-        Huffman tables. */
+         either replace this with a custom decoder, or at least precompute the
+         Huffman tables. */
 
         // if first time, set up tables for fixed blocks
         if (zip_fixed_tl == null) {
@@ -2288,7 +2312,7 @@ if (typeof global != 'undefined') {
             zip_fixed_bl = 7;
 
             h = new zip_HuftBuild(l, 288, 257, zip_cplens, zip_cplext,
-			      zip_fixed_bl);
+                zip_fixed_bl);
             if (h.status != 0) {
                 alert("HufBuild error: " + h.status);
                 return -1;
@@ -2471,7 +2495,7 @@ if (typeof global != 'undefined') {
                         zip_copy_dist &= zip_WSIZE - 1;
                         zip_wp &= zip_WSIZE - 1;
                         buff[off + n++] = zip_slide[zip_wp++] =
-			zip_slide[zip_copy_dist++];
+                            zip_slide[zip_copy_dist++];
                     }
                 } else {
                     while (zip_copy_leng > 0 && n < size) {
