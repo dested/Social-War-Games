@@ -1,6 +1,6 @@
-import {MenuManager} from "./hexLibraries/menuManager";
-import {HexUtils} from "./hexLibraries/hexUtils";
-import {GameManager} from "./gameManager";
+import {MenuManager} from "./game/menuManager";
+import {HexUtils} from "./game/hexUtils";
+import {GameManager} from "./game/gameManager";
 import {HexagonColorUtils} from "./utils/hexagonColorUtils";
 declare let Hammer;
 export class PageManager {

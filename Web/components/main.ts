@@ -1,7 +1,7 @@
 ﻿/// <reference path="./typings/index.d.ts" />
 
-import {AssetManager} from "./hexLibraries/AssetManager";
-import {GameManager} from "./gameManager";
+import {AssetManager} from "./game/AssetManager";
+import {GameManager} from "./game/gameManager";
 import {PageManager} from "./pageManager";
 import {GameController} from "./ui/gameController";
 declare const angular:angular.IAngularStatic;

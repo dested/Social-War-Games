@@ -1,5 +1,5 @@
 import {GameMetricsVote, GameEntity} from "./models/hexBoard";
-import {HexBoard} from "./hexLibraries/hexBoard";
+import {HexBoard} from "./game/hexBoard";
 import {BaseEntity} from "./entities/entityManager";
 
 export class AnimationManager {

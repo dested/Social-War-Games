@@ -14,7 +14,7 @@ export class HexagonColorUtils {
     static moveHighlightColor = new HexagonColor('#BE9EFF');
     static attackHighlightColor = new HexagonColor('#91F9CF');
     static voteColor: HexagonColor[];
-    static miniBaseColor: HexagonColor=new HexagonColor('#DCDCDC');
+    static miniBaseColor: HexagonColor = new HexagonColor('#DCDCDC');
 
     public static setupColors() {
         this.baseColors = [new HexagonColor('#AFFFFF')];
@@ -30,20 +30,18 @@ export class HexagonColorUtils {
         this.voteColor.push(new HexagonColor("#13dfff"));
         this.voteColor.push(new HexagonColor("#1bc1ff"));
         this.voteColor.push(new HexagonColor("#63b2ff"));
-        this.voteColor.push(new HexagonColor("#4559ff"));
+        this.voteColor.push(new HexagonColor("#a3a0ff"));
         this.voteColor.push(new HexagonColor("#b66aff"));
-        this.voteColor.push(new HexagonColor("#ff3adc"));
+        this.voteColor.push(new HexagonColor("#ffb0ec"));
         this.voteColor.push(new HexagonColor("#ffcd68"));
         this.voteColor.push(new HexagonColor("#FF6638"));
         this.voteColor.push(new HexagonColor("#FF0000"));
 
 
-
         for (let f = 0; f < this.factionColors.length; f++) {
             this.factionHexColors[f] = [];
-            this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.baseColors[0].color, this.factionColors[f], 1)));
-            for (let i = 0; i < 6; i++) {
-                this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.baseColors[i + 1].color, DrawingUtils.colorLuminance(this.factionColors[f], (i / 6)), 1)));
+            for (let i = 0; i < this.baseColors.length; i++) {
+                this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.baseColors[i].color, DrawingUtils.colorLuminance(this.factionColors[f], i==0?1:((i - 1) / 6)), 1)));
             }
         }
 

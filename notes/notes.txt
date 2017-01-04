@@ -5,7 +5,7 @@ vote execution order is different server and client
 heatmap should be more linear to the total number of votes
   1000 votes shouldnt still be red
 make the ui not show up immediately
-drawing order of hex and entities causes weird things
+'/drawing order of hex and entities causes weird things
 shouldnt show other units heatmap when moving
 should have the moving entity tile be in two tiles at once
 votes collection spins out of control, should delete after a while or something
@@ -21,7 +21,7 @@ add attack action
 add spawn action
 
 update ui to include details
-  map bottom left
+'/  map bottom left
   unit details middle
     icon
     actions

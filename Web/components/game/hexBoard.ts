@@ -1,14 +1,14 @@
-﻿import {GridHexagonConstants, GridMiniHexagonConstants} from "../hexLibraries/gridHexagonConstants";
+﻿import {GridHexagonConstants, GridMiniHexagonConstants} from ".//gridHexagonConstants";
 import {GameState} from "../models/hexBoard";
 import {GridHexagon} from "./gridHexagon";
 import {
     EntityManager,
     HeliEntity,
-    MainBaseEntity
+    MainBaseEntity, BaseEntity
 } from "../entities/entityManager";
 import {Vector3, HexUtils, Node} from "./hexUtils";
 import {AssetManager} from "./assetManager";
-import {ViewPort} from "../gameManager";
+import {ViewPort} from "./gameManager";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
 
 export class HexBoard {
@@ -17,7 +17,9 @@ export class HexBoard {
     boardSize = {width: 0, height: 0};
     entityManager: EntityManager;
     generation: number = -1;
-    private visibleHexList: GridHexagon[];
+    private hexListHeightMap: GridHexagon[][];
+    private visibleHexListHeightMap: GridHexagon[][];
+    private visibleEntityHeightMap: BaseEntity[][];
 
     constructor() {
         this.entityManager = new EntityManager(this);
@@ -50,7 +52,38 @@ export class HexBoard {
 
 
     reorderHexList() {
-        this.hexList = HexUtils.orderBy(this.hexList, m => (m.z - m.y) * 1000 + (m.x % 2) * -200 + m.height);
+
+        let hx = this.hexList.sort((a, b) => a.height - b.height);
+
+        let curHeight = 0;
+        let hx_h = [];
+
+        let c_h = [];
+        for (let t = 0; t < hx.length; t++) {
+            let hex = this.hexList[t];
+            if (hex.height != curHeight) {
+                curHeight = hex.height;
+                hx_h.push(c_h);
+                c_h = [];
+            }
+            c_h.push(hex);
+        }
+        hx_h.push(c_h);
+        for (let i = 0; i < hx_h.length; i++) {
+            hx_h[i] = HexUtils.orderBy(hx_h[i], m => (m.z) * 1000 + (m.x % 2) * -200)
+        }
+        console.log('----');
+
+        this.hexList = [];
+        this.hexListHeightMap = [];
+        for (let i = 0; i < hx_h.length; i++) {
+            let h = hx_h[i];
+            console.log(h.length);
+            this.hexListHeightMap[i] = h;
+            this.hexList.push(...h);
+        }
+
+        // this.hexList = HexUtils.orderBy(this.hexList, m => (m.z) * 1000 + (m.x % 2) * -200 + m.height);
     }
 
     getHexAtSpot(x, z): GridHexagon {
@@ -199,34 +232,46 @@ export class HexBoard {
 
     drawBoard(context: CanvasRenderingContext2D, viewPort: ViewPort): void {
         context.lineWidth = 1;
-        for (let i = 0; i < this.visibleHexList.length; i++) {
-            const gridHexagon = this.visibleHexList[i];
-            gridHexagon.draw(context, gridHexagon.getRealX(), gridHexagon.getRealZ());
-            // gridHexagon.drawMini(context, gridHexagon.getRealMiniX(), gridHexagon.getRealMiniZ())
-            let entities = this.entityManager.getEntitiesAtTile(gridHexagon);
-            if (entities) {
-                for (let j = 0; j < entities.length; j++) {
-                    entities[j].draw(context);
-                }
+        for (let j = 0; j < this.visibleHexListHeightMap.length; j++) {
+            let hexList = this.visibleHexListHeightMap[j];
+            let entList = this.visibleEntityHeightMap[j];
+            for (let i = 0; i < hexList.length; i++) {
+                const gridHexagon = hexList[i];
+                gridHexagon.draw(context, gridHexagon.getRealX(), gridHexagon.getRealZ());
+            }
+
+            for (let j = 0; j < entList.length; j++) {
+                entList[j].draw(context);
             }
         }
-
     }
-
 
     resetVisibleHexList(viewPort: ViewPort): void {
         let visibleHexList = [];
-        for (let i = 0; i < this.hexList.length; i++) {
-            const gridHexagon = this.hexList[i];
-            if (gridHexagon.shouldDraw(viewPort)) {
-                visibleHexList.push(gridHexagon);
+        let visibleEntity = [];
+
+        for (let j = 0; j < this.hexListHeightMap.length; j++) {
+            let hexList = this.hexListHeightMap[j];
+            let vhexes = [];
+            let ventities = [];
+            for (let i = 0; i < hexList.length; i++) {
+                const gridHexagon = hexList[i];
+                if (gridHexagon.shouldDraw(viewPort)) {
+                    vhexes.push(gridHexagon);
+                    let entities = this.entityManager.getEntitiesAtTile(gridHexagon);
+                    if (entities) {
+                        for (let j = 0; j < entities.length; j++) {
+                            ventities.push(entities[j]);
+                        }
+                    }
+                }
             }
+            visibleHexList.push(vhexes);
+            visibleEntity.push(ventities);
         }
-        this.visibleHexList = visibleHexList;
+
+        this.visibleHexListHeightMap = visibleHexList;
+        this.visibleEntityHeightMap = visibleEntity;
     }
-
-
-
-
 
 }

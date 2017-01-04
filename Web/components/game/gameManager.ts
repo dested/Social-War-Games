@@ -1,13 +1,13 @@
-import {BaseEntity} from "./entities/entityManager";
-import {DrawingUtils} from "./utils/drawingUtilities";
-import {HexUtils} from "./hexLibraries/hexUtils";
-import {GridHexagon} from "./hexLibraries/gridHexagon";
-import {HexBoard} from "./hexLibraries/hexBoard";
-import {DataService} from "./dataServices";
-import {AnimationManager} from "./animationManager";
-import {GridHexagonConstants, GridMiniHexagonConstants} from "./hexLibraries/gridHexagonConstants";
-import {HexagonColorUtils} from "./utils/hexagonColorUtils";
-import {GameService} from "./ui/gameService";
+import {BaseEntity} from "../entities/entityManager";
+import {DrawingUtils} from "../utils/drawingUtilities";
+import {HexUtils} from "./hexUtils";
+import {GridHexagon} from "./gridHexagon";
+import {HexBoard} from "./hexBoard";
+import {DataService} from "../dataServices";
+import {AnimationManager} from "../animationManager";
+import {GridHexagonConstants, GridMiniHexagonConstants} from "./gridHexagonConstants";
+import {HexagonColorUtils} from "../utils/hexagonColorUtils";
+import {GameService} from "../ui/gameService";
 declare let Hammer;
 
 export class GameManager {
@@ -105,7 +105,6 @@ export class GameManager {
             let y = <number> ev.center.y - tapStart.y - rect.top - 15;
             let item = this.getMiniHexAtPoint(x, y);
             if (item) {
-                console.log(x, y, item.x, item.z);
                 this.centerOnHex(item);
             }
         });
@@ -130,16 +129,21 @@ export class GameManager {
     private miniCanvas: HTMLCanvasElement;
     private miniContext: CanvasRenderingContext2D;
 
-    private rebuildMiniBoard(justEntities: boolean) {
+    private rebuildMiniBoard(justEntities: boolean, entity?: BaseEntity) {
         let size = this.hexBoard.gameDimensionsMini();
         this.miniContext.save();
-        if(!justEntities)
+        if (!justEntities)
             this.miniContext.clearRect(0, 0, size.width + 20, size.height + 20);
         this.miniContext.translate(10, 10);
         for (let i = 0; i < this.hexBoard.hexList.length; i++) {
             const gridHexagon = this.hexBoard.hexList[i];
             if (justEntities) {
                 if (gridHexagon.hasEntities()) {
+                    if (entity) {
+                        if (!gridHexagon.getEntityById(entity.id)) {
+                            continue;
+                        }
+                    }
                     gridHexagon.drawMini(this.miniContext, gridHexagon.getRealMiniX(), gridHexagon.getRealMiniZ());
                 }
             } else {
@@ -319,6 +323,7 @@ export class GameManager {
                     entity.pushVote(vote);
 
                 }
+                this.rebuildMiniBoard(true, entity);
             }
         }
     }
@@ -420,7 +425,7 @@ export class GameManager {
             const gridHexagon = this.hexBoard.hexList[i];
             const x = GridHexagonConstants.width * 3 / 4 * gridHexagon.x;
             let z = gridHexagon.z * GridHexagonConstants.height() + ((gridHexagon.x % 2 === 1) ? (-GridHexagonConstants.height() / 2) : 0);
-            z -= gridHexagon.getDepthHeight();
+            z -= gridHexagon.getDepthHeight(true);
             z += gridHexagon.y * GridHexagonConstants.depthHeight();
             if (DrawingUtils.pointInPolygon(clickX - x, clickY - z, GridHexagonConstants.hexagonTopPolygon())) {
                 lastClick = gridHexagon;

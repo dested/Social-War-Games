@@ -1,8 +1,8 @@
-import {AssetManager} from "../hexLibraries/assetManager";
-import {HexBoard} from "../hexLibraries/hexBoard";
-import {GridHexagonConstants} from "../hexLibraries/gridHexagonConstants";
-import {GridHexagon} from "../hexLibraries/gridHexagon";
-import {Vector3, HexUtils} from "../hexLibraries/hexUtils";
+import {AssetManager} from "../game/assetManager";
+import {HexBoard} from "../game/hexBoard";
+import {GridHexagonConstants} from "../game/gridHexagonConstants";
+import {GridHexagon} from "../game/gridHexagon";
+import {Vector3, HexUtils} from "../game/hexUtils";
 import {GameMetricVoteAction, GameMetricMoveVoteAction, GameEntity, GameMetricsVote} from "../models/hexBoard";
 import {AnimationFrame, AnimationFrameType} from "../animationManager";
 import {Help} from "../utils/help";
