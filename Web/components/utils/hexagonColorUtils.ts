@@ -40,9 +40,9 @@ export class HexagonColorUtils {
 
         for (let f = 0; f < this.factionColors.length; f++) {
             this.factionHexColors[f] = [];
-            this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.baseColors[0].color, this.factionColors[f], 0.6)));
+            this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.baseColors[0].color, this.factionColors[f], 1)));
             for (let i = 0; i < 6; i++) {
-                this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.baseColors[i + 1].color, DrawingUtils.colorLuminance(this.factionColors[f], (i / 6)), 0.6)));
+                this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.baseColors[i + 1].color, DrawingUtils.colorLuminance(this.factionColors[f], (i / 6)), 1)));
             }
         }
 

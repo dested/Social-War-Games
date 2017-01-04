@@ -19,7 +19,6 @@ export class GameController {
                 $scope.timerPercent += secondsTick;
             }
             $scope.timerPercent = Math.min($scope.timerPercent, 100);
-            console.log($scope.timerPercent);
         }, 100)
     }
 }

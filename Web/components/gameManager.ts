@@ -124,7 +124,7 @@ export class GameManager {
         this.checking = false;
         setTimeout(async() => {
             await this.checkState();
-        }, 1000 * (seconds > 5 ? 5 : seconds+1));
+        }, 1000 * (seconds+2 > 5 ? 5 : seconds+2));
     }
 
     startAction(item: GridHexagon) {
