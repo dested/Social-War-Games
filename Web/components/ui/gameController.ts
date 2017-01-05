@@ -1,5 +1,6 @@
 import angular from 'angular';
 import {GameService} from "./gameService";
+import {BaseEntity} from "../entities/entityManager";
 
 export class GameController {
     static $inject = ['$scope', '$interval'];
@@ -8,14 +9,22 @@ export class GameController {
         $scope.name = 'foo';
         $scope.timerPercent = 0;
         let secondsTick = 0;
-        $scope.loading=true;
+        $scope.loading = true;
 
-        GameService.hasData=()=>{
-            $scope.loading=false;
+
+        GameService.setSelectedEntity = (entity: BaseEntity) => {
+            $scope.selectedEntity = entity;
+            $scope.$apply();
+        };
+
+        GameService.hasData = () => {
+            $scope.loading = false;
+            $scope.$apply();
         };
         GameService.setSecondsToNextGeneration = (seconds) => {
             secondsTick = 100 / (10 * GameService.secondsPerGeneration);
             $scope.timerPercent = Math.min(100 - (seconds / GameService.secondsPerGeneration * 100), 100);
+            $scope.$apply();
         };
 
         $interval(() => {
@@ -29,6 +38,7 @@ export class GameController {
 
 
 interface GameControllerScope extends angular.IScope {
+    selectedEntity: BaseEntity;
     loading: boolean;
     timerPercent: number;
     name: string;

@@ -22,10 +22,7 @@ export class Main {
         AssetManager.completed = onComplete;
         var size = {width: 80, height: 80};
         var base = {x: 40, y: 55};
-        AssetManager.addAsset('Infantry', 'images/tower_10.png', size, base);
-        AssetManager.addAsset('Tank', 'images/tower_40.png', size, base);
-        AssetManager.addAsset('Base', 'images/tower_42.png', size, base);
-        AssetManager.addAsset('MainBase', 'images/tower_42.png', size, base);
+        AssetManager.addAsset('MainBase', 'images/MainBase/down_1.png', size, base);
 
 
         AssetManager.addAsset('Icon.Move', 'images/icons/move.png', size, base);
@@ -34,23 +31,23 @@ export class Main {
         AssetManager.addAsset('tile', 'images/tile.png', size, base);
 
 
-        AssetManager.addAssetFrame('Heli.TopLeft', 0, 'images/heli/top_left_1.png', null, null);
-        AssetManager.addAssetFrame('Heli.TopLeft', 1, 'images/heli/top_left_2.png', null, null);
+        AssetManager.addAssetFrame('Heli.TopLeft', 0, 'images/Heli/top_left_1.png', null, null);
+        AssetManager.addAssetFrame('Heli.TopLeft', 1, 'images/Heli/top_left_2.png', null, null);
 
-        AssetManager.addAssetFrame('Heli.TopRight', 0, 'images/heli/top_right_1.png', null, null);
-        AssetManager.addAssetFrame('Heli.TopRight', 1, 'images/heli/top_right_2.png', null, null);
+        AssetManager.addAssetFrame('Heli.TopRight', 0, 'images/Heli/top_right_1.png', null, null);
+        AssetManager.addAssetFrame('Heli.TopRight', 1, 'images/Heli/top_right_2.png', null, null);
 
-        AssetManager.addAssetFrame('Heli.BottomLeft', 0, 'images/heli/bottom_left_1.png', null, null);
-        AssetManager.addAssetFrame('Heli.BottomLeft', 1, 'images/heli/bottom_left_2.png', null, null);
+        AssetManager.addAssetFrame('Heli.BottomLeft', 0, 'images/Heli/bottom_left_1.png', null, null);
+        AssetManager.addAssetFrame('Heli.BottomLeft', 1, 'images/Heli/bottom_left_2.png', null, null);
 
-        AssetManager.addAssetFrame('Heli.BottomRight', 0, 'images/heli/bottom_right_1.png', null, null);
-        AssetManager.addAssetFrame('Heli.BottomRight', 1, 'images/heli/bottom_right_2.png', null, null);
+        AssetManager.addAssetFrame('Heli.BottomRight', 0, 'images/Heli/bottom_right_1.png', null, null);
+        AssetManager.addAssetFrame('Heli.BottomRight', 1, 'images/Heli/bottom_right_2.png', null, null);
 
-        AssetManager.addAssetFrame('Heli.Bottom', 0, 'images/heli/down_1.png', null, null);
-        AssetManager.addAssetFrame('Heli.Bottom', 1, 'images/heli/down_2.png', null, null);
+        AssetManager.addAssetFrame('Heli.Bottom', 0, 'images/Heli/down_1.png', null, null);
+        AssetManager.addAssetFrame('Heli.Bottom', 1, 'images/Heli/down_2.png', null, null);
 
-        AssetManager.addAssetFrame('Heli.Top', 0, 'images/heli/up_1.png', null, null);
-        AssetManager.addAssetFrame('Heli.Top', 1, 'images/heli/up_2.png', null, null);
+        AssetManager.addAssetFrame('Heli.Top', 0, 'images/Heli/up_1.png', null, null);
+        AssetManager.addAssetFrame('Heli.Top', 1, 'images/Heli/up_2.png', null, null);
 
         AssetManager.start();
     }

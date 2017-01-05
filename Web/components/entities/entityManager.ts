@@ -78,6 +78,8 @@ export abstract class BaseEntity {
     private tile: GridHexagon;
     private faction: number;
 
+    public totalVoteCount: number;
+
     constructor(private entityManager: EntityManager, entity: GameEntity, private  totalFrames: number, private animationSpeed: number) {
         this.faction = entity.factionId;
         this.setHealth(entity.health);
@@ -166,6 +168,7 @@ export abstract class BaseEntity {
 
     resetVotes() {
         this.currentVotes.length = 0;
+        this.totalVoteCount = 0;
         this.getTile().clearVoteColor();
         this.getTile().clearSecondaryVoteColor();
     }
@@ -176,7 +179,7 @@ export abstract class BaseEntity {
         for (let i = 0; i < this.currentVotes.length; i++) {
             votes += this.currentVotes[i].votes;
         }
-
+        this.totalVoteCount = votes;
         this.getTile().setVoteColor(HexagonColorUtils.voteColor[Math.min(votes, 10)]);
     }
 

@@ -17,6 +17,7 @@ export class GameManager {
     private checking: boolean;
 
     constructor() {
+        GameService.setGameManager(this);
     }
 
     async init() {
@@ -349,6 +350,7 @@ export class GameManager {
          return;
          }
          this.menuManager.closeMenu();*/
+        GameService.setSelectedEntity(null);
 
 
         for (let i = 0; i < this.hexBoard.hexList.length; i++) {
@@ -359,18 +361,31 @@ export class GameManager {
         }
 
         let item = this.getHexAtPoint(x, y);
-        if (!item) return;
+        if (!item) {
+            this.selectedHex = null;
+            return;
+        }
 
 
         if (this.selectedHex) {
             let distance = HexUtils.distance(this.selectedHex, item);
             if (distance > 5 || distance == 0) {
-                this.selectedHex = null;
+                let entities = this.hexBoard.entityManager.getEntitiesAtTile(item);
+                if (entities && entities[0]) {
+                    this.selectedHex = item;
+                    GameService.setSelectedEntity(entities[0]);
+                    this.startAction(item);
+                }
                 return;
             }
             let entities = this.hexBoard.entityManager.getEntitiesAtTile(this.selectedHex);
             if (!entities || entities.length == 0) {
-                this.selectedHex = null;
+                let entities = this.hexBoard.entityManager.getEntitiesAtTile(item);
+                if (entities && entities[0]) {
+                    this.selectedHex = item;
+                    GameService.setSelectedEntity(entities[0]);
+                    this.startAction(item);
+                }
                 return;
             }
             let entity = entities[0];
@@ -383,23 +398,11 @@ export class GameManager {
         let entities = this.hexBoard.entityManager.getEntitiesAtTile(item);
         if (entities && entities[0]) {
             this.selectedHex = item;
+            GameService.setSelectedEntity(entities[0]);
             this.startAction(item);
         }
 
 
-        /*
-         this.menuManager.openMenu([
-         {image: AssetManager.instance.assets['Icon.Move'].image, action: 'Move'},
-         {image: AssetManager.instance.assets['Icon.Attack'].image, action: 'Attack'}
-         ],
-         new Point(x, y),
-         (selectedItem) => {
-         item.setHighlight(ClientGameManager.selectedHighlightColor);
-         this.menuManager.closeMenu();
-         this.startAction(item);
-         currentState = 'highlighting';
-         });
-         */
     }
 
     resize(width: number, height: number) {

@@ -50,7 +50,8 @@ body {
   position: absolute;
   height: 25vh;
   bottom: 0;
-
+  cursor:default;
+  pointer-events: none;
 
   .countdown-container {
     left: 24.6%;
@@ -74,6 +75,7 @@ body {
 
 
   .left-bubble {
+    pointer-events:auto;
     left: 0;
     width: 25%;
     border-top-right-radius: 70%;
@@ -86,9 +88,10 @@ body {
     overflow: hidden;
     margin-left:0;
     margin-top:0;
-
+    cursor:all-scroll;
   }
   .center {
+    pointer-events:auto;
     padding:10px;
     left: 24.8%;
     width: 50.4%;
@@ -100,6 +103,7 @@ body {
   }
 
   .right-bubble {
+    pointer-events:auto;
     left: 75%;
     width: 25%;
     border-top-left-radius: 70%;
