@@ -35,6 +35,9 @@ export class GameManager {
 
         await this.checkState();
 
+        GameService.hasData && GameService.hasData();
+
+
         let lx = localStorage.getItem("lastX");
         let ly = localStorage.getItem("lastY");
 
@@ -196,6 +199,7 @@ export class GameManager {
                 hex.clearSecondaryVoteColor();
                 hex.clearHighlightColor();
                 hex.clearVoteColor();
+                hex.setShowVotes(true);
             }
 
             if (!result) {
@@ -241,9 +245,17 @@ export class GameManager {
     }
 
     startAction(item: GridHexagon) {
+
+        for (let i = 0; i < this.hexBoard.hexList.length; i++) {
+            let h = this.hexBoard.hexList[i];
+            h.setShowVotes(false);
+        }
+
+
         let radius = 5;
         let spots = this.findAvailableSpots(radius, item);
         let ent = item.getEntities()[0];
+        item.setShowVotes(true);
 
         for (let i = 0; i < spots.length; i++) {
             let spot = spots[i];
@@ -252,7 +264,7 @@ export class GameManager {
             let path = this.hexBoard.pathFind(item, spot);
             if (path.length > 1 && path.length <= radius + 1) {
                 spot.setHighlightColor(HexagonColorUtils.moveHighlightColor);
-
+                spot.setShowVotes(true);
                 ent.setSecondaryVoteColor(spot);
                 // spot.setHeightOffset(.25);
             }
@@ -341,6 +353,7 @@ export class GameManager {
 
         for (let i = 0; i < this.hexBoard.hexList.length; i++) {
             let h = this.hexBoard.hexList[i];
+            h.setShowVotes(true);
             h.clearHighlightColor();
             h.clearSecondaryVoteColor();
         }

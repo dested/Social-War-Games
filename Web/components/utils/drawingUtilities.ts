@@ -46,6 +46,7 @@ export class DrawingUtils {
     static makeTransparent(hex: string, opacitiy: number): string {
         // validate hex string
         hex = hex.replace(new RegExp('[^0-9a-f]', 'gi'), '');
+
         // convert to decimal and change luminosity
         let rgb = 'rgba(';
         for (let i = 0; i < 3; i++) {

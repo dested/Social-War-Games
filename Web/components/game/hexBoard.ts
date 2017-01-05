@@ -247,28 +247,30 @@ export class HexBoard {
     }
 
     resetVisibleHexList(viewPort: ViewPort): void {
-        let visibleHexList = [];
-        let visibleEntity = [];
+        let visibleHexList = new Array(10);
+        let visibleEntity = new Array(10);
+
+        for (let i = 0; i < 10; i++) {
+            visibleHexList[i] = [];
+            visibleEntity[i] = [];
+        }
 
         for (let j = 0; j < this.hexListHeightMap.length; j++) {
             let hexList = this.hexListHeightMap[j];
-            let vhexes = [];
-            let ventities = [];
             for (let i = 0; i < hexList.length; i++) {
                 const gridHexagon = hexList[i];
                 if (gridHexagon.shouldDraw(viewPort)) {
-                    vhexes.push(gridHexagon);
+                    visibleHexList[j].push(gridHexagon);
                     let entities = this.entityManager.getEntitiesAtTile(gridHexagon);
                     if (entities) {
-                        for (let j = 0; j < entities.length; j++) {
-                            ventities.push(entities[j]);
+                        for (let c = 0; c < entities.length; c++) {
+                            visibleEntity[j + entities[c].getYOffset()].push(entities[c]);
                         }
                     }
                 }
             }
-            visibleHexList.push(vhexes);
-            visibleEntity.push(ventities);
         }
+
 
         this.visibleHexListHeightMap = visibleHexList;
         this.visibleEntityHeightMap = visibleEntity;

@@ -197,9 +197,11 @@ export abstract class BaseEntity {
             spot.setSecondaryVoteColor(HexagonColorUtils.voteColor[Math.min(votes, 10)]);
         }
     }
+
+    abstract getYOffset(): number;
 }
 
-export class SixDirectionEntity extends BaseEntity {
+export abstract class SixDirectionEntity extends BaseEntity {
 
     currentDirection: number = (Math.random() * 6) | 0;
 
@@ -310,7 +312,7 @@ export class SixDirectionEntity extends BaseEntity {
 
 }
 
-export class StationaryEntity extends BaseEntity {
+export abstract class StationaryEntity extends BaseEntity {
     getActionFrames(action: GameMetricVoteAction, hexBoard: HexBoard): AnimationFrame[] {
         return [];
     }
@@ -344,11 +346,19 @@ export class HeliEntity extends SixDirectionEntity {
         super(entityManager, entity, 2, 10);
         this.key = 'Heli';
     }
+
+    getYOffset(): number {
+        return 1;
+    }
 }
 export class MainBaseEntity extends StationaryEntity {
     constructor(entityManager: EntityManager, entity: GameEntity) {
         super(entityManager, entity, 0, 0);
         this.key = 'MainBase';
+    }
+
+    getYOffset(): number {
+        return 0;
     }
 
 }

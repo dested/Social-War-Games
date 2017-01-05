@@ -8,7 +8,11 @@ export class GameController {
         $scope.name = 'foo';
         $scope.timerPercent = 0;
         let secondsTick = 0;
+        $scope.loading=true;
 
+        GameService.hasData=()=>{
+            $scope.loading=false;
+        };
         GameService.setSecondsToNextGeneration = (seconds) => {
             secondsTick = 100 / (10 * GameService.secondsPerGeneration);
             $scope.timerPercent = Math.min(100 - (seconds / GameService.secondsPerGeneration * 100), 100);
@@ -25,6 +29,7 @@ export class GameController {
 
 
 interface GameControllerScope extends angular.IScope {
+    loading: boolean;
     timerPercent: number;
     name: string;
 }
