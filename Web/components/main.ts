@@ -4,7 +4,7 @@ import {AssetManager} from "./game/AssetManager";
 import {GameManager} from "./game/gameManager";
 import {PageManager} from "./pageManager";
 import {GameController} from "./ui/gameController";
-declare const angular:angular.IAngularStatic;
+declare const angular: angular.IAngularStatic;
 
 
 export class Main {
@@ -28,34 +28,40 @@ export class Main {
         AssetManager.addAsset('Icon.Move', 'images/icons/move.png', size, base);
         AssetManager.addAsset('Icon.Attack', 'images/icons/attack.png', size, base);
 
-        AssetManager.addAsset('tile', 'images/tile.png', size, base);
+        AssetManager.addAsset('Stone.Top', 'images/tile.png');
+        AssetManager.addAsset('Stone.Left', 'images/tile.png');
+        AssetManager.addAsset('Stone.Bottom', 'images/tile.png');
+        AssetManager.addAsset('Stone.Right', 'images/tile.png');
+
+        AssetManager.addAsset('Grass.Top', 'images/grass.png');
+        AssetManager.addAsset('Grass.Left', 'images/grass.png');
+        AssetManager.addAsset('Grass.Bottom', 'images/grass.png');
+        AssetManager.addAsset('Grass.Right', 'images/grass.png');
 
 
-        AssetManager.addAssetFrame('Heli.TopLeft', 0, 'images/Heli/top_left_1.png', null, null);
-        AssetManager.addAssetFrame('Heli.TopLeft', 1, 'images/Heli/top_left_2.png', null, null);
+        AssetManager.addAsset('Water.Top', 'images/water.png');
+        AssetManager.addAsset('Water.Left', 'images/water.png');
+        AssetManager.addAsset('Water.Bottom', 'images/water.png');
+        AssetManager.addAsset('Water.Right', 'images/water.png');
 
-        AssetManager.addAssetFrame('Heli.TopRight', 0, 'images/Heli/top_right_1.png', null, null);
-        AssetManager.addAssetFrame('Heli.TopRight', 1, 'images/Heli/top_right_2.png', null, null);
+        /*
+                AssetManager.addAsset('Stone.Top', 'images/tile.png');
+                AssetManager.addAsset('Stone.Left', 'images/tile.png');
+                AssetManager.addAsset('Stone.Bottom', 'images/tile.png');
+                AssetManager.addAsset('Stone.Right', 'images/tile.png');
+        */
 
-        AssetManager.addAssetFrame('Heli.BottomLeft', 0, 'images/Heli/bottom_left_1.png', null, null);
-        AssetManager.addAssetFrame('Heli.BottomLeft', 1, 'images/Heli/bottom_left_2.png', null, null);
 
-        AssetManager.addAssetFrame('Heli.BottomRight', 0, 'images/Heli/bottom_right_1.png', null, null);
-        AssetManager.addAssetFrame('Heli.BottomRight', 1, 'images/Heli/bottom_right_2.png', null, null);
+        AssetManager.addAssetFrame('Heli', 0, 'images/Heli/up_1.png', null, null);
+        AssetManager.addAssetFrame('Heli', 1, 'images/Heli/up_2.png', null, null);
 
-        AssetManager.addAssetFrame('Heli.Bottom', 0, 'images/Heli/down_1.png', null, null);
-        AssetManager.addAssetFrame('Heli.Bottom', 1, 'images/Heli/down_2.png', null, null);
-
-        AssetManager.addAssetFrame('Heli.Top', 0, 'images/Heli/up_1.png', null, null);
-        AssetManager.addAssetFrame('Heli.Top', 1, 'images/Heli/up_2.png', null, null);
+        AssetManager.addAssetFrame('Tank', 0, 'images/Tank/up_1.png', null, null);
+        AssetManager.addAssetFrame('Tank', 1, 'images/Tank/up_1.png', null, null);
 
         AssetManager.start();
     }
 
-    //http://www.goldenskullstudios.com/2d-hexagonal-tile-pack/
     //http://www.kenney.nl/assets/hexagon-pack
-    //https://s-media-cache-ak0.pinimg.com/originals/5a/d3/7f/5ad37f0b696c77dbe85bfb3b329de46f.jpg
-    //Arpegglatura <3
 }
 
 Main.run();

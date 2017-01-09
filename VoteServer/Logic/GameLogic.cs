@@ -62,59 +62,72 @@ namespace VoteServer.Logic
                 return new PostVoteResponse() { GenerationMismatch = true };
             }
 
-            var unit = gameState.GetUnitById(model.EntityId);
-            if (unit == null)
+            var entity = gameState.GetEntityById(model.EntityId);
+            if (entity == null)
                 return new PostVoteResponse() { IssueVoting = true };
+            MongoGameVote.VoteAction action;
 
-            switch (unit.EntityType)
+            var hex1 = board.GetHexagon(entity.X, entity.Z);
+            var hex2 = board.GetHexagon(model.X, model.Z);
+            if (hex1 == null || hex2 == null)
             {
-                case GameEntityType.Infantry:
-                    break;
-                case GameEntityType.Tank:
-                    break;
-                case GameEntityType.Base:
-                    break;
-                case GameEntityType.MainBase:
-                    break;
-                case GameEntityType.Plane:
-                    switch (model.Action)
-                    {
-                        case "Move":
-                            var hex1 = board.GetHexagon(unit.X, unit.Z);
-                            var hex2 = board.GetHexagon(model.X, model.Z);
-                            if (hex1 == null || hex2 == null)
-                            {
-                                return new PostVoteResponse() { IssueVoting = true };
-                            }
-                            var distance = HexUtils.Distance(hex1, hex2);
-
-                            if (distance > 5)
-                            {
-                                return new PostVoteResponse() { IssueVoting = true }; ;
-                            }
-                            MongoGameVote.GameVote gameVote = new MongoGameVote.GameVote()
-                            {
-                                Generated = DateTime.UtcNow,
-                                Generation = model.Generation,
-                                UserId = model.UserId,
-                                Action = new MongoGameVote.MoveVoteAction()
-                                {
-                                    EntityId = model.EntityId,
-                                    X = model.X,
-                                    Z = model.Z
-                                }
-                            };
-                            await Task.WhenAll(
-                                gameVote.Insert(),
-                                logic.GameListener.SendGameVote(model.Generation, new GameVoteMessage() { Vote = gameVote })
-                            );
-                            break;
-                        default:
-                            throw new RequestValidationException("Action not found");
-                    }
-                    break;
-                default: throw new RequestValidationException("Action not found");
+                return new PostVoteResponse() { IssueVoting = true };
             }
+            var distance = HexUtils.Distance(hex1, hex2);
+
+
+            var detail = EntityDetails.Detail[entity.EntityType];
+
+
+            switch (model.Action)
+            {
+                case "Move":
+
+                    if (distance <= 0 || distance > detail.MoveRadius)
+                    {
+                        return new PostVoteResponse() { IssueVoting = true }; ;
+                    }
+                    action = new MongoGameVote.MoveVoteAction() { EntityId = model.EntityId, X = model.X, Z = model.Z };
+                    break;
+                case "Attack":
+
+                    if (distance <= 0 || distance > detail.AttackRadius)
+                    {
+                        return new PostVoteResponse() { IssueVoting = true }; ;
+                    }
+                    var attackEntity = gameState.GetEntityByLocation(model.X, model.Z);
+                    if (attackEntity == null || attackEntity.FactionId == entity.FactionId)
+                    {
+                        return new PostVoteResponse() { IssueVoting = true }; ;
+                    }
+                    action = new MongoGameVote.AttackVoteAction() { EntityId = model.EntityId, X = model.X, Z = model.Z };
+                    break;
+                case "Spawn":
+                    if (distance <= 0 || distance > detail.SpawnRadius)
+                    {
+                        return new PostVoteResponse() { IssueVoting = true }; ;
+                    }
+                    action = new MongoGameVote.SpawnVoteAction() { EntityId = model.EntityId, X = model.X, Z = model.Z ,EntityType = model.EntityType};
+                    break;
+                default:
+                    throw new RequestValidationException("Action not found");
+            }
+
+
+
+            MongoGameVote.GameVote gameVote = new MongoGameVote.GameVote()
+            {
+                Generated = DateTime.UtcNow,
+                Generation = model.Generation,
+                UserId = model.UserId,
+                Action = action
+            };
+            await Task.WhenAll(
+                gameVote.Insert(),
+                logic.GameListener.SendGameVote(model.Generation, new GameVoteMessage() { Vote = gameVote })
+            );
+
+
             return new PostVoteResponse()
             {
                 Votes = logic.GameManager.TrackedVotes.Where(a => a.Action.EntityId == model.EntityId).ToArray()

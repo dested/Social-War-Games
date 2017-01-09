@@ -124,7 +124,6 @@
     <Compile Include="Utils\Utils.cs" />
     <Compile Include="Game\GameManager.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

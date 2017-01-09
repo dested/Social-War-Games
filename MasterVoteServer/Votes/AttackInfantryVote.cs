@@ -22,7 +22,7 @@ namespace MasterVoteServer.Votes
 
         public override void Complete(MongoGameState.GameState stateData)
         {
-            var unit = stateData.GetUnitById(EntityId);
+            var unit = stateData.GetEntityById(EntityId);
             if (unit != null)
             {
                 var enemy = stateData.GetEntityByLocation(X, Z);

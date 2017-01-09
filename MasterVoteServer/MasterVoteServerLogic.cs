@@ -118,11 +118,16 @@ namespace MasterVoteServer
                 h.Faction = faction;
             }
 
-            entities.AddRange(Enumerable.Range(0, 30 * 4).Select(_ =>
-              {
-                  var random = spots.Random();
-                  return MongoGameState.GameEntity.CreatePlane(random.X, random.Z, faction);
-              }));
+            entities.AddRange(Enumerable.Range(0, 30 * 2).Select(_ =>
+            {
+                var random = spots.Random();
+                return MongoGameState.GameEntity.CreatePlane(random.X, random.Z, faction);
+            }));
+            entities.AddRange(Enumerable.Range(0, 30 * 2).Select(_ =>
+            {
+                var random = spots.Random();
+                return MongoGameState.GameEntity.CreateTank(random.X, random.Z, faction);
+            }));
 
         }
 

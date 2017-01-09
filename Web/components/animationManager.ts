@@ -55,6 +55,7 @@ export class AnimationManager {
         let duration = 400;
 
         let frames = this.frames[this.frameIndex++];
+
         if (!frames) {
             this.isRunning = false;
             this.complete();
@@ -63,13 +64,14 @@ export class AnimationManager {
 
         for (let i = 0; i < frames.length; i++) {
             let frame = frames[i];
+            frame.entity.onAnimationStart(frame);
             frame.entity.executeFrame(this.hexBoard, frame, duration);
         }
 
         setTimeout(() => {
             for (let i = 0; i < frames.length; i++) {
                 let frame = frames[i];
-                frame.entity.onAnimationComplete(frame,this.hexBoard.getHexAtSpot(frame.endX || frame.startX, frame.endZ || frame.startZ));
+                frame.entity.onAnimationComplete(frame);
             }
             this.start();
         }, duration)

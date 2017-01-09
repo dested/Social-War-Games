@@ -23,9 +23,6 @@ namespace Deploy
         static void Main(string[] args)
         {
 
-
-
-            //SetupServer("ec2-35-165-5-132.us-west-2.compute.amazonaws.com");
             //SetupServer("ec2-35-162-125-29.us-west-2.compute.amazonaws.com");
 
             List<FileInfo> files = new List<FileInfo>();
@@ -53,13 +50,11 @@ namespace Deploy
                 .ToList();
 
             Task.WaitAll(
-                Task.Run(() => UploadWeb())
-//                Task.Run(() => UploadFiles("ec2-35-160-122-186.us-west-2.compute.amazonaws.com", files)),
-//                Task.Run(() => UploadFiles("ec2-35-165-5-132.us-west-2.compute.amazonaws.com", files)),
-//                Task.Run(() => UploadFiles("ec2-35-162-125-29.us-west-2.compute.amazonaws.com", files))
+//                Task.Run(() => UploadWeb()),
+                Task.Run(() => UploadFiles("ec2-35-160-122-186.us-west-2.compute.amazonaws.com", files)),
+                Task.Run(() => UploadFiles("ec2-35-162-125-29.us-west-2.compute.amazonaws.com", files))
             );
             //            StartApplication("ec2-35-160-122-186.us-west-2.compute.amazonaws.com", "MasterVoteServer");
-            //            StartApplication("ec2-35-165-5-132.us-west-2.compute.amazonaws.com", "VoteServer");
             //            StartApplication("ec2-35-162-125-29.us-west-2.compute.amazonaws.com", "VoteServer");
 
         }

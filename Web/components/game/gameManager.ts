@@ -245,7 +245,17 @@ export class GameManager {
         }, 1000 * (seconds + 2 > 5 ? 5 : seconds + 2));
     }
 
-    startAction(item: GridHexagon) {
+    startAction(tile: GridHexagon) {
+
+
+        let entities = this.hexBoard.entityManager.getEntitiesAtTile(tile);
+        if (!entities || !entities[0]) {
+            return
+        }
+
+        this.selectedHex = tile;
+        GameService.setSelectedEntity(entities[0]);
+
 
         for (let i = 0; i < this.hexBoard.hexList.length; i++) {
             let h = this.hexBoard.hexList[i];
@@ -254,15 +264,15 @@ export class GameManager {
 
 
         let radius = 5;
-        let spots = this.findAvailableSpots(radius, item);
-        let ent = item.getEntities()[0];
-        item.setShowVotes(true);
+        let spots = this.findAvailableSpots(radius, tile);
+        let ent = entities[0];
+        tile.setShowVotes(true);
 
         for (let i = 0; i < spots.length; i++) {
             let spot = spots[i];
             let entities = this.hexBoard.entityManager.getEntitiesAtTile(spot);
-            if (spot == item || (entities && entities.length > 0)) continue;
-            let path = this.hexBoard.pathFind(item, spot);
+            if (spot == tile || (entities && entities.length > 0)) continue;
+            let path = this.hexBoard.pathFind(tile, spot);
             if (path.length > 1 && path.length <= radius + 1) {
                 spot.setHighlightColor(HexagonColorUtils.moveHighlightColor);
                 spot.setShowVotes(true);
@@ -370,39 +380,20 @@ export class GameManager {
         if (this.selectedHex) {
             let distance = HexUtils.distance(this.selectedHex, item);
             if (distance > 5 || distance == 0) {
-                let entities = this.hexBoard.entityManager.getEntitiesAtTile(item);
-                if (entities && entities[0]) {
-                    this.selectedHex = item;
-                    GameService.setSelectedEntity(entities[0]);
-                    this.startAction(item);
-                }
+                this.startAction(item);
                 return;
             }
             let entities = this.hexBoard.entityManager.getEntitiesAtTile(this.selectedHex);
             if (!entities || entities.length == 0) {
-                let entities = this.hexBoard.entityManager.getEntitiesAtTile(item);
-                if (entities && entities[0]) {
-                    this.selectedHex = item;
-                    GameService.setSelectedEntity(entities[0]);
-                    this.startAction(item);
-                }
+                this.startAction(item);
                 return;
             }
             let entity = entities[0];
             await this.vote(entity, 'Move', item.x, item.z);
-
             this.selectedHex = null;
-            return;
-        }
-
-        let entities = this.hexBoard.entityManager.getEntitiesAtTile(item);
-        if (entities && entities[0]) {
-            this.selectedHex = item;
-            GameService.setSelectedEntity(entities[0]);
+        } else {
             this.startAction(item);
         }
-
-
     }
 
     resize(width: number, height: number) {

@@ -4,7 +4,7 @@ import {GridHexagon} from "./gridHexagon";
 import {
     EntityManager,
     HeliEntity,
-    MainBaseEntity, BaseEntity
+    MainBaseEntity, BaseEntity, TankEntity, SixDirectionEntity, InfantryEntity, RegularBaseEntity
 } from "../entities/entityManager";
 import {Vector3, HexUtils, Node} from "./hexUtils";
 import {AssetManager} from "./assetManager";
@@ -147,7 +147,21 @@ export class HexBoard {
         let terrain = state.terrain;
         const str = terrain.boardStr;
         this.setSize(terrain.width, terrain.height);
-        let tile = AssetManager.assets['tile'];
+        let stoneTop = AssetManager.assets['Stone.Top'];
+        let stoneLeft = AssetManager.assets['Stone.Left'];
+        let stoneBottom = AssetManager.assets['Stone.Bottom'];
+        let stoneRight = AssetManager.assets['Stone.Right'];
+
+
+        let grassTop = AssetManager.assets['Grass.Top'];
+        let grassLeft = AssetManager.assets['Grass.Left'];
+        let grassBottom = AssetManager.assets['Grass.Bottom'];
+        let grassRight = AssetManager.assets['Grass.Right'];
+
+        let waterTop = AssetManager.assets['Water.Top'];
+        let waterLeft = AssetManager.assets['Water.Left'];
+        let waterBottom = AssetManager.assets['Water.Bottom'];
+        let waterRight = AssetManager.assets['Water.Right'];
 
         let ys = str.split('|');
         for (let z = 0; z < terrain.height; z++) {
@@ -159,7 +173,13 @@ export class HexBoard {
                 gridHexagon.y = 0;
                 gridHexagon.z = z;
                 gridHexagon.height = result;
-                gridHexagon.setTexture(tile);
+                if (result == 0) {
+                    gridHexagon.setTexture(waterTop, waterLeft, waterBottom, waterRight);
+                } else if (result > 0 && result < 3) {
+                    gridHexagon.setTexture(grassTop, grassLeft, grassBottom, grassRight);
+                } else {
+                    gridHexagon.setTexture(stoneTop, stoneLeft, stoneBottom, stoneRight);
+                }
                 gridHexagon.setBaseColor(HexagonColorUtils.baseColors);
                 gridHexagon.buildPaths();
                 gridHexagon.buildMiniPaths();
@@ -211,8 +231,23 @@ export class HexBoard {
                         entity = new MainBaseEntity(this.entityManager, stateEntity);
                         break;
                     }
+                    case "Base": {
+                        entity = new RegularBaseEntity(this.entityManager, stateEntity);
+                        break;
+                    }
                     case "Plane": {
                         entity = new HeliEntity(this.entityManager, stateEntity);
+                        (<SixDirectionEntity>entity).setDirection(stateEntity.direction);
+                        break;
+                    }
+                    case "Infantry": {
+                        entity = new InfantryEntity(this.entityManager, stateEntity);
+                        (<SixDirectionEntity>entity).setDirection(stateEntity.direction);
+                        break;
+                    }
+                    case "Tank": {
+                        entity = new TankEntity(this.entityManager, stateEntity);
+                        (<SixDirectionEntity>entity).setDirection(stateEntity.direction);
                         break;
                     }
                 }

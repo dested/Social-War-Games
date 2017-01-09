@@ -109,10 +109,10 @@ export class HexUtils {
 }
 
 export enum Direction{
-    TopLeft = 0,
-    Top = 1,
-    TopRight = 2,
-    BottomRight = 3,
-    Bottom = 4,
-    BottomLeft = 5
+    Top = 0,
+    TopRight = 1,
+    BottomRight = 2,
+    Bottom = 3,
+    BottomLeft = 4,
+    TopLeft= 5,
 }

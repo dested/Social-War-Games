@@ -2,7 +2,7 @@ import {AssetManager} from "../game/assetManager";
 import {HexBoard} from "../game/hexBoard";
 import {GridHexagonConstants} from "../game/gridHexagonConstants";
 import {GridHexagon} from "../game/gridHexagon";
-import {Vector3, HexUtils} from "../game/hexUtils";
+import {Vector3, HexUtils, Direction} from "../game/hexUtils";
 import {GameMetricVoteAction, GameMetricMoveVoteAction, GameEntity, GameMetricsVote} from "../models/hexBoard";
 import {AnimationFrame, AnimationFrameType} from "../animationManager";
 import {Help} from "../utils/help";
@@ -64,6 +64,9 @@ export abstract class BaseEntity {
     animationFrame: number = 0;
     _drawTickNumber: number = (Math.random() * 1000) | 0;
 
+    abstract realYOffset(): number;
+
+    abstract realXOffset(): number;
 
     protected animateFromHex: GridHexagon = null;
     protected animateToHex: GridHexagon = null;
@@ -139,13 +142,15 @@ export abstract class BaseEntity {
     public tick() {
     }
 
-    public onAnimationComplete(frame: AnimationFrame, tile: GridHexagon): void {
+    public onAnimationComplete(frame: AnimationFrame): void {
         if (frame.type == AnimationFrameType.Stop) {
             this.currentTick = -1;
             this.durationTicks = -1;
             this.animateToHex = null;
             this.animateFromHex = null;
+            return;
         }
+        let tile = this.entityManager.hexBoard.getHexAtSpot(frame.endX || frame.startX, frame.endZ || frame.startZ);
         let neighbors = tile.getNeighbors();
         tile.setFaction(this.faction);
         for (let j = 0; j < neighbors.length; j++) {
@@ -156,8 +161,17 @@ export abstract class BaseEntity {
         }
         this.x = tile.getRealX();
         this.z = tile.getRealZ();
-
         this.setTile(tile);
+    }
+
+    public onAnimationStart(frame: AnimationFrame): void {
+        if (frame.type == AnimationFrameType.Start) {
+            this.currentTick = -1;
+            this.durationTicks = -1;
+            this.animateToHex = null;
+            this.animateFromHex = null;
+            return;
+        }
     }
 
     abstract getActionFrames(action: GameMetricVoteAction, hexBoard: HexBoard): AnimationFrame[] ;
@@ -206,54 +220,33 @@ export abstract class BaseEntity {
 
 export abstract class SixDirectionEntity extends BaseEntity {
 
-    currentDirection: number = (Math.random() * 6) | 0;
+
+    currentDirection: Direction = Direction.Bottom;
+
+    setDirection(direction: Direction) {
+        this.currentDirection = direction;
+    }
 
     draw(context: CanvasRenderingContext2D) {
         super.draw(context);
         context.save();
         context.translate(this.x, this.z);
 
-        let assetName = this.key + '.' + this.currentDirectionToAssetName();
-        let asset = AssetManager.assets[assetName];
+        let asset = AssetManager.assets[this.key];
         let image = asset.images[this.animationFrame];
 
 
-        let ratio = (GridHexagonConstants.width / asset.size.width);
+        let ratio = (GridHexagonConstants.width / asset.size.width) / 2;
 
 
-        let width = GridHexagonConstants.width;
+        let width = GridHexagonConstants.width / 2;
         let height = asset.size.height * ratio;
-
-        context.drawImage(image, -asset.base.x * ratio, -asset.base.y * ratio - this.hoverY(), width, height);
-
+        context.rotate(this.directionToRadians());
+        context.drawImage(image, -asset.base.x * ratio - this.realXOffset(), -asset.base.y * ratio - this.realYOffset(), width, height);
 
         context.restore();
     }
 
-    currentDirectionToAssetName() {
-
-        switch (this.currentDirection) {
-            case 0:
-                return "TopLeft";
-            case 1:
-                return "Top";
-            case 2:
-                return "TopRight";
-            case 3:
-                return "BottomRight";
-            case 4:
-                return "Bottom";
-            case 5:
-                return "BottomLeft";
-            default :
-                throw "Direction not found";
-        }
-    }
-
-    private hoverY() {
-        let offset = GridHexagonConstants.depthHeight();
-        return -(Math.sin(this._drawTickNumber / 10)) * offset + offset * 1.5;
-    }
 
     getActionFrames(action: GameMetricVoteAction, hexBoard: HexBoard): AnimationFrame[] {
         let frames: AnimationFrame[] = [];
@@ -312,7 +305,30 @@ export abstract class SixDirectionEntity extends BaseEntity {
         }
     }
 
-
+    private directionToRadians(): number {
+        let degrees = 0;
+        switch (this.currentDirection) {
+            case Direction.TopLeft:
+                degrees = -45;
+                break;
+            case Direction.Top:
+                degrees = 0;
+                break;
+            case Direction.TopRight:
+                degrees = 45;
+                break;
+            case Direction.BottomRight:
+                degrees = 45 + 90;
+                break;
+            case Direction.Bottom:
+                degrees = 180;
+                break;
+            case Direction.BottomLeft:
+                degrees = -45 - 90;
+                break;
+        }
+        return degrees * 0.0174533;
+    }
 }
 
 export abstract class StationaryEntity extends BaseEntity {
@@ -345,6 +361,17 @@ export abstract class StationaryEntity extends BaseEntity {
 }
 
 export class HeliEntity extends SixDirectionEntity {
+    realYOffset(): number {
+
+        let offset = GridHexagonConstants.depthHeight();
+        return -(Math.sin(this._drawTickNumber / 10)) * offset + offset * 1;
+    }
+
+
+    realXOffset(): number {
+        return 0;
+    }
+
     constructor(entityManager: EntityManager, entity: GameEntity) {
         super(entityManager, entity, 2, 10);
         this.key = 'Heli';
@@ -354,14 +381,151 @@ export class HeliEntity extends SixDirectionEntity {
         return 1;
     }
 }
+export class TankEntity extends SixDirectionEntity {
+    constructor(entityManager: EntityManager, entity: GameEntity) {
+        super(entityManager, entity, 2, 10);
+        this.key = 'Tank';
+    }
+
+    realYOffset(): number {
+        return 0;
+    }
+
+    realXOffset(): number {
+        return 0;
+    }
+
+    getYOffset(): number {
+        return 0;
+    }
+}
+export class InfantryEntity extends SixDirectionEntity {
+    constructor(entityManager: EntityManager, entity: GameEntity) {
+        super(entityManager, entity, 2, 10);
+        this.key = 'Infantry';
+    }
+
+    realYOffset(): number {
+        return 0;
+    }
+
+    realXOffset(): number {
+        return 0;
+    }
+
+    getYOffset(): number {
+        return 0;
+    }
+}
 export class MainBaseEntity extends StationaryEntity {
     constructor(entityManager: EntityManager, entity: GameEntity) {
         super(entityManager, entity, 0, 0);
         this.key = 'MainBase';
     }
 
+    realYOffset(): number {
+        return 0;
+    }
+
+    realXOffset(): number {
+        return 0;
+    }
+
     getYOffset(): number {
         return 0;
     }
 
+}
+export class RegularBaseEntity extends StationaryEntity {
+    constructor(entityManager: EntityManager, entity: GameEntity) {
+        super(entityManager, entity, 0, 0);
+        this.key = 'Base';
+    }
+
+    realYOffset(): number {
+        return 0;
+    }
+
+    realXOffset(): number {
+        return 0;
+    }
+
+    getYOffset(): number {
+        return 0;
+    }
+
+}
+
+export class EntityDetail {
+    public solid: boolean;
+    public moveRadius: number;
+    public attackRadius: number;
+    public spawnRadius: number;
+    public attackPower: number;
+    public ticksToSpawn: number;
+    public health: number;
+    public healthRegenRate: number;
+}
+
+export class EntityDetails {
+
+    static instance: EntityDetails = new EntityDetails();
+    details: {[entity: string]: EntityDetail} = {};
+
+    constructor() {
+
+        this.details["Base"] = new EntityDetail();
+        this.details["Base"].moveRadius = 0;
+        this.details["Base"].health = 10;
+        this.details["Base"].attackRadius = 0;
+        this.details["Base"].attackPower = 0;
+        this.details["Base"].ticksToSpawn = 5;
+        this.details["Base"].healthRegenRate = 1;
+        this.details["Base"].solid = true;
+        this.details["Base"].spawnRadius = 3;
+
+
+        this.details["MainBase"] = new EntityDetail();
+        this.details["MainBase"].moveRadius = 0;
+        this.details["MainBase"].health = 30;
+        this.details["MainBase"].attackRadius = 0;
+        this.details["MainBase"].attackPower = 0;
+        this.details["MainBase"].ticksToSpawn = 0;
+        this.details["MainBase"].healthRegenRate = 0;
+        this.details["MainBase"].solid = true;
+        this.details["MainBase"].spawnRadius = 4;
+
+
+        this.details["Tank"] = new EntityDetail();
+        this.details["Tank"].moveRadius = 4;
+        this.details["Tank"].health = 4;
+        this.details["Tank"].attackRadius = 8;
+        this.details["Tank"].attackPower = 3;
+        this.details["Tank"].ticksToSpawn = 3;
+        this.details["Tank"].healthRegenRate = 1;
+        this.details["Tank"].solid = false;
+        this.details["Tank"].spawnRadius = 0;
+
+
+        this.details["Plane"] = new EntityDetail();
+        this.details["Plane"].moveRadius = 10;
+        this.details["Plane"].health = 1;
+        this.details["Plane"].attackRadius = 3;
+        this.details["Plane"].attackPower = 3;
+        this.details["Plane"].ticksToSpawn = 4;
+        this.details["Plane"].healthRegenRate = 1;
+        this.details["Plane"].solid = false;
+        this.details["Plane"].spawnRadius = 0;
+
+
+        this.details["Infantry"] = new EntityDetail();
+        this.details["Infantry"].moveRadius = 8;
+        this.details["Infantry"].health = 2;
+        this.details["Infantry"].attackRadius = 3;
+        this.details["Infantry"].attackPower = 1;
+        this.details["Infantry"].ticksToSpawn = 2;
+        this.details["Infantry"].healthRegenRate = 1;
+        this.details["Infantry"].solid = false;
+        this.details["Infantry"].spawnRadius = 2;
+    }
 }

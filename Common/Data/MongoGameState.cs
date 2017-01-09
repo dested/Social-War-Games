@@ -46,6 +46,7 @@ namespace Common.Data
             [BsonRepresentation(BsonType.String)]
             public GameEntityType EntityType { get; set; }
             public int Health { get; set; }
+            public Direction Direction { get; set; }
             public int X { get; set; }
             public int Z { get; set; }
 
@@ -82,8 +83,20 @@ namespace Common.Data
                     Id = ObjectId.GenerateNewId().ToString()
                 };
             }
+            public static GameEntity CreateTank(int x, int z, int factionId)
+            {
+                return new GameEntity()
+                {
+                    X = x,
+                    Z = z,
+                    EntityType = GameEntityType.Tank,
+                    FactionId = factionId,
+                    Health = 1,
+                    Id = ObjectId.GenerateNewId().ToString()
+                };
+            }
         }
-        public static MongoGameState.GameEntity GetUnitById(this GameState state, string id)
+        public static MongoGameState.GameEntity GetEntityById(this GameState state, string id)
         {
             foreach (var gameUnit in state.Entities)
             {
@@ -105,6 +118,14 @@ namespace Common.Data
             }
             return null;
         }
-
+    }
+    public enum Direction
+    {
+        Top = 0,
+        TopRight = 1,
+        BottomRight = 2,
+        Bottom = 3,
+        BottomLeft = 4,
+        TopLeft = 5,
     }
 }

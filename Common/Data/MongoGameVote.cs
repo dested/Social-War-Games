@@ -111,7 +111,9 @@ namespace Common.Data
         {
             public int X { get; set; }
             public int Z { get; set; }
-            public string Unit { get; set; }
+            [JsonConverter(typeof(StringEnumConverter))]
+            [BsonRepresentation(BsonType.String)]
+            public GameEntityType EntityType { get; set; }
             [JsonConverter(typeof(StringEnumConverter))]
             [BsonRepresentation(BsonType.String)]
             public override VoteActionType ActionType { get; } = VoteActionType.Spawn;
@@ -119,7 +121,7 @@ namespace Common.Data
             {
                 var action = a as SpawnVoteAction;
                 if (action == null) return false;
-                return X == action.X && Z == action.Z && Unit == action.Unit;
+                return X == action.X && Z == action.Z && EntityType == action.EntityType;
             }
             public override bool Complete(GameManager gameManager)
             {

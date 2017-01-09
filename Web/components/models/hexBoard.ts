@@ -1,3 +1,4 @@
+import {Direction} from "../game/hexUtils";
 export interface VoteResponse {
     generationMismatch: boolean;
     issueVoting: boolean;
@@ -18,6 +19,7 @@ export interface Terrain {
     boardStr: string;
 }
 export interface GameEntity {
+    direction: Direction;
     id: string;
     factionId: number;
     entityType: string;
