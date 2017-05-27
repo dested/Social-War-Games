@@ -3,7 +3,7 @@ import {HexBoard} from "../game/hexBoard";
 import {GridHexagonConstants} from "../game/gridHexagonConstants";
 import {GridHexagon} from "../game/gridHexagon";
 import {Vector3, HexUtils, Direction} from "../game/hexUtils";
-import {GameMetricVoteAction, GameMetricMoveVoteAction, GameEntity, GameMetricsVote} from "../models/hexBoard";
+import {GameMetricVoteAction, GameMetricMoveVoteAction, GameEntity, GameMetricsVote, GameMetricSpawnVoteAction, GameMetricAttackVoteAction} from "../models/hexBoard";
 import {AnimationFrame, AnimationFrameType} from "../animationManager";
 import {Help} from "../utils/help";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
@@ -218,6 +218,18 @@ export abstract class BaseEntity {
                 case "Move":
                     let moveAction = <GameMetricMoveVoteAction> currentVote.action;
                     if (moveAction.x == spot.x && moveAction.z == spot.z) {
+                        votes += currentVote.votes;
+                    }
+                    break;
+                case "Attack":
+                    let attackAction = <GameMetricAttackVoteAction> currentVote.action;
+                    if (attackAction.x == spot.x && attackAction.z == spot.z) {
+                        votes += currentVote.votes;
+                    }
+                    break;
+                case "Spawn":
+                    let spawnAction = <GameMetricSpawnVoteAction> currentVote.action;
+                    if (spawnAction.x == spot.x && spawnAction.z == spot.z) {
                         votes += currentVote.votes;
                     }
                     break;
@@ -520,7 +532,7 @@ export class EntityDetails {
 
         this.details["Tank"] = new EntityDetail();
         this.details["Tank"].moveRadius = 4;
-        this.details["Tank"].health = 4;
+        this.details["Tank"].health = 8;
         this.details["Tank"].attackRadius = 8;
         this.details["Tank"].attackPower = 3;
         this.details["Tank"].ticksToSpawn = 3;
@@ -532,7 +544,7 @@ export class EntityDetails {
 
         this.details["Heli"] = new EntityDetail();
         this.details["Heli"].moveRadius = 10;
-        this.details["Heli"].health = 1;
+        this.details["Heli"].health = 2;
         this.details["Heli"].attackRadius = 3;
         this.details["Heli"].attackPower = 3;
         this.details["Heli"].ticksToSpawn = 4;
@@ -544,7 +556,7 @@ export class EntityDetails {
 
         this.details["Infantry"] = new EntityDetail();
         this.details["Infantry"].moveRadius = 8;
-        this.details["Infantry"].health = 2;
+        this.details["Infantry"].health = 4;
         this.details["Infantry"].attackRadius = 3;
         this.details["Infantry"].attackPower = 1;
         this.details["Infantry"].ticksToSpawn = 2;

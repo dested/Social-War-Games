@@ -40,7 +40,7 @@ export interface GameMetricsVote {
 }
 export interface GameMetricVoteAction {
     entityId: string;
-    actionType: string;
+    actionType: "Move"|"Attack"|"Spawn";
 }
 export interface GameMetricMoveVoteAction extends GameMetricVoteAction {
     x: number;

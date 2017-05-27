@@ -105,44 +105,60 @@ export class GridHexagon {
     }
 
     setBaseColor(baseColor: HexagonColor[]): void {
-        this.baseColor = baseColor;
-        this.invalidateColor();
+        if (this.baseColor !== baseColor) {
+            this.baseColor = baseColor;
+            this.invalidateColor();
+        }
     }
 
     setFaction(faction: number): void {
-        this.faction = faction;
-        this.invalidateColor();
+        if (this.faction !== faction) {
+            this.faction = faction;
+            this.invalidateColor();
+        }
     }
 
     setHighlightColor(highlightColor: HexagonColor): void {
-        this.highlightColor = highlightColor;
-        this.invalidateColor();
+        if (this.highlightColor !== highlightColor) {
+            this.highlightColor = highlightColor;
+            this.invalidateColor();
+        }
     }
 
 
     setVoteColor(voteColor: HexagonColor): void {
-        this.voteColor = voteColor;
-        this.invalidateColor();
+        if (this.voteColor !== voteColor) {
+            this.voteColor = voteColor;
+            this.invalidateColor();
+        }
     }
 
     clearVoteColor(): void {
-        this.voteColor = null;
-        this.invalidateColor();
+        if (this.voteColor !== null) {
+            this.voteColor = null;
+            this.invalidateColor();
+        }
     }
 
     setSecondaryVoteColor(voteColor: HexagonColor): void {
-        this.secondaryVoteColor = voteColor;
-        this.invalidateColor();
+        if (this.secondaryVoteColor !== voteColor) {
+            this.secondaryVoteColor = voteColor;
+            this.invalidateColor();
+        }
     }
 
     clearSecondaryVoteColor(): void {
-        this.secondaryVoteColor = null;
-        this.invalidateColor();
+        if (this.secondaryVoteColor !== null) {
+            this.secondaryVoteColor = null;
+            this.invalidateColor();
+        }
     }
 
     clearHighlightColor(): void {
-        this.highlightColor = null;
-        this.invalidateColor();
+        if (this.highlightColor !== null) {
+            this.highlightColor = null;
+            this.invalidateColor();
+        }
     }
 
     setTexture(textureTop: Asset, textureLeft: Asset, textureBottom: Asset, textureRight: Asset): void {

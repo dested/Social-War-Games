@@ -71,7 +71,7 @@ namespace MasterVoteServer
             MongoTickResult.Collection.DeleteMany(FilterDefinition<MongoTickResult.TickResult>.Empty);
             MongoServerLog.Collection.DeleteMany(FilterDefinition<MongoServerLog.ServerLog>.Empty);
 
-            var terrain = GenerateTerrain(48 * 2, 48 * 2);
+            var terrain = GenerateTerrain(84 * 2, 84 * 2);
             var board = new GameBoard(new MongoGameState.GameState() { Terrain = terrain });
             var entities = new List<MongoGameState.GameEntity>();
 

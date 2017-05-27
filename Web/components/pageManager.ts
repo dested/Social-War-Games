@@ -121,6 +121,8 @@ export class PageManager {
         }
         // if (Math.abs(this.swipeVelocity.x) > 0 || Math.abs(this.swipeVelocity.y) > 0)
         {
+
+            //todo optimize this cause its called way too fucking often
             this.gameManager.offsetView(-this.swipeVelocity.x, -this.swipeVelocity.y);
         }
         this.gameManager.tick();

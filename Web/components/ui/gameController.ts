@@ -31,6 +31,7 @@ export class GameController {
                 $scope.model.canAttack = detail.attackRadius > 0;
                 $scope.model.canMove = detail.moveRadius > 0;
                 $scope.model.selectedAction = GameService.selectedAction;
+                $scope.model.maxEntityHealth = detail.health;
             } else {
                 $scope.model.canSpawn = false;
                 $scope.model.canAttack = false;
@@ -66,6 +67,7 @@ interface GameControllerScope extends angular.IScope {
 
 interface GameControllerModel {
     selectedEntity: BaseEntity;
+    maxEntityHealth: number;
     loading: boolean;
     timerPercent: number;
     name: string;

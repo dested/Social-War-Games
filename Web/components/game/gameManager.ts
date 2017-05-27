@@ -308,16 +308,22 @@ export class GameManager {
                 }
                     break;
                 case "attack": {
-                    if (entities.length == 0) continue;
 
-                    if (entities[0].faction == GameService.selectedEntity.faction)continue;
-
+                    if (entities[0] && entities[0].faction == GameService.selectedEntity.faction)continue;
                     let path = this.hexBoard.pathFind(GameService.selectedHex, spot);
                     if (path.length > 1 && path.length <= radius + 1) {
-                        spot.setHighlightColor(HexagonColorUtils.attackHighlightColor);
-                        spot.setShowVotes(true);
-                        selectedEntity.setSecondaryVoteColor(spot);
-                        // spot.setHeightOffset(.25);
+                        if (entities.length == 0) {
+                            spot.setHighlightColor(HexagonColorUtils.moveHighlightColor);
+                            spot.setShowVotes(true);
+                            selectedEntity.setSecondaryVoteColor(spot);
+                            // spot.setHeightOffset(.25);
+                        } else {
+                            spot.setHighlightColor(HexagonColorUtils.attackHighlightColor);
+                            spot.setShowVotes(true);
+                            selectedEntity.setSecondaryVoteColor(spot);
+                            // spot.setHeightOffset(.25);
+                        }
+
                     }
                 }
                     break;

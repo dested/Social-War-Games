@@ -12,7 +12,7 @@ export class HexagonColorUtils {
     static highlightColor = new HexagonColor('#00F9FF');
     static selectedHighlightColor = new HexagonColor('#6B90FF');
     static moveHighlightColor = new HexagonColor('#BE9EFF');
-    static attackHighlightColor = new HexagonColor('#f91d0e');
+    static attackHighlightColor = new HexagonColor('#f9a5b1');
     static spawnHighlightColor = new HexagonColor('#f7f966');
     static voteColor: HexagonColor[];
     static miniBaseColor: HexagonColor = new HexagonColor('#DCDCDC');

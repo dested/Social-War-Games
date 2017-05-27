@@ -19,7 +19,7 @@ namespace Common.Game
         public MongoGameState.GameState GameState { get; set; }
         public GameBoard GameBoard { get; set; }
         public bool Locked { get; set; }
-        public Random Random { get; set; }=new Random(31337);
+        public Random Random { get; set; } = new Random(31337);
 
         private object locker = new object();
 
@@ -104,6 +104,19 @@ namespace Common.Game
                         {
                             completedVotes.Add(vote);
                             break;
+                        }
+                    }
+                }
+
+                foreach (var entity in this.GameState.Entities)
+                {
+                    if (entity.Health > 0)
+                    {
+                        var detail = EntityDetails.Detail[entity.EntityType];
+                        entity.Health += detail.HealthRegenRate;
+                        if (entity.Health > detail.Health)
+                        {
+                            entity.Health = detail.Health;
                         }
                     }
                 }
