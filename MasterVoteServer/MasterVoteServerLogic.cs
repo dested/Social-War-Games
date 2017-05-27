@@ -71,7 +71,7 @@ namespace MasterVoteServer
             MongoTickResult.Collection.DeleteMany(FilterDefinition<MongoTickResult.TickResult>.Empty);
             MongoServerLog.Collection.DeleteMany(FilterDefinition<MongoServerLog.ServerLog>.Empty);
 
-            var terrain = GenerateTerrain(84 * 2, 84 * 2);
+            var terrain = GenerateTerrain(48 * 2, 48 * 2);
             var board = new GameBoard(new MongoGameState.GameState() { Terrain = terrain });
             var entities = new List<MongoGameState.GameEntity>();
 
@@ -96,7 +96,7 @@ namespace MasterVoteServer
             {
                 Generation = 0,
                 LastGeneration = DateTime.UtcNow,
-                TickIntervalSeconds = 60,
+                TickIntervalSeconds = 15,
                 Terrain = terrain,
                 FactionData = sb.ToString(),
                 Entities = entities,
@@ -121,7 +121,7 @@ namespace MasterVoteServer
             entities.AddRange(Enumerable.Range(0, 30 * 2).Select(_ =>
             {
                 var random = spots.Random();
-                return MongoGameState.GameEntity.CreatePlane(random.X, random.Z, faction);
+                return MongoGameState.GameEntity.CreateHeli(random.X, random.Z, faction);
             }));
             entities.AddRange(Enumerable.Range(0, 30 * 2).Select(_ =>
             {

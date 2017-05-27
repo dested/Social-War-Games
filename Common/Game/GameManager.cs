@@ -19,6 +19,7 @@ namespace Common.Game
         public MongoGameState.GameState GameState { get; set; }
         public GameBoard GameBoard { get; set; }
         public bool Locked { get; set; }
+        public Random Random { get; set; }=new Random(31337);
 
         private object locker = new object();
 

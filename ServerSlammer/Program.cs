@@ -85,7 +85,7 @@ namespace ServerSlammer
                 var result = Vote(new PostVoteRequest()
                 {
                     EntityId = ent.Id,
-                    Action = "Move",
+                    Action = VoteActionType.Move,
                     UserId = "faa",
                     Generation = board.GameState.Generation,
                     X = px,

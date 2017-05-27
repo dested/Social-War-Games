@@ -101,8 +101,25 @@ namespace Common.Data
             }
             public override bool Complete(GameManager gameManager)
             {
-                return true;
+                var entity = gameManager.GameState.Entities.First(a => a.Id == EntityId);
 
+                var enemyEntity = gameManager.GameState.Entities.FirstOrDefault(a => a.X == X && a.Z == Z);
+
+                if (enemyEntity == null)
+                {
+                    return false;
+                }
+
+                var attackerDetail = EntityDetails.Detail[entity.EntityType];
+                var enemyDetail = EntityDetails.Detail[enemyEntity.EntityType];
+                //todo take into account shield from enemy
+
+                int amount = gameManager.Random.Next(0, attackerDetail.AttackPower) + 1;
+
+                enemyEntity.Hurt(amount, gameManager.GameState);
+
+
+                return true;
             }
 
         }

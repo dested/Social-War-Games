@@ -19,7 +19,7 @@ interface Path2DConstructor {
     new (path: Path2D, fillRule?: string): Path2D;
     prototype: Path2D;
 }
-declare var Path2D: Path2DConstructor;
+// declare var Path2D: Path2DConstructor;
 
 // Extend Window 
 interface Window { Path2D: Path2DConstructor; }

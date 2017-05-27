@@ -5,8 +5,9 @@
     "emitDecoratorMetadata": true,
     "removeComments": false,
     "outFile": "../js/app.js",
-    "target": "es5",
-    "inlineSourceMap": true
+    "target": "es2017",
+    "inlineSourceMap": true,
+    "lib": ["dom","es7"]
   },
   "files": [
     "main.ts"

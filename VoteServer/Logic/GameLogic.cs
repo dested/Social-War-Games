@@ -81,7 +81,7 @@ namespace VoteServer.Logic
 
             switch (model.Action)
             {
-                case "Move":
+                case VoteActionType.Move:
 
                     if (distance <= 0 || distance > detail.MoveRadius)
                     {
@@ -89,7 +89,7 @@ namespace VoteServer.Logic
                     }
                     action = new MongoGameVote.MoveVoteAction() { EntityId = model.EntityId, X = model.X, Z = model.Z };
                     break;
-                case "Attack":
+                case VoteActionType.Attack:
 
                     if (distance <= 0 || distance > detail.AttackRadius)
                     {
@@ -102,12 +102,12 @@ namespace VoteServer.Logic
                     }
                     action = new MongoGameVote.AttackVoteAction() { EntityId = model.EntityId, X = model.X, Z = model.Z };
                     break;
-                case "Spawn":
+                case VoteActionType.Spawn:
                     if (distance <= 0 || distance > detail.SpawnRadius)
                     {
                         return new PostVoteResponse() { IssueVoting = true }; ;
                     }
-                    action = new MongoGameVote.SpawnVoteAction() { EntityId = model.EntityId, X = model.X, Z = model.Z ,EntityType = model.EntityType};
+                    action = new MongoGameVote.SpawnVoteAction() { EntityId = model.EntityId, X = model.X, Z = model.Z ,EntityType = model.EntityType.Value};
                     break;
                 default:
                     throw new RequestValidationException("Action not found");

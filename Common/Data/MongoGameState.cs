@@ -67,19 +67,19 @@ namespace Common.Data
                     Z = z,
                     EntityType = GameEntityType.MainBase,
                     FactionId = factionId,
-                    Health = 30,
+                    Health = EntityDetails.Detail[GameEntityType.MainBase].Health,
                     Id = ObjectId.GenerateNewId().ToString()
                 };
             }
-            public static GameEntity CreatePlane(int x, int z, int factionId)
+            public static GameEntity CreateHeli(int x, int z, int factionId)
             {
                 return new GameEntity()
                 {
                     X = x,
                     Z = z,
-                    EntityType = GameEntityType.Plane,
+                    EntityType = GameEntityType.Heli,
                     FactionId = factionId,
-                    Health = 1,
+                    Health = EntityDetails.Detail[GameEntityType.Heli].Health,
                     Id = ObjectId.GenerateNewId().ToString()
                 };
             }
@@ -91,7 +91,7 @@ namespace Common.Data
                     Z = z,
                     EntityType = GameEntityType.Tank,
                     FactionId = factionId,
-                    Health = 1,
+                    Health = EntityDetails.Detail[GameEntityType.Tank].Health,
                     Id = ObjectId.GenerateNewId().ToString()
                 };
             }

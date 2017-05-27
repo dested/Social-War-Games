@@ -7,6 +7,7 @@ import {GameMetricVoteAction, GameMetricMoveVoteAction, GameEntity, GameMetricsV
 import {AnimationFrame, AnimationFrameType} from "../animationManager";
 import {Help} from "../utils/help";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
+import {PossibleActions} from "../ui/gameService";
 export class EntityManager {
 
     constructor(public hexBoard: HexBoard) {
@@ -14,8 +15,8 @@ export class EntityManager {
 
 
     public entities: BaseEntity[] = [];
-    private entityKeys: {[entityId: number]: BaseEntity} = {};
-    private entitiesMap: {[tileKey: number]: BaseEntity[]} = {};
+    private entityKeys: { [entityId: number]: BaseEntity } = {};
+    private entitiesMap: { [tileKey: number]: BaseEntity[] } = {};
 
 
     tick() {
@@ -26,7 +27,7 @@ export class EntityManager {
     }
 
     getEntitiesAtTile(item: Vector3): BaseEntity[] {
-        return this.entitiesMap[item.x + item.z * 5000];
+        return this.entitiesMap[item.x + item.z * 5000] || [];
     }
 
     addEntity(entity: BaseEntity) {
@@ -51,6 +52,16 @@ export class EntityManager {
         this.entitiesMap[tile.x + tile.z * 5000] = entities;
     }
 
+    killEntity(entity: BaseEntity): void {
+        var tile = entity.getTile();
+
+        let entities = this.entitiesMap[tile.x + tile.z * 5000];
+        entities.splice(entities.indexOf(entity), 1);
+
+        this.entitiesMap[tile.x + tile.z * 5000] = entities;
+        this.entities.splice(this.entities.indexOf(entity), 1);
+    }
+
     addEntityToTile(tile: GridHexagon, entity: BaseEntity): void {
         if (!this.entitiesMap[tile.x + tile.z * 5000]) {
             this.entitiesMap[tile.x + tile.z * 5000] = [];
@@ -58,6 +69,8 @@ export class EntityManager {
         this.entitiesMap[tile.x + tile.z * 5000].push(entity);
     }
 }
+
+export type EntityUnits = 'Tank' | 'Heli' | 'Infantry' | 'MainBase' | 'Base';
 
 export abstract class BaseEntity {
 
@@ -75,11 +88,11 @@ export abstract class BaseEntity {
 
     public x: number;
     public z: number;
-    public key: string;
+    public entityType: EntityUnits;
     public id: string;
     private health: number;
     private tile: GridHexagon;
-    private faction: number;
+    public faction: number;
 
     public totalVoteCount: number;
 
@@ -216,6 +229,12 @@ export abstract class BaseEntity {
     }
 
     abstract getYOffset(): number;
+
+    stillAlive: boolean = false;
+
+    markAlive() {
+        this.stillAlive = true;
+    }
 }
 
 export abstract class SixDirectionEntity extends BaseEntity {
@@ -232,7 +251,7 @@ export abstract class SixDirectionEntity extends BaseEntity {
         context.save();
         context.translate(this.x, this.z);
 
-        let asset = AssetManager.assets[this.key];
+        let asset = AssetManager.assets[this.entityType];
         let image = asset.images[this.animationFrame];
 
 
@@ -341,7 +360,7 @@ export abstract class StationaryEntity extends BaseEntity {
         context.save();
         context.translate(this.x, this.z);
 
-        let assetName = this.key;
+        let assetName = this.entityType;
         let asset = AssetManager.assets[assetName];
         let image = asset.image || asset.images[this.animationFrame];
 
@@ -374,7 +393,7 @@ export class HeliEntity extends SixDirectionEntity {
 
     constructor(entityManager: EntityManager, entity: GameEntity) {
         super(entityManager, entity, 2, 10);
-        this.key = 'Heli';
+        this.entityType = 'Heli';
     }
 
     getYOffset(): number {
@@ -384,7 +403,7 @@ export class HeliEntity extends SixDirectionEntity {
 export class TankEntity extends SixDirectionEntity {
     constructor(entityManager: EntityManager, entity: GameEntity) {
         super(entityManager, entity, 2, 10);
-        this.key = 'Tank';
+        this.entityType = 'Tank';
     }
 
     realYOffset(): number {
@@ -402,7 +421,7 @@ export class TankEntity extends SixDirectionEntity {
 export class InfantryEntity extends SixDirectionEntity {
     constructor(entityManager: EntityManager, entity: GameEntity) {
         super(entityManager, entity, 2, 10);
-        this.key = 'Infantry';
+        this.entityType = 'Infantry';
     }
 
     realYOffset(): number {
@@ -420,7 +439,7 @@ export class InfantryEntity extends SixDirectionEntity {
 export class MainBaseEntity extends StationaryEntity {
     constructor(entityManager: EntityManager, entity: GameEntity) {
         super(entityManager, entity, 0, 0);
-        this.key = 'MainBase';
+        this.entityType = 'MainBase';
     }
 
     realYOffset(): number {
@@ -439,7 +458,7 @@ export class MainBaseEntity extends StationaryEntity {
 export class RegularBaseEntity extends StationaryEntity {
     constructor(entityManager: EntityManager, entity: GameEntity) {
         super(entityManager, entity, 0, 0);
-        this.key = 'Base';
+        this.entityType = 'Base';
     }
 
     realYOffset(): number {
@@ -465,12 +484,13 @@ export class EntityDetail {
     public ticksToSpawn: number;
     public health: number;
     public healthRegenRate: number;
+    public defaultAction: PossibleActions;
 }
 
 export class EntityDetails {
 
     static instance: EntityDetails = new EntityDetails();
-    details: {[entity: string]: EntityDetail} = {};
+    details: { [entity: string]: EntityDetail } = {};
 
     constructor() {
 
@@ -483,6 +503,7 @@ export class EntityDetails {
         this.details["Base"].healthRegenRate = 1;
         this.details["Base"].solid = true;
         this.details["Base"].spawnRadius = 3;
+        this.details["Base"].defaultAction = 'spawn';
 
 
         this.details["MainBase"] = new EntityDetail();
@@ -494,6 +515,7 @@ export class EntityDetails {
         this.details["MainBase"].healthRegenRate = 0;
         this.details["MainBase"].solid = true;
         this.details["MainBase"].spawnRadius = 4;
+        this.details["MainBase"].defaultAction = 'spawn';
 
 
         this.details["Tank"] = new EntityDetail();
@@ -505,17 +527,19 @@ export class EntityDetails {
         this.details["Tank"].healthRegenRate = 1;
         this.details["Tank"].solid = false;
         this.details["Tank"].spawnRadius = 0;
+        this.details["Tank"].defaultAction = 'move';
 
 
-        this.details["Plane"] = new EntityDetail();
-        this.details["Plane"].moveRadius = 10;
-        this.details["Plane"].health = 1;
-        this.details["Plane"].attackRadius = 3;
-        this.details["Plane"].attackPower = 3;
-        this.details["Plane"].ticksToSpawn = 4;
-        this.details["Plane"].healthRegenRate = 1;
-        this.details["Plane"].solid = false;
-        this.details["Plane"].spawnRadius = 0;
+        this.details["Heli"] = new EntityDetail();
+        this.details["Heli"].moveRadius = 10;
+        this.details["Heli"].health = 1;
+        this.details["Heli"].attackRadius = 3;
+        this.details["Heli"].attackPower = 3;
+        this.details["Heli"].ticksToSpawn = 4;
+        this.details["Heli"].healthRegenRate = 1;
+        this.details["Heli"].solid = false;
+        this.details["Heli"].spawnRadius = 0;
+        this.details["Heli"].defaultAction = 'move';
 
 
         this.details["Infantry"] = new EntityDetail();
@@ -527,5 +551,6 @@ export class EntityDetails {
         this.details["Infantry"].healthRegenRate = 1;
         this.details["Infantry"].solid = false;
         this.details["Infantry"].spawnRadius = 2;
+        this.details["Infantry"].defaultAction = 'move';
     }
 }

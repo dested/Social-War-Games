@@ -13,7 +13,7 @@ import {HexagonColorUtils} from "../utils/hexagonColorUtils";
 
 export class HexBoard {
     hexList: GridHexagon[] = [];
-    hexBlock: {[key: number]: GridHexagon} = {};
+    hexBlock: { [key: number]: GridHexagon } = {};
     boardSize = {width: 0, height: 0};
     entityManager: EntityManager;
     generation: number = -1;
@@ -30,14 +30,14 @@ export class HexBoard {
         this.boardSize.height = height;
     }
 
-    gameDimensions(): {width: number, height: number} {
+    gameDimensions(): { width: number, height: number } {
         const size = {width: 0, height: 0};
         size.width = GridHexagonConstants.width * (3 / 4) * this.boardSize.width;
         size.height = GridHexagonConstants.height() * this.boardSize.height;
         return size;
     }
 
-    gameDimensionsMini(): {width: number, height: number} {
+    gameDimensionsMini(): { width: number, height: number } {
         const size = {width: 0, height: 0};
         size.width = GridMiniHexagonConstants.width * (3 / 4) * this.boardSize.width;
         size.height = GridMiniHexagonConstants.height() * this.boardSize.height;
@@ -210,17 +210,6 @@ export class HexBoard {
             }
         }
 
-        /*
-         state.entities = [];
-         for (var i = 0; i < state.terrain.width - 10; i += 1) {
-         state.entities.push({
-         factionId: i % 3 + 1, health: 10,
-         x: 10 + i, z: state.terrain.height/4,
-         id: 'foo' + i,
-         entityType: "Plane"
-         });
-         }*/
-
         for (let i = 0; i < state.entities.length; i++) {
             let stateEntity = state.entities[i];
             let entity = this.entityManager.getEntityById(stateEntity.id);
@@ -235,7 +224,7 @@ export class HexBoard {
                         entity = new RegularBaseEntity(this.entityManager, stateEntity);
                         break;
                     }
-                    case "Plane": {
+                    case "Heli": {
                         entity = new HeliEntity(this.entityManager, stateEntity);
                         (<SixDirectionEntity>entity).setDirection(stateEntity.direction);
                         break;
@@ -255,13 +244,25 @@ export class HexBoard {
                 entity.setId(stateEntity.id);
                 entity.setHealth(stateEntity.health);
                 entity.setTile(gridHexagon);
+                entity.markAlive();
                 this.entityManager.addEntity(entity);
             } else {
                 entity.setHealth(stateEntity.health);
+                entity.markAlive();
                 entity.setTile(gridHexagon);
             }
         }
 
+
+        for (let i = this.entityManager.entities.length - 1; i >= 0; i--) {
+            let entity = this.entityManager.entities[i];
+            if (!entity.stillAlive) {
+                this.entityManager.killEntity(entity);
+            }
+            else {
+                entity.stillAlive = false;
+            }
+        }
     }
 
 

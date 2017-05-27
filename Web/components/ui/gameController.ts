@@ -1,45 +1,77 @@
 import angular from 'angular';
-import {GameService} from "./gameService";
-import {BaseEntity} from "../entities/entityManager";
+import {GameService, PossibleActions} from "./gameService";
+import {BaseEntity, EntityDetails} from "../entities/entityManager";
+import {GameManager} from "../game/gameManager";
 
 export class GameController {
     static $inject = ['$scope', '$interval'];
 
     constructor(private $scope: GameControllerScope, private $interval: angular.IIntervalService) {
-        $scope.name = 'foo';
-        $scope.timerPercent = 0;
+        $scope.model = <any>{};
+        $scope.model.name = 'foo';
+        $scope.model.timerPercent = 0;
         let secondsTick = 0;
-        $scope.loading = true;
+        $scope.model.loading = true;
 
+        $scope.model.selectedAction = 'move';
+        $scope.model.setSelectedAction = (action) => {
+            $scope.model.selectedAction = action;
+            GameService.selectedAction = action;
+            setTimeout(() => {
+                GameService.getGameManager().startAction();
+            }, 0)
+        };
 
-        GameService.setSelectedEntity = (entity: BaseEntity) => {
-            $scope.selectedEntity = entity;
+        GameService.onSetSelectedEntity = (entity: BaseEntity) => {
+            $scope.model.selectedEntity = entity;
+
+            if ($scope.model.selectedEntity) {
+                let detail = EntityDetails.instance.details[entity.entityType];
+                $scope.model.canSpawn = detail.spawnRadius > 0;
+                $scope.model.canAttack = detail.attackRadius > 0;
+                $scope.model.canMove = detail.moveRadius > 0;
+                $scope.model.selectedAction = GameService.selectedAction;
+            } else {
+                $scope.model.canSpawn = false;
+                $scope.model.canAttack = false;
+                $scope.model.canMove = false;
+                $scope.model.selectedAction = null;
+            }
             $scope.$apply();
         };
 
         GameService.hasData = () => {
-            $scope.loading = false;
+            $scope.model.loading = false;
             $scope.$apply();
         };
         GameService.setSecondsToNextGeneration = (seconds) => {
             secondsTick = 100 / (10 * GameService.secondsPerGeneration);
-            $scope.timerPercent = Math.min(100 - (seconds / GameService.secondsPerGeneration * 100), 100);
+            $scope.model.timerPercent = Math.min(100 - (seconds / GameService.secondsPerGeneration * 100), 100);
             $scope.$apply();
         };
 
         $interval(() => {
-            if ($scope.timerPercent < 100) {
-                $scope.timerPercent += secondsTick;
+            if ($scope.model.timerPercent < 100) {
+                $scope.model.timerPercent += secondsTick;
             }
-            $scope.timerPercent = Math.min($scope.timerPercent, 100);
+            $scope.model.timerPercent = Math.min($scope.model.timerPercent, 100);
         }, 100)
     }
 }
 
 
 interface GameControllerScope extends angular.IScope {
+    model: GameControllerModel;
+}
+
+interface GameControllerModel {
     selectedEntity: BaseEntity;
     loading: boolean;
     timerPercent: number;
     name: string;
+    canAttack: boolean;
+    canSpawn: boolean;
+    canMove: boolean;
+    selectedAction: PossibleActions;
+    setSelectedAction: (action: PossibleActions) => void;
 }

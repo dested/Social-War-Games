@@ -22,7 +22,7 @@ export class Main {
         AssetManager.completed = onComplete;
         var size = {width: 80, height: 80};
         var base = {x: 40, y: 55};
-        AssetManager.addAsset('MainBase', 'images/MainBase/down_1.png', size, base);
+        AssetManager.addAsset('MainBase', 'images/MainBase/up_1.png', size, base);
 
 
         AssetManager.addAsset('Icon.Move', 'images/icons/move.png', size, base);

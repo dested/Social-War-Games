@@ -8,9 +8,16 @@ namespace Common.Data
         Tank = 1,
         Base = 2,
         MainBase = 3,
-        Plane = 4/*,
+        Heli = 4/*,
         Wall = 5,
         Gate = 6*/
+    }
+
+    public enum VoteActionType
+    {
+        Move,
+        Attack,
+        Spawn
     }
 
     public static class EntityDetails
@@ -47,7 +54,7 @@ namespace Common.Data
                 GameEntityType.Tank, new EntityDetail()
                 {
                     MoveRadius = 4,
-                    Health = 4,
+                    Health = 8,
                     AttackRadius = 8,
                     AttackPower = 3,
                     TicksToSpawn = 3,
@@ -57,10 +64,10 @@ namespace Common.Data
                 }
             },
             {
-                GameEntityType.Plane, new EntityDetail()
+                GameEntityType.Heli, new EntityDetail()
                 {
                     MoveRadius = 10,
-                    Health = 1,
+                    Health = 2,
                     AttackRadius = 3,
                     AttackPower = 3,
                     TicksToSpawn = 4,
@@ -73,7 +80,7 @@ namespace Common.Data
                 GameEntityType.Infantry, new EntityDetail()
                 {
                     MoveRadius = 8,
-                    Health = 2,
+                    Health = 4,
                     AttackRadius = 3,
                     AttackPower = 1,
                     TicksToSpawn = 2,

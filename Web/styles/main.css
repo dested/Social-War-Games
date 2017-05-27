@@ -100,13 +100,44 @@ body {
   bottom: 0;
   background: rgba(0, 0, 255, 0.74);
 }
+.action-button {
+  float: left;
+  margin-left: 20px;
+  border: solid 2px black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100%;
+}
+.attack-button {
+  background-color: #da1709;
+}
+.move-button {
+  background-color: #71ccff;
+}
+.spawn-button {
+  background-color: #30ff7b;
+}
+.selected-attack-button {
+  background-color: #Fa1709;
+  border: solid 4px #333333;
+}
+.selected-move-button {
+  background-color: #91ccff;
+  border: solid 4px #333333;
+}
+.selected-spawn-button {
+  background-color: #60ff7b;
+  border: solid 4px #333333;
+}
 /* Absolute Center Spinner */
 .loading {
   position: fixed;
   z-index: 999;
   height: 2em;
   width: 2em;
-  overflow: show;
+  overflow: visible;
   margin: auto;
   top: 0;
   left: 0;

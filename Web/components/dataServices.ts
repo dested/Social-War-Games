@@ -1,10 +1,11 @@
 import {GameState, GameMetrics, VoteResponse} from "./models/hexBoard";
+import {PossibleActions} from "./ui/gameService";
 
 
 let rawDeflateWorker = new Worker("/libs/RawDeflate.js");
 
 export class WorkerService {
-    static payloads: {[key: string]: (payload: any) => void}={};
+    static payloads: { [key: string]: (payload: any) => void } = {};
 
     static start() {
         rawDeflateWorker.onmessage = (ev) => {
@@ -26,8 +27,8 @@ WorkerService.start();
 
 export class DataService {
 
-    private static voteServer: string = 'https://vote.socialwargames.com/';
-    // private static voteServer: string = 'http://localhost:3568/';
+    // private static voteServer: string = 'https://vote.socialwargames.com/';
+    private static voteServer: string = 'http://localhost:3568/';
 
     static async getGameMetrics(): Promise<GameMetrics> {
         try {
@@ -50,7 +51,7 @@ export class DataService {
         }
     }
 
-    static async vote(vote: {entityId: string, action: string, userId: string, generation: number, x: number, z: number}): Promise<VoteResponse> {
+    static async vote(vote: { entityId: string, action: PossibleActions, userId: string, generation: number, x: number, z: number }): Promise<VoteResponse> {
         try {
             let response = await fetch(this.voteServer + 'api/game/vote', {
                 method: "POST",
@@ -75,7 +76,7 @@ export class DataService {
 
     static compressor = new Compressor();
 
-    static async  getGameState(): Promise<GameState> {
+    static async getGameState(): Promise<GameState> {
         try {
             let response = await fetch(this.voteServer + 'api/game/state', {
                 headers: {

@@ -78,7 +78,7 @@ export class GridHexagon {
 
     getDepthHeight(position: boolean): number {
         if (position)
-            return Math.max(1, (this.height + this.heightOffset) * (GridHexagonConstants.depthHeight()-2));
+            return Math.max(1, (this.height + this.heightOffset) * (GridHexagonConstants.depthHeight() - 2));
         return GridHexagonConstants.depthHeight();
     }
 
@@ -185,7 +185,7 @@ export class GridHexagon {
         let factionColor = (this.faction > 0 && HexagonColorUtils.factionHexColors[this.faction - 1][this.height]);
         let baseColor = (this.baseColor && this.baseColor[this.height]);
         this.currentDrawColorNoVote = factionColor || baseColor;
-        this.currentDrawColor = voteColor || secondaryVoteColor || entityColor || highlightColor || factionColor || baseColor;
+        this.currentDrawColor = voteColor || secondaryVoteColor || highlightColor || entityColor || factionColor || baseColor;
         this.currentFactionColor = factionColor || baseColor;
 
         this.currentMiniColor = voteColor || entityColor || factionColor || baseColor;
@@ -300,7 +300,7 @@ export class GridHexagon {
          context.stroke(this.topMiniPath);*/
     }
 
-    private   envelope(): {width: number, height: number} {
+    private   envelope(): { width: number, height: number } {
         const size = {width: 0, height: 0};
         size.width = GridHexagonConstants.width;
         size.height = GridHexagonConstants.height();
@@ -314,7 +314,7 @@ export class GridHexagon {
         return size;
     }
 
-    private envelopeMini(): {width: number, height: number} {
+    private envelopeMini(): { width: number, height: number } {
         const size = {width: 0, height: 0};
         size.width = GridMiniHexagonConstants.width;
         size.height = GridMiniHexagonConstants.height();
@@ -375,7 +375,7 @@ export class GridHexagon {
         }
     }
 
-    getNeighbors(): {x: number, z: number}[] {
+    getNeighbors(): { x: number, z: number }[] {
         const neighbors = [];
         if ((this.x % 2 === 0)) {
             neighbors.push({x: this.x - 1, z: this.z});
@@ -398,7 +398,7 @@ export class GridHexagon {
     }
 
 
-    static caches: {[key: string]: HTMLCanvasElement} = {};
+    static caches: { [key: string]: HTMLCanvasElement } = {};
 
     static getCacheImage(height: number, hexColor: HexagonColor, texture: string): HTMLCanvasElement {
         const c = `${height}-${hexColor.color}-${texture}`;
