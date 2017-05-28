@@ -105,9 +105,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MasterVoteServerLogic.cs" />
-    <Compile Include="Votes\AttackInfantryVote.cs" />
-    <Compile Include="Votes\Vote.cs" />
-    <Compile Include="Votes\MoveInfantryVote.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

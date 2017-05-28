@@ -50,13 +50,15 @@ namespace Common.Data
             public int X { get; set; }
             public int Z { get; set; }
 
-            public void Hurt(int amount, GameState gameState)
+            public bool Hurt(int amount, GameState gameState)
             {
                 Health -= amount;
                 if (Health <= 0)
                 {
                     gameState.Entities.Remove(this);
+                    return true;
                 }
+                return false;
             }
 
             public static GameEntity CreateMainBase(int x, int z, int factionId)

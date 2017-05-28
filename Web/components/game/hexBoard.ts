@@ -6,7 +6,7 @@ import {
     HeliEntity,
     MainBaseEntity, BaseEntity, TankEntity, SixDirectionEntity, InfantryEntity, RegularBaseEntity
 } from "../entities/entityManager";
-import {Vector3, HexUtils, Node} from "./hexUtils";
+import {Vector3, HexUtils, Node, Direction} from "./hexUtils";
 import {AssetManager} from "./assetManager";
 import {ViewPort} from "./gameManager";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
@@ -86,9 +86,51 @@ export class HexBoard {
         // this.hexList = HexUtils.orderBy(this.hexList, m => (m.z) * 1000 + (m.x % 2) * -200 + m.height);
     }
 
-    getHexAtSpot(x, z): GridHexagon {
+    getHexAtSpot(x: number, z: number): GridHexagon {
         return this.hexBlock[x + z * 5000];
     }
+
+    getHexAtSpotDirection(x: number, z: number, direction: Direction): GridHexagon {
+        switch (direction) {
+            case Direction.Top:
+                z -= 1;
+                break;
+            case Direction.Bottom:
+                z += 1;
+                break;
+
+            case Direction.TopLeft:
+                if (x % 2 === 1) {
+                    z -= 1;
+                }
+                x -= 1;
+
+                break;
+            case Direction.BottomLeft:
+                if (x % 2 === 0) {
+                    z += 1;
+                }
+                x -= 1;
+                break;
+
+            case Direction.TopRight:
+                if (x % 2 === 1) {
+                    z -= 1;
+                }
+                x += 1;
+                break;
+            case Direction.BottomRight:
+                if (x % 2 === 0) {
+                    z += 1;
+                }
+                x += 1;
+                break;
+
+        }
+
+        return this.hexBlock[x + z * 5000];
+    }
+
 
     pathFind(start: GridHexagon, finish: GridHexagon) {
         const myPathStart = new Node(null, start);
@@ -298,9 +340,26 @@ export class HexBoard {
                 if (gridHexagon.shouldDraw(viewPort)) {
                     visibleHexList[j].push(gridHexagon);
                     let entities = this.entityManager.getEntitiesAtTile(gridHexagon);
-                    if (entities) {
+                    if (entities.length) {
+                        let aboveMe = this.getHexAtSpotDirection(gridHexagon.x, gridHexagon.z, Direction.Top);
+                        let localYOffset = 0;
+                        if (aboveMe && aboveMe.height > gridHexagon.height) {
+                            localYOffset = 1;
+                        } else {
+                            let topLeft = this.getHexAtSpotDirection(gridHexagon.x, gridHexagon.z, Direction.TopLeft);
+                            if (topLeft && topLeft.height > gridHexagon.height) {
+                                localYOffset = 1;
+                            } else {
+                                let topRight = this.getHexAtSpotDirection(gridHexagon.x, gridHexagon.z, Direction.TopRight);
+                                if (topRight && topRight.height > gridHexagon.height) {
+                                    localYOffset = 1;
+                                }
+                            }
+                        }
+
+
                         for (let c = 0; c < entities.length; c++) {
-                            visibleEntity[j + entities[c].getYOffset()].push(entities[c]);
+                            visibleEntity[j + entities[c].getYOffset() + localYOffset].push(entities[c]);
                         }
                     }
                 }

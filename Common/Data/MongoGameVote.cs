@@ -120,7 +120,14 @@ namespace Common.Data
 
                 int amount = gameManager.Random.Next(0, attackerDetail.AttackPower) + 1;
 
-                enemyEntity.Hurt(amount, gameManager.GameState);
+                if (enemyEntity.Hurt(amount, gameManager.GameState))
+                {
+                    var hex = gameManager.GameBoard.GetHexagon(X, Z);
+                    if (hex != null)
+                    {
+                        hex.Faction = entity.FactionId;
+                    }
+                }
 
 
                 return true;
