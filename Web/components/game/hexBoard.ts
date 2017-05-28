@@ -12,6 +12,7 @@ import {ViewPort} from "./gameManager";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
 
 export class HexBoard {
+    hexListLength: number;
     hexList: GridHexagon[] = [];
     hexBlock: { [key: number]: GridHexagon } = {};
     boardSize = {width: 0, height: 0};
@@ -228,6 +229,8 @@ export class HexBoard {
                 this.addHexagon(gridHexagon);
             }
         }
+
+        this.hexListLength=this.hexList.length;
 
         this.entityManager.empty();
         this.reorderHexList();

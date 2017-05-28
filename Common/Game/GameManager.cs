@@ -50,7 +50,7 @@ namespace Common.Game
                 var details = vote.Action;
                 if (GameState.Generation != vote.Generation)
                 {
-                    Console.WriteLine("Bad generation " + GameState.Generation + " " + vote.Generation);
+                    //                    Console.WriteLine("Bad generation " + GameState.Generation + " " + vote.Generation);
                     return false;
                 }
 
@@ -93,20 +93,84 @@ namespace Common.Game
                     GameState.UpdateSync();
                     return;
                 }
-                List<TrackedVote> completedVotes = new List<TrackedVote>();
+                List<TrackedVote> votes = new List<TrackedVote>();
+
+                List<TrackedVote> moveVotes = new List<TrackedVote>();
+                List<TrackedVote> attackVotes = new List<TrackedVote>();
+                List<TrackedVote> spawnVotes = new List<TrackedVote>();
                 Console.WriteLine("Ticking " + TrackedVotes.Count);
+
 
                 foreach (var unitVotes in TrackedVotes.GroupBy(a => a.Action.EntityId))
                 {
-                    foreach (var vote in unitVotes.OrderByDescending(a => a.Votes))
+                    var vote = unitVotes.OrderByDescending(a => a.Votes).First();
+                    switch (vote.Action.ActionType)
                     {
-                        if (vote.Action.Complete(this))
-                        {
-                            completedVotes.Add(vote);
+                        case MongoGameVote.VoteActionType.Move:
+                            moveVotes.Add(vote);
                             break;
-                        }
+                        case MongoGameVote.VoteActionType.Attack:
+                            attackVotes.Add(vote);
+                            break;
+                        case MongoGameVote.VoteActionType.Spawn:
+                            spawnVotes.Add(vote);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
                 }
+
+                foreach (var vote in attackVotes)
+                {
+                    vote.Action.Complete(this);
+                    votes.Add(vote);
+                }
+
+
+                var nextMoveVotes = new List<TrackedVote>();
+
+                foreach (var vote in moveVotes)
+                {
+                    if (vote.Action.Valid(this))
+                    {
+                        vote.Action.Start(this);
+                        votes.Add(vote);
+                        nextMoveVotes.Add(vote);
+                    }
+                }
+                var originalMoveVotes = nextMoveVotes;
+
+
+                while (nextMoveVotes.Count > 0)
+                {
+                    var nextVotes = new List<TrackedVote>();
+
+                    foreach (var moveVote in nextMoveVotes)
+                    {
+                        if (moveVote.Action.NextTick(this))
+                        {
+                            nextVotes.Add(moveVote);
+                        }
+                    }
+                    nextMoveVotes = nextVotes;
+                }
+
+
+                foreach (var moveVote in originalMoveVotes)
+                {
+                    moveVote.Action.Complete(this);
+                }
+
+
+                foreach (var spawnVote in spawnVotes)
+                {
+                    if (spawnVote.Action.Valid(this))
+                    {
+                        spawnVote.Action.Complete(this);
+                    }
+                }
+
+
 
                 foreach (var entity in this.GameState.Entities)
                 {
@@ -121,22 +185,26 @@ namespace Common.Game
                     }
                 }
 
+                var gameStateFactionData = this.GameBoard.ToFactionData(this.GameState.Terrain);
+                sw.Stop();
+                var tickTime = sw.ElapsedMilliseconds;
+                sw.Reset();
+                sw.Start();
                 MongoTickResult.TickResult result = new MongoTickResult.TickResult();
                 result.Generation = GameState.Generation;
                 result.Generated = DateTime.UtcNow;
-                result.Votes = completedVotes;
+                result.Votes = votes;
                 result.UsersVoted = UserVotes.Count;
                 result.InsertSync();
 
                 GameState.Generation += 1;
                 GameState.LastGeneration = DateTime.UtcNow;
-                GameState.FactionData = this.GameBoard.ToFactionData(this.GameState.Terrain);
+                GameState.FactionData = gameStateFactionData;
                 GameState.UpdateSync();
+
                 sw.Stop();
 
-
-
-                var formattableString = $"{sw.ElapsedMilliseconds}ms Votes: {TrackedVotes.Sum(a => a.Votes)} Actions: {TrackedVotes.Count}  Users Participated: {UserVotes.Count} Generation: {GameState.Generation - 1}";
+                var formattableString = $"{sw.ElapsedMilliseconds}ms Update, {tickTime}ms Tick, Votes: {TrackedVotes.Sum(a => a.Votes)} Actions: {TrackedVotes.Count}  Users Participated: {UserVotes.Count} Generation: {GameState.Generation - 1}";
                 MongoServerLog.AddServerLog("Master.vote", formattableString, null);
                 Reset();
             }

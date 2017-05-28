@@ -21,8 +21,8 @@ namespace ServerSlammer
     {
         private static double count = 0;
         private static Timer timer;
-        //        private static string url= "http://localhost:3568";
-        private static string url = "https://vote.socialwargames.com";
+        private static string url = "http://localhost:3568";
+        //        private static string url = "https://vote.socialwargames.com";
 
         static void Main(string[] args)
         {
@@ -62,6 +62,7 @@ namespace ServerSlammer
             int pz;
 
             Random rand = new Random();
+            var details = EntityDetails.Detail;
             while (true)
             {
                 while (true)
@@ -69,17 +70,17 @@ namespace ServerSlammer
                     count++;
                     var p = rand.Next(0, board.GameState.Entities.Count);
                     ent = board.GameState.Entities[p];
-                    px = ent.X + rand.Next(-5, 6);
-                    pz = ent.Z + rand.Next(-5, 6);
+                    var detail = details[ent.EntityType];
+                    px = ent.X + rand.Next(-detail.MoveRadius, detail.MoveRadius + 1);
+                    pz = ent.Z + rand.Next(-detail.MoveRadius, detail.MoveRadius + 1);
                     if (px == 0 && pz == 0) continue;
                     if (board.GetHexagon(px, pz) == null) continue;
                     if (board.GetHexagon(ent.X, ent.Z) == null) continue;
 
                     var distance = HexUtils.Distance(board.GetHexagon(px, pz), board.GetHexagon(ent.X, ent.Z));
-                    if (distance <= 5)
+                    if (distance <= detail.MoveRadius)
                     {
                         break;
-
                     }
                 }
                 var result = Vote(new PostVoteRequest()
@@ -117,7 +118,7 @@ namespace ServerSlammer
                     new ObjectIdJsonConverter()
                 }
             };
-            Console.WriteLine("Get state");
+//            Console.WriteLine("Get state");
             var ds = JsonConvert.DeserializeObject<STResponse<string>>(response.Content, settings);
             Console.WriteLine("Got state");
 
@@ -127,6 +128,7 @@ namespace ServerSlammer
 
         private static bool Vote(PostVoteRequest vote)
         {
+            //            Console.WriteLine("voting");
             var client = new RestClient(url);
 
             var request = new RestRequest("api/game/vote", Method.POST);
@@ -143,7 +145,6 @@ namespace ServerSlammer
                     new ObjectIdJsonConverter()
                 }
             };
-            Console.WriteLine("voting");
             var state = JsonConvert.DeserializeObject<STResponse<PostVoteResponse>>(response.Content, settings);
             Console.WriteLine("voted");
 

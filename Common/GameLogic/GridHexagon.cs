@@ -11,31 +11,37 @@ namespace Common.GameLogic
         public int Height { get; set; }
         public int Faction { get; set; }
 
+        private List<Vector2> _neighbors;
         public List<Vector2> GetNeighbors()
         {
-            var neighbors = new List<Vector2>();
-
-            if ((this.X % 2 == 0))
+            if (_neighbors == null)
             {
-                neighbors.Add(new Vector2() { X = this.X - 1, Z = this.Z });
-                neighbors.Add(new Vector2() { X = this.X, Z = this.Z - 1 });
-                neighbors.Add(new Vector2() { X = this.X + 1, Z = this.Z });
-                                  
-                neighbors.Add(new Vector2() { X = this.X - 1, Z = this.Z + 1 });
-                neighbors.Add(new Vector2() { X = this.X, Z = this.Z + 1 });
-                neighbors.Add(new Vector2() { X = this.X + 1, Z = this.Z + 1 });
-            }                     
-            else                  
-            {                     
-                neighbors.Add(new Vector2() { X = this.X - 1, Z = this.Z - 1 });
-                neighbors.Add(new Vector2() { X = this.X, Z = this.Z - 1 });
-                neighbors.Add(new Vector2() { X = this.X + 1, Z = this.Z - 1 });
-                                  
-                neighbors.Add(new Vector2() { X = this.X - 1, Z = this.Z });
-                neighbors.Add(new Vector2() { X = this.X, Z = this.Z + 1 });
-                neighbors.Add(new Vector2() { X = this.X + 1, Z = this.Z });
+                var neighbors = new List<Vector2>();
+
+                if ((this.X % 2 == 0))
+                {
+                    neighbors.Add(new Vector2() { X = this.X - 1, Z = this.Z });
+                    neighbors.Add(new Vector2() { X = this.X, Z = this.Z - 1 });
+                    neighbors.Add(new Vector2() { X = this.X + 1, Z = this.Z });
+
+                    neighbors.Add(new Vector2() { X = this.X - 1, Z = this.Z + 1 });
+                    neighbors.Add(new Vector2() { X = this.X, Z = this.Z + 1 });
+                    neighbors.Add(new Vector2() { X = this.X + 1, Z = this.Z + 1 });
+                }
+                else
+                {
+                    neighbors.Add(new Vector2() { X = this.X - 1, Z = this.Z - 1 });
+                    neighbors.Add(new Vector2() { X = this.X, Z = this.Z - 1 });
+                    neighbors.Add(new Vector2() { X = this.X + 1, Z = this.Z - 1 });
+
+                    neighbors.Add(new Vector2() { X = this.X - 1, Z = this.Z });
+                    neighbors.Add(new Vector2() { X = this.X, Z = this.Z + 1 });
+                    neighbors.Add(new Vector2() { X = this.X + 1, Z = this.Z });
+                }
+
+                _neighbors = neighbors;
             }
-            return neighbors;
+            return _neighbors;
 
         }
     }

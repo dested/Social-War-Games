@@ -157,12 +157,18 @@ export abstract class BaseEntity {
 
     public onAnimationComplete(frame: AnimationFrame): void {
         if (frame.type == AnimationFrameType.Stop) {
+            let tile = this.entityManager.hexBoard.getHexAtSpot(frame.endX || frame.startX, frame.endZ || frame.startZ);
+            tile.clearHighlightColor();
             this.currentTick = -1;
             this.durationTicks = -1;
             this.animateToHex = null;
             this.animateFromHex = null;
             return;
         }
+
+        let startTile = this.entityManager.hexBoard.getHexAtSpot(frame.startX, frame.startZ);
+        startTile.clearHighlightColor();
+
         let tile = this.entityManager.hexBoard.getHexAtSpot(frame.endX || frame.startX, frame.endZ || frame.startZ);
         let neighbors = tile.getNeighbors();
         tile.setFaction(this.faction);
@@ -185,6 +191,10 @@ export abstract class BaseEntity {
             this.animateFromHex = null;
             return;
         }
+        let startTile = this.entityManager.hexBoard.getHexAtSpot(frame.startX, frame.startZ);
+        let nextTile = this.entityManager.hexBoard.getHexAtSpot(frame.endX || frame.startX, frame.endZ || frame.startZ);
+        startTile.setHighlightColor(HexagonColorUtils.highlightColor);
+        nextTile.setHighlightColor(HexagonColorUtils.highlightColor);
     }
 
     abstract getActionFrames(action: GameMetricVoteAction, hexBoard: HexBoard): AnimationFrame[] ;

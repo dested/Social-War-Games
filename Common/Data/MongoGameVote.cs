@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Common.BoardUtils;
 using Common.Game;
+using Common.GameLogic;
 using Common.GameLogic.Models;
 using Common.Utils.Mongo;
 using MongoDB.Bson;
@@ -36,8 +37,12 @@ namespace Common.Data
             public abstract bool Equates(VoteAction argAction);
 
             public abstract VoteActionType ActionType { get; }
-            public abstract bool Complete(GameManager gameManager);
+            public abstract bool Valid(GameManager gameManager);
+            public abstract void Start(GameManager gameManager);
+            public abstract bool NextTick(GameManager gameManager);
+            public abstract void Complete(GameManager gameManager);
         }
+
         public class MoveVoteAction : VoteAction
         {
             public int X { get; set; }
@@ -52,7 +57,8 @@ namespace Common.Data
                 return X == action.X && Z == action.Z;
             }
 
-            public override bool Complete(GameManager gameManager)
+
+            public override bool Valid(GameManager gameManager)
             {
                 var entity = gameManager.GameState.Entities.First(a => a.Id == EntityId);
 
@@ -60,36 +66,56 @@ namespace Common.Data
                 {
                     return false;
                 }
+                this._Act_Entity = entity;
+                return true;
+            }
 
 
-                var chex = gameManager.GameBoard.GetHexagon(entity.X, entity.Z);
+            public override void Start(GameManager gameManager)
+            {
+                var chex = gameManager.GameBoard.GetHexagon(this._Act_Entity.X, this._Act_Entity.Z);
                 var fhex = gameManager.GameBoard.GetHexagon(X, Z);
 
                 var path = gameManager.GameBoard.PathFind(chex, fhex);
+                this._Act_Path = path;
+                this._Act_PathIndex = 0;
+            }
 
-                entity.X = this.X;
-                entity.Z = this.Z;
+            public int _Act_PathIndex;
+            public List<GridHexagon> _Act_Path;
+            private MongoGameState.GameEntity _Act_Entity;
 
-                var oldP = path[0];
-                foreach (var p in path)
+            public override bool NextTick(GameManager gameManager)
+            {
+                var p = _Act_Path[_Act_PathIndex];
+                var oldP = _Act_Path[_Act_PathIndex == 0 ? 0 : _Act_PathIndex - 1];
+
+                p.Faction = _Act_Entity.FactionId;
+
+                _Act_Entity.Direction = HexUtils.GetDirection(oldP, p);
+                _Act_Entity.X = p.X;
+                _Act_Entity.Z = p.Z;
+
+                foreach (var neighbor in p.GetNeighbors())
                 {
-                    p.Faction = entity.FactionId;
-
-                    entity.Direction = HexUtils.GetDirection(oldP, p);
-                    oldP = p;
-                    foreach (var neighbor in p.GetNeighbors())
+                    var hex = gameManager.GameBoard.GetHexagon(neighbor.X, neighbor.Z);
+                    if (hex != null)
                     {
-                        var hex = gameManager.GameBoard.GetHexagon(neighbor.X, neighbor.Z);
-                        if (hex != null)
-                        {
-                            hex.Faction = entity.FactionId;
-                        }
+                        hex.Faction = _Act_Entity.FactionId;
                     }
                 }
+                _Act_PathIndex++;
+                if (_Act_Path.Count == _Act_PathIndex)
+                {
+                    return false;
+                }
                 return true;
-
+            }
+            public override void Complete(GameManager gameManager)
+            {
             }
         }
+
         public class AttackVoteAction : VoteAction
         {
             public int X { get; set; }
@@ -103,34 +129,49 @@ namespace Common.Data
                 if (action == null) return false;
                 return X == action.X && Z == action.Z;
             }
-            public override bool Complete(GameManager gameManager)
+
+            public override bool Valid(GameManager gameManager)
             {
                 var entity = gameManager.GameState.Entities.First(a => a.Id == EntityId);
-
                 var enemyEntity = gameManager.GameState.Entities.FirstOrDefault(a => a.X == X && a.Z == Z);
 
                 if (enemyEntity == null)
                 {
                     return false;
                 }
+                _Act_Entity = entity;
+                _Act_EnemyEntity = enemyEntity;
 
-                var attackerDetail = EntityDetails.Detail[entity.EntityType];
-                var enemyDetail = EntityDetails.Detail[enemyEntity.EntityType];
+                return true;
+            }
+            private MongoGameState.GameEntity _Act_Entity;
+            private MongoGameState.GameEntity _Act_EnemyEntity;
+
+
+            public override void Start(GameManager gameManager)
+            {
+            }
+
+            public override bool NextTick(GameManager gameManager)
+            {
+                return true;
+            }
+            public override void Complete(GameManager gameManager)
+            {
+                var attackerDetail = EntityDetails.Detail[_Act_Entity.EntityType];
+                var enemyDetail = EntityDetails.Detail[_Act_EnemyEntity.EntityType];
                 //todo take into account shield from enemy
 
                 int amount = gameManager.Random.Next(0, attackerDetail.AttackPower) + 1;
 
-                if (enemyEntity.Hurt(amount, gameManager.GameState))
+                if (_Act_EnemyEntity.Hurt(amount, gameManager.GameState))
                 {
                     var hex = gameManager.GameBoard.GetHexagon(X, Z);
                     if (hex != null)
                     {
-                        hex.Faction = entity.FactionId;
+                        hex.Faction = _Act_Entity.FactionId;
                     }
                 }
-
-
-                return true;
             }
 
         }
@@ -151,10 +192,21 @@ namespace Common.Data
                 if (action == null) return false;
                 return X == action.X && Z == action.Z && EntityType == action.EntityType;
             }
-            public override bool Complete(GameManager gameManager)
+
+            public override bool Valid(GameManager gameManager)
             {
                 return true;
+            }
 
+            public override void Start(GameManager gameManager)
+            {
+            }
+            public override bool NextTick(GameManager gameManager)
+            {
+                return true;
+            }
+            public override void Complete(GameManager gameManager)
+            {
             }
 
         }

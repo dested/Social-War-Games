@@ -119,7 +119,8 @@ export class GameManager {
     getMiniHexAtPoint(clickX, clickY): GridHexagon {
         let lastClick: GridHexagon = null;
 
-        for (let i = 0; i < this.hexBoard.hexList.length; i++) {
+        let hexListLength = this.hexBoard.hexListLength;
+        for (let i = 0; i < hexListLength; i++) {
             const gridHexagon = this.hexBoard.hexList[i];
             const x = GridMiniHexagonConstants.width * 3 / 4 * gridHexagon.x;
             let z = gridHexagon.z * GridMiniHexagonConstants.height() + ((gridHexagon.x % 2 === 1) ? (-GridMiniHexagonConstants.height() / 2) : 0);
@@ -140,7 +141,8 @@ export class GameManager {
         if (!justEntities)
             this.miniContext.clearRect(0, 0, size.width + 20, size.height + 20);
         this.miniContext.translate(10, 10);
-        for (let i = 0; i < this.hexBoard.hexList.length; i++) {
+        let hexListLength = this.hexBoard.hexListLength;
+        for (let i = 0; i < hexListLength; i++) {
             const gridHexagon = this.hexBoard.hexList[i];
             if (justEntities) {
                 if (gridHexagon.hasEntities()) {
@@ -176,7 +178,12 @@ export class GameManager {
     }
 
     private async checkState() {
-        if (this.cantAct())return;
+        if (this.cantAct()){
+            setTimeout(async () => {
+                await this.checkState();
+            }, 1000 * 5);
+            return;
+        }
         this.checking = true;
         let metrics = await DataService.getGameMetrics();
         let seconds = (+metrics.nextGenerationDate - +new Date()) / 1000;
@@ -192,7 +199,8 @@ export class GameManager {
         if (this.hexBoard.generation != metrics.generation) {
             console.log(`Gen - old: ${this.hexBoard.generation} new ${metrics.generation}`);
             let result = await DataService.getGenerationResult(this.hexBoard.generation);
-            for (let i = 0; i < this.hexBoard.hexList.length; i++) {
+            let hexListLength = this.hexBoard.hexListLength;
+            for (let i = 0; i < hexListLength; i++) {
                 let hex = this.hexBoard.hexList[i];
                 hex.clearSecondaryVoteColor();
                 hex.clearHighlightColor();
@@ -221,8 +229,9 @@ export class GameManager {
                     console.log('game updated4 ');
                     this.hexBoard.updateFactionEntities(state);
                     this.rebuildMiniBoard(false);
-
+                
                     this.checking = false;
+                    return this.checkState();
                 });
             });
             this.animationManager.start();
@@ -255,7 +264,8 @@ export class GameManager {
         }
 
 
-        for (let i = 0; i < this.hexBoard.hexList.length; i++) {
+        let hexListLength = this.hexBoard.hexListLength;
+        for (let i = 0; i < hexListLength; i++) {
             let h = this.hexBoard.hexList[i];
             h.setShowVotes(false);
         }
@@ -414,7 +424,8 @@ export class GameManager {
 
     findAvailableSpots(radius, center): GridHexagon[] {
         let items = [];
-        for (let q = 0; q < this.hexBoard.hexList.length; q++) {
+        let hexListLength = this.hexBoard.hexListLength;
+        for (let q = 0; q < hexListLength; q++) {
             let item = this.hexBoard.hexList[q];
 
             if (HexUtils.distance(center, item) <= radius) {
@@ -474,7 +485,6 @@ export class GameManager {
                 for (let i = 0; i < result.votes.length; i++) {
                     let vote = result.votes[i];
                     entity.pushVote(vote);
-
                 }
                 this.rebuildMiniBoard(true, entity);
             }
@@ -538,7 +548,8 @@ export class GameManager {
         let gridHeight = GridHexagonConstants.height();
 
 
-        for (let i = 0; i < this.hexBoard.hexList.length; i++) {
+        let hexListLength = this.hexBoard.hexListLength;
+        for (let i = 0; i < hexListLength; i++) {
             const gridHexagon = this.hexBoard.hexList[i];
             const x = hexWidth * gridHexagon.x;
             let z = gridHexagon.z * gridHeight + ((gridHexagon.x % 2 === 1) ? (-gridHeight / 2) : 0);
@@ -571,9 +582,9 @@ export class GameManager {
     }
 
     private resetBoardColors() {
-        for (let i = 0; i < this.hexBoard.hexList.length; i++) {
+        let length = this.hexBoard.hexListLength;
+        for (let i = 0; i < length; i++) {
             let h = this.hexBoard.hexList[i];
-            //todo optimize
             h.clearHighlightColor();
             h.clearSecondaryVoteColor();
             h.setShowVotes(true);

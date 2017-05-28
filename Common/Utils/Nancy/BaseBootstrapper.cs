@@ -36,7 +36,7 @@ namespace Common.Utils.Nancy
             pipelines.AfterRequest.AddItemToEndOfPipeline((ctx) =>
             {
                 finish++;
-                //                Console.WriteLine("Request made: " + ctx.Request.Path + " " + ctx.Request.Method);
+                //                Console.WriteLine("Request made: " + ctx.Request._Act_Path + " " + ctx.Request.Method);
                 ctx.Response.WithHeader("Access-Control-Allow-Origin", "*")
                                 .WithHeader("Access-Control-Allow-Methods", "POST,GET")
                                 .WithHeader("Access-Control-Allow-Headers", "Accept, Origin, Content-type");

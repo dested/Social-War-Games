@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Configuration;
 using MongoDB.Driver;
 
@@ -5,16 +7,30 @@ namespace Common.Utils.Mongo
 {
     public static class MongoTools
     {
+        private static IMongoDatabase _database;
+        private static Dictionary<Type, object> _collections = new Dictionary<Type, object>();
         public static IMongoDatabase GetDatabase()
         {
-            var client = new MongoClient(ConnectionString);
-            var database = client.GetDatabase(Database);
-            return database;
+
+            if (_database == null)
+            {
+                var client = new MongoClient(ConnectionString);
+                _database = client.GetDatabase(Database);
+
+            }
+            return _database;
         }
 
         public static IMongoCollection<T> GetCollection<T>() where T : IMongoModel
         {
+            var type = typeof(T);
+            if (_collections.ContainsKey(type))
+            {
+                return (IMongoCollection<T>)_collections[type];
+            }
+
             var collection = GetDatabase().GetCollection<T>(GetCollectionName<T>());
+            _collections[type] = collection;
             return collection;
         }
 
