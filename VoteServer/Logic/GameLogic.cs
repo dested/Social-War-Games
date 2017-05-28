@@ -8,6 +8,7 @@ using Common.Data;
 using Common.GameLogic;
 using Common.GameLogic.Models;
 using Common.BoardUtils;
+using Common.Game;
 using Common.Utils.Mongo;
 using Common.Utils.Nancy;
 using VoteServer.Modules.Models;
@@ -126,12 +127,32 @@ namespace VoteServer.Logic
             };
 
             gameVote.Insert();
+
+
+
+            var trackedVotes = logic.GameManager.TrackedVotes.Where(a => a.Action.EntityId == model.EntityId).ToList();
+            var trackedVote = trackedVotes.FirstOrDefault(a => action.ActionType == a.Action.ActionType && action.Equates(a.Action));
+
+            if (trackedVote == null)
+            {
+                trackedVotes.Add(new TrackedVote()
+                {
+                    Action = action,
+                    Votes = 1,
+                });
+            }
+            else
+            {
+                trackedVote.Votes++;
+            }
+
             await logic.GameListener.SendGameVote(model.Generation, new GameVoteMessage() { Vote = gameVote });
+
 
 
             return new PostVoteResponse()
             {
-                Votes = logic.GameManager.TrackedVotes.Where(a => a.Action.EntityId == model.EntityId).ToArray()
+                Votes = trackedVotes.ToArray()
             };
         }
     }

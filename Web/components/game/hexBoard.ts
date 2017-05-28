@@ -73,13 +73,12 @@ export class HexBoard {
         for (let i = 0; i < hx_h.length; i++) {
             hx_h[i] = HexUtils.orderBy(hx_h[i], m => (m.z) * 1000 + (m.x % 2) * -200)
         }
-        console.log('----');
 
         this.hexList = [];
         this.hexListHeightMap = [];
         for (let i = 0; i < hx_h.length; i++) {
             let h = hx_h[i];
-            console.log(h.length);
+            // console.log(h.length);
             this.hexListHeightMap[i] = h;
             this.hexList.push(...h);
         }

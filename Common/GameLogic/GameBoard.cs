@@ -106,8 +106,8 @@ namespace Common.GameLogic
                         min = i;
                     }
                 }
-                node = open[0];
-                open.RemoveAt(0);
+                node = open[min];
+                open.RemoveAt(min);
                 if (node.X == myPathEnd.X && node.Y == myPathEnd.Y)
                 {
                     closed.Add(node);

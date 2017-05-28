@@ -9,6 +9,7 @@ import {GridHexagonConstants, GridMiniHexagonConstants} from "./gridHexagonConst
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
 import {GameService, PossibleActions} from "../ui/gameService";
 import {GameState} from "../models/hexBoard";
+import {DebounceUtils} from "../utils/debounceUtils";
 declare let Hammer;
 
 export class GameManager {
@@ -50,11 +51,6 @@ export class GameManager {
         /*        setTimeout(() => {
          this.randomTap();
          }, 1000);*/
-
-        setTimeout(async () => {
-            await this.checkState();
-        }, 4 * 1000);
-
     }
 
     private createMiniCanvas() {
@@ -178,10 +174,11 @@ export class GameManager {
     }
 
     private async checkState() {
+        // console.log('got state',+new Date());
         if (this.cantAct()){
-            setTimeout(async () => {
-                await this.checkState();
-            }, 1000 * 5);
+            DebounceUtils.debounce("checkState",1000*5,() => {
+                this.checkState();
+            }) ;
             return;
         }
         this.checking = true;
@@ -247,9 +244,10 @@ export class GameManager {
             this.rebuildMiniBoard(true);
         }
         this.checking = false;
-        setTimeout(async () => {
-            await this.checkState();
-        }, 1000 * (seconds + 2 > 5 ? 5 : seconds + 2));
+        DebounceUtils.debounce("checkState",1000 * (seconds  > 5 ? 5 : Math.max(seconds,.5) ),() => {
+            this.checkState();
+        }) ;
+
     }
 
     startAction() {

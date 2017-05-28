@@ -19,8 +19,8 @@ namespace MasterVoteServer
     {
         public static void Main()
         {
-            startNewGame();
-            return;
+//            startNewGame();
+//            return;
             MongoServerLog.AddServerLog("Master.Start", "1", "1");
             var logic=MasterVoteServerLogic.GetServerLogic();
             while (true)
@@ -69,7 +69,7 @@ namespace MasterVoteServer
             {
                 Generation = 0,
                 LastGeneration = DateTime.UtcNow,
-                TickIntervalSeconds = 60,
+                TickIntervalSeconds = 15,
                 Terrain = terrain,
                 FactionData = sb.ToString(),
                 Entities = entities,
