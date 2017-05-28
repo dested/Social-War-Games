@@ -534,22 +534,29 @@ export class GameManager {
         clickX += this.viewPort.x;
         clickY += this.viewPort.y;
 
+        let hexWidth = GridHexagonConstants.width * 3 / 4;
+        let gridHeight = GridHexagonConstants.height();
+
+
         for (let i = 0; i < this.hexBoard.hexList.length; i++) {
             const gridHexagon = this.hexBoard.hexList[i];
-            const x = GridHexagonConstants.width * 3 / 4 * gridHexagon.x;
-            let z = gridHexagon.z * GridHexagonConstants.height() + ((gridHexagon.x % 2 === 1) ? (-GridHexagonConstants.height() / 2) : 0);
+            const x = hexWidth * gridHexagon.x;
+            let z = gridHexagon.z * gridHeight + ((gridHexagon.x % 2 === 1) ? (-gridHeight / 2) : 0);
             z -= gridHexagon.getDepthHeight(true);
             z += gridHexagon.y * GridHexagonConstants.depthHeight();
-            if (DrawingUtils.pointInPolygon(clickX - x, clickY - z, GridHexagonConstants.hexagonTopPolygon())) {
+
+            let depthHeight = gridHexagon.getDepthHeight(false);
+
+
+            let offClickX = clickX - x;
+            let offClickY = clickY - z;
+            if (DrawingUtils.pointInPolygon(offClickX, offClickY, GridHexagonConstants.hexagonTopPolygon())) {
                 lastClick = gridHexagon;
-            }
-            if (DrawingUtils.pointInPolygon(clickX - x, clickY - z, GridHexagonConstants.hexagonDepthLeftPolygon((gridHexagon.height + 1) * GridHexagonConstants.depthHeight()))) {
+            } else if (DrawingUtils.pointInPolygon(offClickX, offClickY, GridHexagonConstants.hexagonDepthLeftPolygon(depthHeight))) {
                 lastClick = gridHexagon;
-            }
-            if (DrawingUtils.pointInPolygon(clickX - x, clickY - z, GridHexagonConstants.hexagonDepthBottomPolygon((gridHexagon.height + 1) * GridHexagonConstants.depthHeight()))) {
+            } else if (DrawingUtils.pointInPolygon(offClickX, offClickY, GridHexagonConstants.hexagonDepthBottomPolygon(depthHeight))) {
                 lastClick = gridHexagon;
-            }
-            if (DrawingUtils.pointInPolygon(clickX - x, clickY - z, GridHexagonConstants.hexagonDepthRightPolygon((gridHexagon.height + 1) * GridHexagonConstants.depthHeight()))) {
+            } else if (DrawingUtils.pointInPolygon(offClickX, offClickY, GridHexagonConstants.hexagonDepthRightPolygon(depthHeight))) {
                 lastClick = gridHexagon;
             }
         }
