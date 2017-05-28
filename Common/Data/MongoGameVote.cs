@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common.BoardUtils;
 using Common.Game;
 using Common.GameLogic.Models;
 using Common.Utils.Mongo;
@@ -66,13 +67,16 @@ namespace Common.Data
 
                 var path = gameManager.GameBoard.PathFind(chex, fhex);
 
-
                 entity.X = this.X;
                 entity.Z = this.Z;
 
+                var oldP = path[0];
                 foreach (var p in path)
                 {
                     p.Faction = entity.FactionId;
+
+                    entity.Direction = HexUtils.GetDirection(oldP, p);
+                    oldP = p;
                     foreach (var neighbor in p.GetNeighbors())
                     {
                         var hex = gameManager.GameBoard.GetHexagon(neighbor.X, neighbor.Z);

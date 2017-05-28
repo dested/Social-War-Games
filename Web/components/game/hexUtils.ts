@@ -75,36 +75,64 @@ export class HexUtils {
 
     static getDirection(p1: Vector3, p2: Vector3): Direction {
         // console.log('x1', p1.x, 'x2', p2.x, 'y1', p1.z, 'y2', p2.z);
-        if (p1.x > p2.x) {
-            if (p1.z == p2.z) {
-                return Direction.BottomLeft;
-            } else {
-                if (p1.z < p2.z) {
-                    return Direction.TopLeft;
-                } else {
-                    return Direction.BottomLeft;
-                }
-            }
-        } else if (p1.x < p2.x) {
-            if (p1.z == p2.z) {
-                // console.log('a');
-                return Direction.TopRight;
-            } else {
-                if (p1.z < p2.z) {
-                    // console.log('b');
-                    return Direction.BottomRight;
-                } else {
-                    // console.log('c');
-                    return Direction.TopRight;
-                }
+        var upDown: 'up' | 'down';
+        var leftRight: 'left' | 'right' | 'neither';
+
+
+        if (p1.x % 2 == 0) {
+            if (p1.z === p2.z) {
+                upDown = 'up';
+            } else if (p1.z < p2.z) {
+                upDown = 'down';
+            } else if (p1.z > p2.z) {
+                upDown = 'up';
             }
         } else {
-            if (p1.z < p2.z) {
-                return Direction.Bottom;
-            } else {
-                return Direction.Top;
+            if (p1.z === p2.z) {
+                upDown = 'down';
+            } else if (p1.z < p2.z) {
+                upDown = 'down';
+            } else if (p1.z > p2.z) {
+                upDown = 'up';
             }
         }
+
+
+        if (p1.x < p2.x) {
+            leftRight = "right";
+        } else if (p1.x > p2.x) {
+            leftRight = "left";
+        } else {
+            leftRight = "neither";
+        }
+        switch (leftRight) {
+            case "left":
+                switch (upDown) {
+                    case "up":
+                        return Direction.TopLeft;
+                    case "down":
+                        return Direction.BottomLeft;
+                }
+                break;
+            case "right":
+                switch (upDown) {
+                    case "up":
+                        return Direction.TopRight;
+                    case "down":
+                        return Direction.BottomRight;
+                }
+                break;
+            case "neither":
+                switch (upDown) {
+                    case "up":
+                        return Direction.Top;
+                    case "down":
+                        return Direction.Bottom;
+                }
+                break;
+        }
+
+
     }
 }
 
@@ -114,5 +142,5 @@ export enum Direction{
     BottomRight = 2,
     Bottom = 3,
     BottomLeft = 4,
-    TopLeft= 5,
+    TopLeft = 5,
 }

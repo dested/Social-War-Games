@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Common.HexUtils;
+using Common.BoardUtils;
 
 namespace Common.GameLogic
 {

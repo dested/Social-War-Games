@@ -1,4 +1,4 @@
-namespace Common.HexUtils
+namespace Common.BoardUtils
 {
     public class Vector3
     {

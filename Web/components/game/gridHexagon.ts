@@ -351,6 +351,13 @@ export class GridHexagon {
         if (this.showVotes) {
             if (this.drawCache) {
                 context.drawImage(this.drawCache, offsetX - GridHexagon.hexCenter.x, offsetY - GridHexagon.hexCenter.y);
+
+/*
+                context.fillStyle='black';
+                context.font='11px bold san-serif';
+                context.fillText(this.x+","+this.z,offsetX -10,offsetY +5)
+*/
+
             } else {
                 let cacheImage = GridHexagon.getCacheImage(this.getDepthHeight(false), this.currentDrawColor, this.textureTop.name);
                 if (cacheImage) {

@@ -74,7 +74,7 @@ export class AnimationManager {
                 frame.entity.onAnimationComplete(frame);
             }
             this.start();
-        }, duration)
+        }, duration);
 
     }
 

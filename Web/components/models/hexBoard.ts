@@ -10,7 +10,7 @@ export interface GameState {
     terrain: Terrain;
     entities: GameEntity[];
     generation: number;
-    tickIntervalSeconds:number;
+    tickIntervalSeconds: number;
     factionData: string;
 }
 export interface Terrain {
@@ -19,7 +19,7 @@ export interface Terrain {
     boardStr: string;
 }
 export interface GameEntity {
-    direction: Direction;
+    direction: "Top" | "Bottom" | "TopLeft" | "BottomLeft" | "TopRight" | "BottomRight";
     id: string;
     factionId: number;
     entityType: string;
@@ -40,7 +40,7 @@ export interface GameMetricsVote {
 }
 export interface GameMetricVoteAction {
     entityId: string;
-    actionType: "Move"|"Attack"|"Spawn";
+    actionType: "Move" | "Attack" | "Spawn";
 }
 export interface GameMetricMoveVoteAction extends GameMetricVoteAction {
     x: number;

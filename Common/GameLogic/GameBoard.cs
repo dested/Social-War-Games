@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using BoardUtils;
 using Common.Data;
-using Common.HexUtils;
+using Common.BoardUtils;
 
 namespace Common.GameLogic
 {
@@ -59,7 +60,7 @@ namespace Common.GameLogic
             {
                 var item = this.HexList[q];
 
-                if (HexUtils.HexUtils.Distance(center, item) <= radius)
+                if (BoardUtils.HexUtils.Distance(center, item) <= radius)
                 {
                     items.Add(item);
                 }
@@ -133,8 +134,8 @@ namespace Common.GameLogic
                         path = new Node(node, n);
                         if (!aStar.Contains(path.Value()))
                         {
-                            path.G = node.G + HexUtils.HexUtils.Distance(n, node.Item) + (Math.Abs((node.Item.Y + node.Item.Height) - (n.Y + n.Height)) * 2);
-                            path.F = path.G + HexUtils.HexUtils.Distance(n, finish);
+                            path.G = node.G + BoardUtils.HexUtils.Distance(n, node.Item) + (Math.Abs((node.Item.Y + node.Item.Height) - (n.Y + n.Height)) * 2);
+                            path.F = path.G + BoardUtils.HexUtils.Distance(n, finish);
                             open.Add(path);
                             aStar.Add(path.Value());
                         }

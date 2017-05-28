@@ -177,10 +177,8 @@ export class GameManager {
 
     private async checkState() {
         if (this.cantAct())return;
-        console.log('checking generation');
         this.checking = true;
         let metrics = await DataService.getGameMetrics();
-        console.log('got generation');
         let seconds = (+metrics.nextGenerationDate - +new Date()) / 1000;
 
 

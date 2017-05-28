@@ -254,8 +254,27 @@ export abstract class SixDirectionEntity extends BaseEntity {
 
     currentDirection: Direction = Direction.Bottom;
 
-    setDirection(direction: Direction) {
-        this.currentDirection = direction;
+    setDirection(direction: "Top" | "Bottom" | "TopLeft" | "BottomLeft" | "TopRight" | "BottomRight") {
+        switch (direction) {
+            case "Bottom":
+                this.currentDirection = Direction.Bottom;
+                break;
+            case "Top":
+                this.currentDirection = Direction.Top;
+                break;
+            case "BottomLeft":
+                this.currentDirection = Direction.BottomLeft;
+                break;
+            case "BottomRight":
+                this.currentDirection = Direction.BottomRight;
+                break;
+            case "TopLeft":
+                this.currentDirection = Direction.TopLeft;
+                break;
+            case "TopRight":
+                this.currentDirection = Direction.TopRight;
+                break;
+        }
     }
 
     draw(context: CanvasRenderingContext2D) {

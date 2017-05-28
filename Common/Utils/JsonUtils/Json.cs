@@ -50,7 +50,6 @@ namespace Common.Utils.JsonUtils
         {
             var data = Encoding.UTF8.GetBytes(str);
             if (null == data || data.Length < 1) return null;
-            string compressedBase64 = "";
 
             //write into a new memory stream wrapped by a deflate stream
             using (MemoryStream ms = new MemoryStream())

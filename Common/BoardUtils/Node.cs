@@ -1,6 +1,6 @@
 using Common.GameLogic;
 
-namespace Common.HexUtils
+namespace Common.BoardUtils
 {
     class Node
     {

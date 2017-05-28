@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common.Data;
 using Common.GameLogic;
-using Common.HexUtils;
+using Common.BoardUtils;
 using Common.Utils.JsonUtils;
 using Common.Utils.Nancy;
 using Newtonsoft.Json;

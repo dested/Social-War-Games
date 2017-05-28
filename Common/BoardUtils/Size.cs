@@ -1,4 +1,4 @@
-namespace Common.HexUtils
+namespace BoardUtils
 {
     public class Size
     {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Common.Data;
 using Common.GameLogic;
 using Common.GameLogic.Models;
-using Common.HexUtils;
+using Common.BoardUtils;
 using Common.Utils.Mongo;
 using Common.Utils.Nancy;
 using VoteServer.Modules.Models;

@@ -1,6 +1,6 @@
 using System;
 
-namespace Common.HexUtils
+namespace BoardUtils
 {
     /// <summary>
     /// Implementation of the Perlin simplex noise, an improved Perlin noise algorithm.

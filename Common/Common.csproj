@@ -89,11 +89,11 @@
     <Compile Include="GameLogic\Models\StopVoteMessage.cs" />
     <Compile Include="GameLogic\GridHexagon.cs" />
     <Compile Include="GameLogic\GameBoard.cs" />
-    <Compile Include="HexUtils\HexUtils.cs" />
-    <Compile Include="HexUtils\Node.cs" />
-    <Compile Include="HexUtils\Noise.cs" />
-    <Compile Include="HexUtils\Size.cs" />
-    <Compile Include="HexUtils\Vector3.cs" />
+    <Compile Include="BoardUtils\HexUtils.cs" />
+    <Compile Include="BoardUtils\Node.cs" />
+    <Compile Include="BoardUtils\Noise.cs" />
+    <Compile Include="BoardUtils\Size.cs" />
+    <Compile Include="BoardUtils\Vector3.cs" />
     <Compile Include="Utils\JsonUtils\Json.cs" />
     <Compile Include="Utils\JsonUtils\ObjectIdConverter.cs" />
     <Compile Include="Utils\Mongo\MongoTools.cs" />
