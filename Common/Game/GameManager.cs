@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Common.Data;
 using Common.GameLogic;
 using Common.Utils.Mongo;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 
 namespace Common.Game
@@ -98,7 +99,7 @@ namespace Common.Game
                 List<TrackedVote> moveVotes = new List<TrackedVote>();
                 List<TrackedVote> attackVotes = new List<TrackedVote>();
                 List<TrackedVote> spawnVotes = new List<TrackedVote>();
-                Console.WriteLine("Ticking " + TrackedVotes.Count);
+                Console.WriteLine("Ticking");
 
 
                 foreach (var unitVotes in TrackedVotes.GroupBy(a => a.Action.EntityId))
@@ -122,8 +123,11 @@ namespace Common.Game
 
                 foreach (var vote in attackVotes)
                 {
-                    vote.Action.Complete(this);
-                    votes.Add(vote);
+                    if (vote.Action.Valid(this))
+                    {
+                        vote.Action.Complete(this);
+                        votes.Add(vote);
+                    }
                 }
 
 
@@ -203,6 +207,8 @@ namespace Common.Game
                 GameState.UpdateSync();
 
                 sw.Stop();
+
+                MongoGameVote.Collection.DeleteMany(Builders<MongoGameVote.GameVote>.Filter.Lte(a => a.Generation, GameState.Generation - 1));
 
                 var formattableString = $"{sw.ElapsedMilliseconds}ms Update, {tickTime}ms Tick, Votes: {TrackedVotes.Sum(a => a.Votes)} Actions: {TrackedVotes.Count}  Users Participated: {UserVotes.Count} Generation: {GameState.Generation - 1}";
                 MongoServerLog.AddServerLog("Master.vote", formattableString, null);

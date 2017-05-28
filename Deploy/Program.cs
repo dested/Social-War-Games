@@ -23,8 +23,8 @@ namespace Deploy
         static void Main(string[] args)
         {
 
-            //SetupServer("ec2-35-162-125-29.us-west-2.compute.amazonaws.com");
-
+            //            SetupServer("ec2-54-187-132-104.us-west-2.compute.amazonaws.com");
+            //            return;
             List<FileInfo> files = new List<FileInfo>();
 
 
@@ -50,13 +50,17 @@ namespace Deploy
                 .ToList();
 
             Task.WaitAll(
-                Task.Run(() => UploadWeb())
-//                Task.Run(() => UploadFiles("ec2-35-160-122-186.us-west-2.compute.amazonaws.com", files)),
-//                Task.Run(() => UploadFiles("ec2-35-162-125-29.us-west-2.compute.amazonaws.com", files))
+                //                Task.Run(() => UploadWeb())
+                Task.Run(() => UploadFiles("ec2-35-160-122-186.us-west-2.compute.amazonaws.com", files))
+                , Task.Run(() => UploadFiles("ec2-35-162-125-29.us-west-2.compute.amazonaws.com", files))
+                , Task.Run(() => UploadFiles("ec2-54-187-132-104.us-west-2.compute.amazonaws.com", files))
             );
-            //            StartApplication("ec2-35-160-122-186.us-west-2.compute.amazonaws.com", "MasterVoteServer");
-            //            StartApplication("ec2-35-162-125-29.us-west-2.compute.amazonaws.com", "VoteServer");
 
+
+        /*    StartApplication("ec2-35-160-122-186.us-west-2.compute.amazonaws.com", "MasterVoteServer");
+            StartApplication("ec2-35-162-125-29.us-west-2.compute.amazonaws.com", "VoteServer");
+            StartApplication("ec2-54-187-132-104.us-west-2.compute.amazonaws.com", "VoteServer");
+*/
         }
 
         private static void UploadWeb()
@@ -64,6 +68,7 @@ namespace Deploy
             var path = "../../../Web/";
             try
             {
+                var m = Directory.GetFiles(path);
                 Console.WriteLine("Starting Web Upload");
                 TransferUtility directoryTransferUtility = new TransferUtility(new AmazonS3Client(Amazon.RegionEndpoint.USWest2), new TransferUtilityConfig()
                 {
@@ -112,7 +117,7 @@ namespace Deploy
 
         private static void StartApplication(string address, string server)
         {
-
+            Console.WriteLine("Starting " + server + "   " + address);
             using (var client = new SshClient(address, User, Password))
             {
                 client.Connect();
@@ -120,8 +125,12 @@ namespace Deploy
                 {
                     Console.WriteLine(b.Exception);
                 };
+
                 var output = client.RunCommand("sudo pkill mono");
-                Console.WriteLine("--" + output.Error + " " + output.Result);
+                if (!string.IsNullOrWhiteSpace(output.Error) && !string.IsNullOrWhiteSpace(output.Result))
+                {
+                    Console.WriteLine("--" + output.Error + " " + output.Result);
+                }
                 output = client.RunCommand("sudo mono socialwargames/" + server + ".exe &");
                 Console.WriteLine("--" + output.Error + " " + output.Result);
                 client.Disconnect();

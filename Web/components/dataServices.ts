@@ -27,8 +27,8 @@ WorkerService.start();
 
 export class DataService {
 
-    // private static voteServer: string = 'https://vote.socialwargames.com/';
-    private static voteServer: string = 'http://localhost:3568/';
+    private static voteServer: string = 'https://vote.socialwargames.com/';
+    // private static voteServer: string = 'http://localhost:3568/';
 
     static async getGameMetrics(): Promise<GameMetrics> {
         try {

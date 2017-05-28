@@ -229,7 +229,8 @@ export class GameManager {
                     console.log('game updated4 ');
                     this.hexBoard.updateFactionEntities(state);
                     this.rebuildMiniBoard(false);
-                
+
+
                     this.checking = false;
                     return this.checkState();
                 });

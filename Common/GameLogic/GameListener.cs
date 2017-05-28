@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Threading.Tasks;
 using Common.GameLogic.Models;
 using Common.Utils.Redis;
+using Newtonsoft.Json;
 
 namespace Common.GameLogic
 {

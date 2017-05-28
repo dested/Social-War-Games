@@ -24,8 +24,8 @@ namespace Common.Data
         public class GameVote : IMongoModel
         {
             public ObjectId Id { get; set; }
-            public DateTime Generated { get; set; }
             public int Generation { get; set; }
+            public DateTime Generated { get; set; }
             public VoteAction Action { get; set; }
             public string UserId { get; set; }
         }
@@ -66,23 +66,23 @@ namespace Common.Data
                 {
                     return false;
                 }
-                this._Act_Entity = entity;
+                _Act_Entity = entity;
                 return true;
             }
 
 
             public override void Start(GameManager gameManager)
             {
-                var chex = gameManager.GameBoard.GetHexagon(this._Act_Entity.X, this._Act_Entity.Z);
+                var chex = gameManager.GameBoard.GetHexagon(_Act_Entity.X, _Act_Entity.Z);
                 var fhex = gameManager.GameBoard.GetHexagon(X, Z);
 
                 var path = gameManager.GameBoard.PathFind(chex, fhex);
-                this._Act_Path = path;
-                this._Act_PathIndex = 0;
+                _Act_Path = path;
+                _Act_PathIndex = 0;
             }
 
-            public int _Act_PathIndex;
-            public List<GridHexagon> _Act_Path;
+            private int _Act_PathIndex;
+            private List<GridHexagon> _Act_Path;
             private MongoGameState.GameEntity _Act_Entity;
 
             public override bool NextTick(GameManager gameManager)

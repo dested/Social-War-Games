@@ -55,6 +55,8 @@ namespace VoteServer.Logic
         }
         public static async Task<PostVoteResponse> VoteAction(VoteServerLogic logic, PostVoteRequest model)
         {
+            if (logic.GameManager.Locked) return new PostVoteResponse() { IssueVoting = true };
+
             var gameState = logic.GameManager.GameState;
             var board = logic.GameManager.GameBoard;
             if (model.Generation != gameState.Generation)
@@ -122,10 +124,9 @@ namespace VoteServer.Logic
                 UserId = model.UserId,
                 Action = action
             };
-            await Task.WhenAll(
-                gameVote.Insert(),
-                logic.GameListener.SendGameVote(model.Generation, new GameVoteMessage() { Vote = gameVote })
-            );
+
+            gameVote.Insert();
+            await logic.GameListener.SendGameVote(model.Generation, new GameVoteMessage() { Vote = gameVote });
 
 
             return new PostVoteResponse()

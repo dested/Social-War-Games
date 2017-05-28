@@ -146,7 +146,7 @@ namespace ServerSlammer
                 }
             };
             var state = JsonConvert.DeserializeObject<STResponse<PostVoteResponse>>(response.Content, settings);
-            Console.WriteLine("voted");
+//            Console.WriteLine("voted");
 
             return state.Data.GenerationMismatch;
         }
