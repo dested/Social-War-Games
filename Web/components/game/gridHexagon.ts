@@ -1,6 +1,6 @@
 ﻿///<reference path="../typings/path2d.d.ts"/>
 
-import {Asset} from "./AssetManager";
+import {Asset} from "./assetManager";
 import {HexagonColor, DrawingUtils} from "../utils/drawingUtilities";
 import {GridHexagonConstants, GridMiniHexagonConstants} from "./gridHexagonConstants";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";

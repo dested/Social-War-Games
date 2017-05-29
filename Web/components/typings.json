@@ -1,8 +1,0 @@
-{
-  "globalDependencies": {
-    "core-js": "registry:dt/core-js#0.9.7+20161130133742",
-    "jquery": "registry:dt/jquery#1.10.0+20170101013624",
-    "whatwg-fetch": "registry:dt/whatwg-fetch#0.0.0+20161120230953",
-    "whatwg-streams": "registry:dt/whatwg-streams#0.0.0+20161214010628"
-  }
-}

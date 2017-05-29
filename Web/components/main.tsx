@@ -1,13 +1,11 @@
 ﻿/// <reference path="./typings/index.d.ts" />
+import React from "react";
+import ReactDOM from "react-dom";
 
-import {AssetManager} from "./game/AssetManager";
-import {GameManager} from "./game/gameManager";
+import {AssetManager} from "./game/assetManager";
 import {PageManager} from "./pageManager";
-import {GameController} from "./ui/gameController";
 import {GridHexagonConstants} from "./game/gridHexagonConstants";
-import {GameService} from "./ui/gameService";
-import {AnimationUtils} from "./utils/animationUtils";
-declare const angular: angular.IAngularStatic;
+import {GameUI} from "./ui/gameController";
 
 
 export class Main {
@@ -16,7 +14,7 @@ export class Main {
     static run() {
         GridHexagonConstants.generate(60);
 
-
+        ReactDOM.render(<GameUI />, document.getElementById('game-ui'));
 
         this.loadAssets(() => {
             this.pageManager = new PageManager();
@@ -25,7 +23,7 @@ export class Main {
 
     }
 
-    private static loadAssets(onComplete:()=>void) {
+    private static loadAssets(onComplete: () => void) {
         AssetManager.completed = onComplete;
         var size = {width: 80, height: 80};
         var base = {x: 40, y: 55};
@@ -78,9 +76,4 @@ export class Main {
 
 Main.run();
 
-
-angular.module('swg', []).controller('GameController', GameController);
-angular.element(function () {
-    angular.bootstrap(document.getElementById('game-ui'), ['swg']);
-});
 

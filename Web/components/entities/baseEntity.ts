@@ -39,7 +39,7 @@ export abstract class BaseEntity {
     public z: number;
     public entityType: EntityUnits;
     public id: string;
-    private health: number;
+    public health: number;
     private tile: GridHexagon;
     public faction: number;
 

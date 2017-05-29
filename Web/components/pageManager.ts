@@ -83,12 +83,13 @@ export class PageManager {
             this.swipeVelocity.y = ev.velocityY * 10 / scaleFactor.y;
         });
 
-        mc.on('tap', (ev:{center:IPoint}) => {
+        mc.on('tap', (ev: { center: IPoint }) => {
             let x = <number> ev.center.x;
             let y = <number> ev.center.y;
             this.swipeVelocity.x = this.swipeVelocity.y = 0;
-
-            this.gameManager.tapHex(x, y)
+            if (!this.menuManager.tap(x, y)) {
+                this.gameManager.tapHex(x, y)
+            }
         });
         this.draw();
         setInterval(() => {

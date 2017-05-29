@@ -1,8 +1,18 @@
-﻿import {IPoint, ISize, Point} from "../utils/utils";
+﻿import {IPoint, ISize} from "../utils/utils";
 export interface IMenuItem {
     image: HTMLImageElement;
     action: string;
 }
+/* this.pageManager.menuManager.openMenu([
+ {
+ image: AssetManager.getAsset("Missile").images[0],
+ action: "do this"
+ }, {
+ image: AssetManager.getAsset("Tank").images[0],
+ action: "do that"
+ }], new Point(100, 100), (item) => {
+ console.log(item);
+ });*/
 export class MenuManager {
     canvas: HTMLCanvasElement = null;
     context: CanvasRenderingContext2D = null;

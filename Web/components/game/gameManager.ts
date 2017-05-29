@@ -12,7 +12,7 @@ import {DebounceUtils} from "../utils/debounceUtils";
 import {ViewPort} from "./viewPort";
 import {IPoint, Point} from "../utils/utils";
 import {PageManager} from "../pageManager";
-import {AssetManager} from "./AssetManager";
+import {AssetManager} from "./assetManager";
 import {BaseEntity} from "../entities/baseEntity";
 import {EntityDetails} from "../entities/entityDetails";
 import {PossibleActions} from "../entities/entityManager";
@@ -194,13 +194,16 @@ export class GameManager {
     private async checkState() {
         // console.log('got state',+new Date());
         if (this.cantAct()) {
-            DebounceUtils.debounce("checkState", 1000 * 5, () => {
-                this.checkState();
-            });
+            DebounceUtils.debounce("checkState", 1000 * 5, () => this.checkState());
             return;
         }
         this.checking = true;
         let metrics = await DataService.getGameMetrics();
+        if(!metrics){
+            this.checking=false;
+            DebounceUtils.debounce("checkState", 1000 * 5, () => this.checkState());
+            return;
+        }
         let seconds = (+metrics.nextGenerationDate - +new Date()) / 1000;
 
 
@@ -436,17 +439,7 @@ export class GameManager {
             }
                 break;
         }
-        this.pageManager.menuManager.openMenu([
-            {
-                image: AssetManager.getAsset("Missile").images[0],
-                action: "do this"
-            }, {
-                image: AssetManager.getAsset("Tank").images[0],
-                action: "do that"
-            }], new Point(100, 100), (item) => {
-            console.log(item);
-        });
-        return;
+
         await this.vote(GameService.selectedEntity, GameService.selectedAction, hex.x, hex.z);
         GameService.resetSelection();
     }

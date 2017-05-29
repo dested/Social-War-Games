@@ -1,4 +1,3 @@
-import {Direction} from "../game/hexUtils";
 export interface VoteResponse {
     generationMismatch: boolean;
     issueVoting: boolean;

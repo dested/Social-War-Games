@@ -5,6 +5,8 @@
   "main": "index.js",
   "dependencies": {
     "@types/angular": "^1.5.22",
+    "@types/react": "^15.0.25",
+    "@types/react-dom": "^15.5.0",
     "angular": "^1.6.1"
   },
   "devDependencies": {},

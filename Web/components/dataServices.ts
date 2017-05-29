@@ -43,11 +43,12 @@ export class DataService {
             let json = await response.json();
 
             var m = await WorkerService.deflate(json.data);
+            if (!m.metrics)return null;
             m.metrics.nextGenerationDate = new Date(m.metrics.nextGeneration);
             return m.metrics;
         } catch (ex) {
             console.error('Fetch Error :-S', ex);
-            return ex;
+            return null;
         }
     }
 
