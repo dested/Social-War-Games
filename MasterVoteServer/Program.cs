@@ -44,7 +44,7 @@ namespace MasterVoteServer
 
             MongoGameVote.Collection.Indexes.CreateOne(Builders<MongoGameVote.GameVote>.IndexKeys.Ascending(_ => _.Generation));
 
-            var terrain = GenerateTerrain(84 * 3, 84 * 3);
+            var terrain = GenerateTerrain(84 *2, 84 * 2);
             var board = new GameBoard(new MongoGameState.GameState() { Terrain = terrain });
             var entities = new List<MongoGameState.GameEntity>();
 
@@ -69,7 +69,7 @@ namespace MasterVoteServer
             {
                 Generation = 0,
                 LastGeneration = DateTime.UtcNow,
-                TickIntervalSeconds = 15,
+                TickIntervalSeconds = 60,
                 Terrain = terrain,
                 FactionData = sb.ToString(),
                 Entities = entities,

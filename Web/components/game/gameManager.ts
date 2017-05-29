@@ -166,10 +166,7 @@ export class GameManager {
 
     draw(context: CanvasRenderingContext2D) {
         context.save();
-
-        this.viewPort.zoom(context);
-
-        context.translate(-this.viewPort.getX(), -this.viewPort.getY());
+        this.viewPort.offset(context);
 
         this.hexBoard.drawBoard(context);
         context.restore();
@@ -199,8 +196,8 @@ export class GameManager {
         }
         this.checking = true;
         let metrics = await DataService.getGameMetrics();
-        if(!metrics){
-            this.checking=false;
+        if (!metrics) {
+            this.checking = false;
             DebounceUtils.debounce("checkState", 1000 * 5, () => this.checkState());
             return;
         }
@@ -553,9 +550,8 @@ export class GameManager {
 
 
     constrainViewPort() {
-
         this.viewPort.constrainViewPort(this.hexBoard.gameDimensions());
-        this.hexBoard.resetVisibleHexList( );
+        this.hexBoard.resetVisibleHexList();
     }
 
     getHexAtPoint(clickX: number, clickY: number): GridHexagon {

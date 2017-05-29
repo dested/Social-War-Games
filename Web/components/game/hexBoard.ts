@@ -20,7 +20,7 @@ export class HexBoard {
     hexListLength: number;
     hexList: GridHexagon[] = [];
     hexBlock: { [key: number]: GridHexagon } = {};
-    boardSize = {width: 0, height: 0};
+    boardSize: ISize = {width: 0, height: 0};
     entityManager: EntityManager;
     generation: number = -1;
     private hexListHeightMap: GridHexagon[][];
@@ -318,6 +318,7 @@ export class HexBoard {
 
     drawBoard(context: CanvasRenderingContext2D): void {
         context.lineWidth = 1;
+        let str = '';
         for (let j = 0; j < this.visibleHexListHeightMap.length; j++) {
             let hexList = this.visibleHexListHeightMap[j];
             let entList = this.visibleEntityHeightMap[j];
@@ -329,7 +330,10 @@ export class HexBoard {
             for (let j = 0; j < entList.length; j++) {
                 entList[j].draw(context);
             }
+            str += `height ${j} hexes: ${hexList.length} entities: ${entList.length} \r\n`;
         }
+        str += '-------';
+        console.log(str);
     }
 
     resetVisibleHexList(): void {

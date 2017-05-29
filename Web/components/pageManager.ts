@@ -92,21 +92,17 @@ export class PageManager {
             }
         });
         this.draw();
-        setInterval(() => {
-            this.tick();
-        }, 1000 / 16);
-
     }
 
     draw() {
-        requestAnimationFrame(() => {
-            this.draw();
-        });
+        this.tick();
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
         this.gameManager.draw(this.context);
         this.menuManager.draw();
         this.fpsMeter.tick();
+        requestAnimationFrame(() => {
+            this.draw();
+        });
     }
 
     tick() {

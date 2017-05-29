@@ -149,9 +149,8 @@ export class ViewPort {
 
     }
 
-    zoom(context: CanvasRenderingContext2D) {
+    offset(context: CanvasRenderingContext2D) {
         if (this.scaleFactor && this.zoomPosition) {
-
             context.translate(
                 -(this.scaleFactor.x - 1) * this.zoomPosition.x,
                 -(this.scaleFactor.y - 1) * this.zoomPosition.y
@@ -159,6 +158,8 @@ export class ViewPort {
 
             context.scale(this.scaleFactor.x, this.scaleFactor.y);
         }
+        context.translate(-this.getX(), -this.getY());
+
     }
 
     static defaultScaleFactor = {x: 1, y: 1};
