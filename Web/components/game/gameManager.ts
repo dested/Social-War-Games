@@ -555,7 +555,7 @@ export class GameManager {
     constrainViewPort() {
 
         this.viewPort.constrainViewPort(this.hexBoard.gameDimensions());
-        this.hexBoard.resetVisibleHexList(this.viewPort);
+        this.hexBoard.resetVisibleHexList( );
     }
 
     getHexAtPoint(clickX: number, clickY: number): GridHexagon {

@@ -14,6 +14,7 @@ import {HeliEntity} from "../entities/heliEntity";
 import {SixDirectionEntity} from "../entities/sixDirectionEntity";
 import {InfantryEntity} from "../entities/infantyEntity";
 import {TankEntity} from "../entities/tankEntity";
+import {GameService} from "../ui/gameService";
 
 export class HexBoard {
     hexListLength: number;
@@ -311,6 +312,7 @@ export class HexBoard {
                 entity.stillAlive = false;
             }
         }
+        this.resetVisibleHexList()
     }
 
 
@@ -330,7 +332,8 @@ export class HexBoard {
         }
     }
 
-    resetVisibleHexList(viewPort: ViewPort): void {
+    resetVisibleHexList(): void {
+        let viewPort = GameService.getGameManager().viewPort;
         let visibleHexList = new Array(10);
         let visibleEntity = new Array(10);
 

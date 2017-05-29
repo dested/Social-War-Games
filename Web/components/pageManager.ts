@@ -125,12 +125,12 @@ export class PageManager {
                 this.swipeVelocity.y = 0;
             }
         }
-        // if (Math.abs(this.swipeVelocity.x) > 0 || Math.abs(this.swipeVelocity.y) > 0)
-        {
-
-            //todo optimize this cause its called way too fucking often
+        if (Math.abs(this.swipeVelocity.x) > 0 || Math.abs(this.swipeVelocity.y) > 0) {
             this.gameManager.offsetView(-this.swipeVelocity.x, -this.swipeVelocity.y);
         }
+        /*else {
+            this.gameManager.hexBoard.resetVisibleHexList()
+        }*/
         this.gameManager.tick();
     }
 }
