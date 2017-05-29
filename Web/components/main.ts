@@ -25,7 +25,7 @@ export class Main {
 
     }
 
-    private static loadAssets(onComplete) {
+    private static loadAssets(onComplete:()=>void) {
         AssetManager.completed = onComplete;
         var size = {width: 80, height: 80};
         var base = {x: 40, y: 55};

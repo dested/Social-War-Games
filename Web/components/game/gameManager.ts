@@ -1,6 +1,6 @@
 import {BaseEntity, EntityDetails} from "../entities/entityManager";
 import {DrawingUtils} from "../utils/drawingUtilities";
-import {HexUtils} from "./hexUtils";
+import {HexUtils, Vector3} from "./hexUtils";
 import {GridHexagon} from "./gridHexagon";
 import {HexBoard} from "./hexBoard";
 import {DataService} from "../dataServices";
@@ -11,7 +11,8 @@ import {GameService, PossibleActions} from "../ui/gameService";
 import {GameState} from "../models/hexBoard";
 import {DebounceUtils} from "../utils/debounceUtils";
 import {ViewPort} from "./viewPort";
-declare let Hammer;
+import {IPoint} from "../utils/utils";
+declare let Hammer: any;
 
 export class GameManager {
     hexBoard: HexBoard;
@@ -73,7 +74,7 @@ export class GameManager {
         mc.add(new Hammer.Pan({threshold: 0, pointers: 0}));
         mc.add(new Hammer.Tap());
         let tapStart = {x: 0, y: 0};
-        mc.on('panstart', (ev) => {
+        mc.on('panstart', () => {
             tapStart.x = parseInt(canvas.style.marginLeft.replace("px", ''));
             tapStart.y = parseInt(canvas.style.marginTop.replace("px", ''));
             tapStart.x = tapStart.x || 0;
@@ -81,7 +82,7 @@ export class GameManager {
             return true;
         });
 
-        mc.on('panmove', (ev) => {
+        mc.on('panmove', (ev: { deltaX: number; deltaY: number }) => {
             let width = leftBubble.clientWidth;
             let height = leftBubble.clientHeight;
 
@@ -95,7 +96,7 @@ export class GameManager {
                 canvas.style.marginTop = ry + "px";
             }
         });
-        mc.on('tap', (ev) => {
+        mc.on('tap', (ev:{center:IPoint}) => {
             let rect = leftBubble.getBoundingClientRect();
 
             tapStart.x = parseInt(canvas.style.marginLeft.replace("px", ''));
@@ -113,7 +114,7 @@ export class GameManager {
     }
 
 
-    getMiniHexAtPoint(clickX, clickY): GridHexagon {
+    getMiniHexAtPoint(clickX:number, clickY:number): GridHexagon {
         let lastClick: GridHexagon = null;
 
         let hexListLength = this.hexBoard.hexListLength;
@@ -436,7 +437,7 @@ export class GameManager {
         GameService.resetSelection();
     }
 
-    findAvailableSpots(radius, center): GridHexagon[] {
+    findAvailableSpots(radius:number, center:Vector3): GridHexagon[] {
         let items = [];
         let hexListLength = this.hexBoard.hexListLength;
         for (let q = 0; q < hexListLength; q++) {

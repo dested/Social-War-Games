@@ -56,20 +56,20 @@ export class GridHexagonConstants {
         return this._topPolygon;
     };
 
-    static hexagonDepthLeftPolygon(depthHeight) {
+    static hexagonDepthLeftPolygon(depthHeight:number) {
         return this._leftPolygon[depthHeight | 0];
     };
 
-    static hexagonDepthBottomPolygon(depthHeight) {
+    static hexagonDepthBottomPolygon(depthHeight:number) {
         return this._bottomPolygon[depthHeight | 0];
     };
 
-    static hexagonDepthRightPolygon(depthHeight) {
+    static hexagonDepthRightPolygon(depthHeight:number) {
         return this._rightPolygon[depthHeight | 0];
     };
 
 
-    static makeHexagonDepthLeftPolygon(depthHeight) {
+    static makeHexagonDepthLeftPolygon(depthHeight:number) {
         return [
             new Point(-this.width / 2, 0),
             new Point(-this.width / 4, this.height() / 2),
@@ -92,7 +92,7 @@ export class GridHexagonConstants {
     };
 
 
-    static makeHexagonDepthBottomPolygon(depthHeight) {
+    static makeHexagonDepthBottomPolygon(depthHeight:number) {
         return [new Point(-this.width / 4, this.height() / 2),
             new Point(this.width / 4, this.height() / 2),
             new Point(this.width / 4, this.height() / 2 + depthHeight),
@@ -101,7 +101,7 @@ export class GridHexagonConstants {
     };
 
 
-    static makeHexagonDepthRightPolygon(depthHeight) {
+    static makeHexagonDepthRightPolygon(depthHeight:number) {
         return [
             new Point(this.width / 4, this.height() / 2),
             new Point(this.width / 2, 0),

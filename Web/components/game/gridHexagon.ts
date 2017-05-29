@@ -5,7 +5,7 @@ import {HexagonColor, DrawingUtils} from "../utils/drawingUtilities";
 import {GridHexagonConstants, GridMiniHexagonConstants} from "./gridHexagonConstants";
 import {BaseEntity} from "../entities/entityManager";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
-import {IPoint} from "../utils/utils";
+import {IPoint, Point} from "../utils/utils";
 import {GameService} from "../ui/gameService";
 import {ViewPort} from "./viewPort";
 
@@ -463,7 +463,7 @@ export class GridHexagon {
         GridHexagon.caches[c] = img;
     }
 
-    static buildPath(path): Path2D {
+    static buildPath(path:Point[]): Path2D {
         const p2d = new Path2D();
         for (let i = 0; i < path.length; i++) {
             const point = path[i];

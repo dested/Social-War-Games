@@ -75,8 +75,8 @@ export class Help {
     }
 
 
-    public static getQueryString(): {[key: string]: string} {
-        let result: {[key: string]: string} = {};
+    public static getQueryString(): { [key: string]: string } {
+        let result: { [key: string]: string } = {};
         let queryString: string = window.location.search.substring(1);
         let re = new RegExp("/([^&=]+)=([^&]*)/g");
         let m;
@@ -88,7 +88,7 @@ export class Help {
 
     static merge<T>(base: T, update: any): T {
         for (let i in update) {
-            base[i] = update[i];
+            (<any>base)[i] = update[i];
         }
         return base;
     }

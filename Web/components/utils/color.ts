@@ -25,9 +25,9 @@ export class ColorUtils {
      @param: color1      => the first color, hex (ie: #000000)
      @param: color2      => the second color, hex (ie: #ffffff)
      @param: percentage  => the distance from the first color, as a decimal between 0 and 1 (ie: 0.5)
-     @returns: string    => the third color, hex, represenatation of the blend between color1 and color2 at the given percentage
+     @returns: string    => the third color, hex, representation of the blend between color1 and color2 at the given percentage
      */
-    static  blend_colors(color1, color2, percentage) {
+    static  blend_colors(color1: string, color2: string, percentage: number) {
         // check input
         color1 = color1 || '#000000';
         color2 = color2 || '#ffffff';
@@ -58,15 +58,15 @@ export class ColorUtils {
 
 
         // 3: we have valid input, convert colors to rgb
-        color1 = [parseInt(color1[0] + color1[1], 16), parseInt(color1[2] + color1[3], 16), parseInt(color1[4] + color1[5], 16)];
-        color2 = [parseInt(color2[0] + color2[1], 16), parseInt(color2[2] + color2[3], 16), parseInt(color2[4] + color2[5], 16)];
+        let colorArray1 = [parseInt(color1[0] + color1[1], 16), parseInt(color1[2] + color1[3], 16), parseInt(color1[4] + color1[5], 16)];
+        let colorArray2 = [parseInt(color2[0] + color2[1], 16), parseInt(color2[2] + color2[3], 16), parseInt(color2[4] + color2[5], 16)];
 
 
         // 4: blend
         let color3 = [
-            (1 - percentage) * color1[0] + percentage * color2[0],
-            (1 - percentage) * color1[1] + percentage * color2[1],
-            (1 - percentage) * color1[2] + percentage * color2[2]
+            (1 - percentage) * colorArray1[0] + percentage * colorArray2[0],
+            (1 - percentage) * colorArray1[1] + percentage * colorArray2[1],
+            (1 - percentage) * colorArray1[2] + percentage * colorArray2[2]
         ];
 
 
@@ -75,7 +75,7 @@ export class ColorUtils {
         return '#' + ColorUtils.int_to_hex(color3[0]) + ColorUtils.int_to_hex(color3[1]) + ColorUtils.int_to_hex(color3[2]);
     }
 
-    static  int_to_hex(num) {
+    static  int_to_hex(num: number) {
         let hex = Math.round(num).toString(16);
         if (hex.length == 1)
             hex = '0' + hex;

@@ -2,7 +2,8 @@ import {MenuManager} from "./game/menuManager";
 import {HexUtils} from "./game/hexUtils";
 import {GameManager} from "./game/gameManager";
 import {HexagonColorUtils} from "./utils/hexagonColorUtils";
-declare let Hammer;
+import {IPoint} from "./utils/utils";
+declare let Hammer: any;
 export class PageManager {
     private menuManager: MenuManager;
     private gameManager: GameManager;
@@ -30,7 +31,7 @@ export class PageManager {
 
         this.canvas = <HTMLCanvasElement>document.getElementById("hex");
         this.context = this.canvas.getContext("2d");
-        let menu = document.getElementById("menu");
+        let menu = <HTMLCanvasElement> document.getElementById("menu");
         this.menuManager = new MenuManager(menu);
 
         let overlay = document.getElementById("overlay");
@@ -52,7 +53,7 @@ export class PageManager {
         this.gameManager.resize(this.canvas.width, this.canvas.height);
 
 
-        mc.on('panstart', (ev) => {
+        mc.on('panstart', (ev: { deltaX: number, deltaY: number }) => {
             if (this.menuManager.isOpen) {
                 return false;
             }
@@ -64,7 +65,7 @@ export class PageManager {
             this.gameManager.setView(this.tapStart.x - ev.deltaX / scaleFactor.x, this.tapStart.y - ev.deltaY / scaleFactor.y);
             return true;
         });
-        mc.on('panmove', (ev) => {
+        mc.on('panmove', (ev: { deltaX: number, deltaY: number }) => {
             if (this.menuManager.isOpen) {
                 return false;
             }
@@ -72,7 +73,7 @@ export class PageManager {
             this.gameManager.setView(this.tapStart.x - ev.deltaX / scaleFactor.x, this.tapStart.y - ev.deltaY / scaleFactor.y);
         });
 
-        mc.on('swipe', (ev) => {
+        mc.on('swipe', (ev: { velocityX: number, velocityY: number }) => {
             if (this.menuManager.isOpen) {
                 return false;
             }
@@ -82,7 +83,7 @@ export class PageManager {
             this.swipeVelocity.y = ev.velocityY * 10 / scaleFactor.y;
         });
 
-        mc.on('tap', (ev) => {
+        mc.on('tap', (ev:{center:IPoint}) => {
             let x = <number> ev.center.x;
             let y = <number> ev.center.y;
             this.swipeVelocity.x = this.swipeVelocity.y = 0;

@@ -150,7 +150,7 @@ export class ViewPort {
     }
 
     zoom(context: CanvasRenderingContext2D) {
-        if (this.scaleFactor) {
+        if (this.scaleFactor && this.zoomPosition) {
 
             context.translate(
                 -(this.scaleFactor.x - 1) * this.zoomPosition.x,

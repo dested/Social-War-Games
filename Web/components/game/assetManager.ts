@@ -48,7 +48,7 @@ export class AssetManager {
     }
 
 
-    static  imageLoaded(img, name) {
+    static  imageLoaded(img:HTMLImageElement, name:string) {
         var assetQueue = this.assetQueue[name];
 
         var asset: Asset = this.assets[assetQueue.realName] || {

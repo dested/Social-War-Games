@@ -13,7 +13,7 @@ export class MenuManager {
     location: Point = null;
     onClick: (selectedItem: MenuItem)=>void = null;
 
-    constructor(canvas) {
+    constructor(canvas:HTMLCanvasElement) {
 
         this.canvas = canvas;
         this.context = this.canvas.getContext('2d');
@@ -49,7 +49,7 @@ export class MenuManager {
         return size;
     }
 
-    tap(x, y) {
+    tap(x:number, y:number) {
         if (!this.isOpen) return false;
         const size = this.size();
         if (x >= this.location.x && y >= this.location.y &&

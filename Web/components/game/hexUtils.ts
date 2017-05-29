@@ -51,7 +51,7 @@ export class HexUtils {
             return Math.abs(du) + Math.abs(dv);
     }
 
-    static orderBy(list, callback) {
+    static orderBy<T>(list: T[], callback: (item: T) => number) {
         const itms = [];
         for (var i = 0; i < list.length; i++) {
             const obj = list[i];

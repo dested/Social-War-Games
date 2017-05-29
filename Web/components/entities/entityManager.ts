@@ -15,8 +15,8 @@ export class EntityManager {
 
 
     public entities: BaseEntity[] = [];
-    private entityKeys: { [entityId: number]: BaseEntity } = {};
-    private entitiesMap: { [tileKey: number]: BaseEntity[] } = {};
+    private entityKeys: { [entityId: string]: BaseEntity } = {};
+    private entitiesMap: { [tileKey: string]: BaseEntity[] } = {};
 
 
     tick() {

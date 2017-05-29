@@ -7,6 +7,7 @@
     "outFile": "../js/app.js",
     "target": "es2017",
     "inlineSourceMap": true,
+    "noImplicitAny": true,
     "lib": ["dom","es7"]
   },
   "files": [

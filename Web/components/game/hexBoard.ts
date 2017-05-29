@@ -10,6 +10,7 @@ import {Vector3, HexUtils, Node, Direction} from "./hexUtils";
 import {AssetManager} from "./assetManager";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
 import {ViewPort} from "./viewPort";
+import {ISize} from "../utils/utils";
 
 export class HexBoard {
     hexListLength: number;
@@ -26,12 +27,12 @@ export class HexBoard {
         this.entityManager = new EntityManager(this);
     }
 
-    setSize(width, height) {
+    setSize(width: number, height: number) {
         this.boardSize.width = width;
         this.boardSize.height = height;
     }
 
-    gameDimensions(): { width: number, height: number } {
+    gameDimensions(): ISize {
         const size = {width: 0, height: 0};
         size.width = GridHexagonConstants.width * (3 / 4) * this.boardSize.width;
         size.height = GridHexagonConstants.height() * this.boardSize.height;
@@ -135,9 +136,9 @@ export class HexBoard {
     pathFind(start: GridHexagon, finish: GridHexagon) {
         const myPathStart = new Node(null, start);
         const myPathEnd = new Node(null, finish);
-        let aStar = [];
+        let aStar: boolean[] = [];
         let open = [myPathStart];
-        let closed = [];
+        let closed: Node[] = [];
         const result: Vector3[] = [];
         let neighbors;
         let node;
@@ -229,7 +230,7 @@ export class HexBoard {
             }
         }
 
-        this.hexListLength=this.hexList.length;
+        this.hexListLength = this.hexList.length;
 
         this.entityManager.empty();
         this.reorderHexList();
