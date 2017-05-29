@@ -543,16 +543,21 @@ export class GameManager {
         this.viewPort.setLocalStorage();
     }
 
+
     constrainViewPort() {
 
         this.viewPort.constrainViewPort(this.hexBoard.gameDimensions());
         this.hexBoard.resetVisibleHexList(this.viewPort);
     }
 
-    getHexAtPoint(clickX, clickY): GridHexagon {
+    getHexAtPoint(clickX: number, clickY: number): GridHexagon {
         let lastClick: GridHexagon = null;
-        clickX += this.viewPort.getX();
-        clickY += this.viewPort.getY();
+
+        clickX /= this.viewPort.getScale().x;
+        clickY /= this.viewPort.getScale().y;
+
+        clickX += this.viewPort.getZoomedX();
+        clickY += this.viewPort.getZoomedY();
 
         let hexWidth = GridHexagonConstants.width * 3 / 4;
         let gridHeight = GridHexagonConstants.height();
@@ -581,7 +586,7 @@ export class GameManager {
                 lastClick = gridHexagon;
             }
         }
-
+        console.log(lastClick.x, lastClick.z);
         return lastClick;
     }
 

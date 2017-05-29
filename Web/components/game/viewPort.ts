@@ -1,9 +1,10 @@
 import {AnimationInstance, AnimationUtils} from "../utils/animationUtils";
 import {IPoint} from "../utils/utils";
 import {GridHexagonConstants} from "./gridHexagonConstants";
+import {DebounceUtils} from "../utils/debounceUtils";
 export class ViewPort {
-    scaleFactor: IPoint;
-    zoomPosition: IPoint;
+    private scaleFactor: IPoint;
+    private zoomPosition: IPoint;
 
     getX() {
         return this.x;
@@ -11,6 +12,21 @@ export class ViewPort {
 
     getY() {
         return this.y;
+    }
+
+    getZoomedX() {
+        if (this.zoomPosition) {
+            return this.x + this.zoomPosition.x / this.scaleFactor.x;
+        }
+        return this.x;
+    }
+
+    getZoomedY() {
+        if (this.zoomPosition) {
+            return this.y + this.zoomPosition.y / this.scaleFactor.y;
+        }
+        return this.y;
+
     }
 
     getWidth() {
@@ -38,10 +54,11 @@ export class ViewPort {
     }
 
     constrainViewPort(size: { width: number; height: number }) {
-        this.x = Math.max(this.x, 0 - this.padding);
-        this.y = Math.max(this.y, 0 - this.padding);
-        this.x = Math.min(this.x, size.width + this.padding - this.width);
-        this.y = Math.min(this.y, size.height + this.padding - this.height);
+        let scale = this.getScale();
+        this.x = Math.max(this.x, 0 - this.padding * scale.x);
+        this.y = Math.max(this.y, 0 - this.padding * scale.y);
+        this.x = Math.min(this.x, size.width + this.padding * scale.x - this.width);
+        this.y = Math.min(this.y, size.height + this.padding * scale.y - this.height);
     }
 
     setLocalStorage() {
@@ -68,41 +85,67 @@ export class ViewPort {
 
     animateZoom(scale: number, position: IPoint) {
 
-        if (this.curAnimation) {
-            this.curAnimation.cancel = true
-        }
+        DebounceUtils.debounce("animateZoom", 10, () => {
+            if (this.curAnimation) {
+                this.curAnimation.cancel = true
+            }
 
-        if (!position) {
-            this.curAnimation = AnimationUtils.start({
-                start: this.scaleFactor.x,
-                finish: 1,
-                callback: (c) => {
-                    this.scaleFactor = {x: c, y: c};
-                },
-                duration: 600,
-                easing: AnimationUtils.easings.easeInQuint,
-                complete: () => {
-                    this.curAnimation = null;
-                    this.scaleFactor = null;
-                    this.zoomPosition = null;
-                }
-            });
-        } else {
-            this.curAnimation = AnimationUtils.start({
-                start: 1,
-                finish: scale,
-                callback: (c) => {
-                    this.scaleFactor = {x: c, y: c};
-                },
-                duration: 600,
-                easing: AnimationUtils.easings.easeInQuint,
-                complete: () => {
-                    this.curAnimation = null;
-                }
-            });
-            this.zoomPosition = position;
-        }
+            if (!position) {
+                if (!this.scaleFactor)return;
+                this.curAnimation = AnimationUtils.start({
+                    start: this.scaleFactor.x,
+                    finish: 1,
+                    callback: (c) => {
+                        this.scaleFactor = {x: c, y: c};
+                    },
+                    duration: 600,
+                    easing: AnimationUtils.easings.easeOutQuint,
+                    complete: () => {
+                        this.curAnimation = null;
+                        this.scaleFactor = null;
+                        this.zoomPosition = null;
+                    }
+                });
+            } else {
+                if (this.scaleFactor) {
+                    AnimationUtils.start({
+                        start: this.zoomPosition.x,
+                        finish: position.x,
+                        callback: (c) => {
+                            this.zoomPosition.x = c;
+                        },
+                        duration: 600,
+                        easing: AnimationUtils.easings.easeOutQuint,
 
+                    });
+                    AnimationUtils.start({
+                        start: this.zoomPosition.y,
+                        finish: position.y,
+                        callback: (c) => {
+                            this.zoomPosition.y = c;
+                        },
+                        duration: 600,
+                        easing: AnimationUtils.easings.easeOutQuint,
+                    });
+                } else {
+                    this.curAnimation = AnimationUtils.start({
+                        start: 1,
+                        finish: scale,
+                        callback: (c) => {
+                            this.scaleFactor = {x: c, y: c};
+                            this.zoomPosition = position;
+                        },
+                        duration: 600,
+                        easing: AnimationUtils.easings.easeOutQuint,
+                        complete: () => {
+                            this.curAnimation = null;
+                        }
+                    });
+
+                }
+
+            }
+        })
 
     }
 
@@ -116,5 +159,11 @@ export class ViewPort {
 
             context.scale(this.scaleFactor.x, this.scaleFactor.y);
         }
+    }
+
+    static defaultScaleFactor = {x: 1, y: 1};
+
+    getScale() {
+        return this.scaleFactor || ViewPort.defaultScaleFactor;
     }
 }

@@ -60,14 +60,16 @@ export class PageManager {
             this.swipeVelocity.x = this.swipeVelocity.y = 0;
             this.tapStart.x = this.gameManager.viewPort.getX();
             this.tapStart.y = this.gameManager.viewPort.getY();
-            this.gameManager.setView(this.tapStart.x - ev.deltaX, this.tapStart.y - ev.deltaY);
+            var scaleFactor = this.gameManager.viewPort.getScale();
+            this.gameManager.setView(this.tapStart.x - ev.deltaX / scaleFactor.x, this.tapStart.y - ev.deltaY / scaleFactor.y);
             return true;
         });
         mc.on('panmove', (ev) => {
             if (this.menuManager.isOpen) {
                 return false;
             }
-            this.gameManager.setView(this.tapStart.x - ev.deltaX, this.tapStart.y - ev.deltaY);
+            var scaleFactor = this.gameManager.viewPort.getScale();
+            this.gameManager.setView(this.tapStart.x - ev.deltaX / scaleFactor.x, this.tapStart.y - ev.deltaY / scaleFactor.y);
         });
 
         mc.on('swipe', (ev) => {
@@ -75,8 +77,9 @@ export class PageManager {
                 return false;
             }
             this.menuManager.closeMenu();
-            this.swipeVelocity.x = ev.velocityX * 10;
-            this.swipeVelocity.y = ev.velocityY * 10;
+            var scaleFactor = this.gameManager.viewPort.getScale();
+            this.swipeVelocity.x = ev.velocityX * 10 / scaleFactor.x;
+            this.swipeVelocity.y = ev.velocityY * 10 / scaleFactor.y;
         });
 
         mc.on('tap', (ev) => {
