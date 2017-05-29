@@ -4,7 +4,7 @@ import {GridHexagonConstants} from "../game/gridHexagonConstants";
 import {GridHexagon} from "../game/gridHexagon";
 import {Vector3, HexUtils, Direction} from "../game/hexUtils";
 import {GameMetricVoteAction, GameMetricMoveVoteAction, GameEntity, GameMetricsVote, GameMetricSpawnVoteAction, GameMetricAttackVoteAction} from "../models/hexBoard";
-import {AnimationFrame, AnimationFrameType} from "../animationManager";
+import {AnimationFrame, AnimationFrameType, AnimationType} from "../animationManager";
 import {Help} from "../utils/help";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
 import {PossibleActions} from "../ui/gameService";
@@ -75,16 +75,29 @@ export type EntityUnits = 'Tank' | 'Heli' | 'Infantry' | 'MainBase' | 'Base';
 export abstract class BaseEntity {
 
     animationFrame: number = 0;
-    _drawTickNumber: number = (Math.random() * 1000) | 0;
+    drawTickNumber: number = (Math.random() * 1000) | 0;
+
+    protected missileDirection: Direction = null;
+    protected missileAnimationFrame: number = 0;
+    protected missileAsset: string;
+    protected missileX: number;
+    protected missileZ: number;
 
     abstract realYOffset(): number;
 
     abstract realXOffset(): number;
 
-    protected animateFromHex: GridHexagon = null;
-    protected animateToHex: GridHexagon = null;
-    protected durationTicks: number = -1;
-    protected currentTick: number = -1;
+    protected _move_animateFromHex: GridHexagon = null;
+    protected _move_animateToHex: GridHexagon = null;
+    protected _move_durationTicks: number = -1;
+    protected _move_currentTick: number = -1;
+
+
+    protected _attack_animateFromHex: GridHexagon = null;
+    protected _attack_animateToHex: GridHexagon = null;
+    protected _attack_durationTicks: number = -1;
+    protected _attack_currentTick: number = -1;
+
 
     public x: number;
     public z: number;
@@ -135,66 +148,118 @@ export abstract class BaseEntity {
 
     draw(context: CanvasRenderingContext2D) {
 
-        this._drawTickNumber++;
+        this.drawTickNumber++;
 
-        if (this._drawTickNumber % this.animationSpeed === 0) {
+        if (this.drawTickNumber % this.animationSpeed === 0) {
             this.animationFrame = (this.animationFrame + 1) % this.totalFrames;
         }
 
-        if (this.currentTick != -1) {
+        if (this._move_currentTick != -1) {
 
-            let percent = this.currentTick / this.durationTicks;
+            let percent = this._move_currentTick / this._move_durationTicks;
             if (percent < 1) {
-                this.x = Help.lerp(this.animateFromHex.getRealX(), this.animateToHex.getRealX(), percent);
-                this.z = Help.lerp(this.animateFromHex.getRealZ(), this.animateToHex.getRealZ(), percent);
-                this.currentTick++;
+                this.x = Help.lerp(this._move_animateFromHex.getRealX(), this._move_animateToHex.getRealX(), percent);
+                this.z = Help.lerp(this._move_animateFromHex.getRealZ(), this._move_animateToHex.getRealZ(), percent);
+                this._move_currentTick++;
             }
         }
+
+        if (this._attack_currentTick != -1) {
+
+
+   /*         if (this.drawTickNumber % this.animationSpeed === 0) {
+                this.missileAnimationFrame = (this.missileAnimationFrame + 1) % this.totalFrames;
+            }*/
+
+            this.missileAsset = 'Missile';
+            let percent = this._attack_currentTick / this._attack_durationTicks;
+            if (percent < 1) {
+                this.missileX = Help.lerp(this._attack_animateFromHex.getRealX(), this._attack_animateToHex.getRealX(), percent);
+                this.missileZ = Help.lerp(this._attack_animateFromHex.getRealZ(), this._attack_animateToHex.getRealZ(), percent);
+                this._attack_currentTick++;
+            }
+        }
+
     }
 
     public tick() {
     }
 
     public onAnimationComplete(frame: AnimationFrame): void {
-        if (frame.type == AnimationFrameType.Stop) {
-            let tile = this.entityManager.hexBoard.getHexAtSpot(frame.endX || frame.startX, frame.endZ || frame.startZ);
-            tile.clearHighlightColor();
-            this.currentTick = -1;
-            this.durationTicks = -1;
-            this.animateToHex = null;
-            this.animateFromHex = null;
-            return;
-        }
+        switch (frame.type) {
+            case AnimationType.Move: {
+                if (frame.frameType == AnimationFrameType.Stop) {
+                    let tile = this.entityManager.hexBoard.getHexAtSpot(frame.endX || frame.startX, frame.endZ || frame.startZ);
+                    tile.clearHighlightColor();
+                    this._move_currentTick = -1;
+                    this._move_durationTicks = -1;
+                    this._move_animateToHex = null;
+                    this._move_animateFromHex = null;
+                    return;
+                }
 
-        let startTile = this.entityManager.hexBoard.getHexAtSpot(frame.startX, frame.startZ);
-        startTile.clearHighlightColor();
+                let startTile = this.entityManager.hexBoard.getHexAtSpot(frame.startX, frame.startZ);
+                startTile.clearHighlightColor();
 
-        let tile = this.entityManager.hexBoard.getHexAtSpot(frame.endX || frame.startX, frame.endZ || frame.startZ);
-        let neighbors = tile.getNeighbors();
-        tile.setFaction(this.faction);
-        for (let j = 0; j < neighbors.length; j++) {
-            let ne = neighbors[j];
-            let tile = this.entityManager.hexBoard.getHexAtSpot(ne.x, ne.z);
-            if (!tile)continue;
-            tile.setFaction(this.faction);
+                let tile = this.entityManager.hexBoard.getHexAtSpot(frame.endX || frame.startX, frame.endZ || frame.startZ);
+                let neighbors = tile.getNeighbors();
+                tile.setFaction(this.faction);
+                for (let j = 0; j < neighbors.length; j++) {
+                    let ne = neighbors[j];
+                    let tile = this.entityManager.hexBoard.getHexAtSpot(ne.x, ne.z);
+                    if (!tile)continue;
+                    tile.setFaction(this.faction);
+                }
+                this.x = tile.getRealX();
+                this.z = tile.getRealZ();
+                this.setTile(tile);
+                break;
+            }
+            case AnimationType.Attack: {
+                if (frame.frameType == AnimationFrameType.Stop) {
+                    this._attack_currentTick = -1;
+                    this._attack_durationTicks = -1;
+                    this._attack_animateToHex = null;
+                    this._attack_animateFromHex = null;
+                    this.missileAsset = null;
+                    return;
+                }
+                break;
+            }
+
         }
-        this.x = tile.getRealX();
-        this.z = tile.getRealZ();
-        this.setTile(tile);
     }
 
     public onAnimationStart(frame: AnimationFrame): void {
-        if (frame.type == AnimationFrameType.Start) {
-            this.currentTick = -1;
-            this.durationTicks = -1;
-            this.animateToHex = null;
-            this.animateFromHex = null;
-            return;
+
+        switch (frame.type) {
+            case AnimationType.Move: {
+                if (frame.frameType == AnimationFrameType.Start) {
+                    this._move_currentTick = -1;
+                    this._move_durationTicks = -1;
+                    this._move_animateToHex = null;
+                    this._move_animateFromHex = null;
+                    return;
+                }
+                let startTile = this.entityManager.hexBoard.getHexAtSpot(frame.startX, frame.startZ);
+                let nextTile = this.entityManager.hexBoard.getHexAtSpot(frame.endX || frame.startX, frame.endZ || frame.startZ);
+                startTile.setHighlightColor(HexagonColorUtils.highlightColor);
+                nextTile.setHighlightColor(HexagonColorUtils.highlightColor);
+                break;
+            }
+            case AnimationType.Attack: {
+                if (frame.frameType == AnimationFrameType.Start) {
+                    this._attack_currentTick = -1;
+                    this._attack_durationTicks = -1;
+                    this._attack_animateToHex = null;
+                    this._attack_animateFromHex = null;
+                    return;
+                }
+                break;
+            }
         }
-        let startTile = this.entityManager.hexBoard.getHexAtSpot(frame.startX, frame.startZ);
-        let nextTile = this.entityManager.hexBoard.getHexAtSpot(frame.endX || frame.startX, frame.endZ || frame.startZ);
-        startTile.setHighlightColor(HexagonColorUtils.highlightColor);
-        nextTile.setHighlightColor(HexagonColorUtils.highlightColor);
+
+
     }
 
     abstract getActionFrames(action: GameMetricVoteAction, hexBoard: HexBoard): AnimationFrame[] ;
@@ -289,29 +354,49 @@ export abstract class SixDirectionEntity extends BaseEntity {
 
     draw(context: CanvasRenderingContext2D) {
         super.draw(context);
-        context.save();
-        context.translate(this.x, this.z);
 
-        let asset = AssetManager.assets[this.entityType];
-        let image = asset.images[this.animationFrame];
+        {
+            context.save();
+            context.translate(this.x, this.z);
+
+            let asset = AssetManager.assets[this.entityType];
+            let image = asset.images[this.animationFrame];
 
 
-        let ratio = (GridHexagonConstants.width / asset.size.width) / 2;
+            let ratio = (GridHexagonConstants.width / asset.size.width) / 2;
 
 
-        let width = GridHexagonConstants.width / 2;
-        let height = asset.size.height * ratio;
-        context.rotate(this.directionToRadians());
-        context.drawImage(image, -asset.base.x * ratio - this.realXOffset(), -asset.base.y * ratio - this.realYOffset(), width, height);
+            let width = GridHexagonConstants.width / 2;
+            let height = asset.size.height * ratio;
+            context.rotate(this.directionToRadians(this.currentDirection));
+            context.drawImage(image, -asset.base.x * ratio - this.realXOffset(), -asset.base.y * ratio - this.realYOffset(), width, height);
+            context.restore();
+        }
 
-        context.restore();
+
+        if(this.missileAsset){
+            context.save();
+            context.translate(this.missileX, this.missileZ);
+
+            let asset = AssetManager.assets[this.missileAsset];
+            let image = asset.images[this.missileAnimationFrame];
+
+            let ratio = (GridHexagonConstants.width / asset.size.width) / 2;
+
+            let width = GridHexagonConstants.width / 2;
+            let height = asset.size.height * ratio;
+            context.rotate(this.directionToRadians(this.missileDirection));
+            context.drawImage(image, -asset.base.x * ratio - this.realXOffset(), -asset.base.y * ratio - this.realYOffset(), width, height);
+            context.restore();
+        }
+
     }
 
 
     getActionFrames(action: GameMetricVoteAction, hexBoard: HexBoard): AnimationFrame[] {
         let frames: AnimationFrame[] = [];
         switch (action.actionType) {
-            case "Move":
+            case "Move": {
                 let moveAction = <GameMetricMoveVoteAction>action;
                 let tile = this.getTile();
                 let path = hexBoard.pathFind(
@@ -319,7 +404,8 @@ export abstract class SixDirectionEntity extends BaseEntity {
                     hexBoard.getHexAtSpot(moveAction.x, moveAction.z)
                 );
                 frames.push({
-                    type: AnimationFrameType.Start,
+                    type: AnimationType.Move,
+                    frameType: AnimationFrameType.Start,
                     startX: path[0].x,
                     startZ: path[0].z,
                     entity: this
@@ -330,7 +416,8 @@ export abstract class SixDirectionEntity extends BaseEntity {
                     let oldP = path[i - 1];
 
                     frames.push({
-                        type: AnimationFrameType.Move,
+                        type: AnimationType.Move,
+                        frameType: AnimationFrameType.Tick,
                         startX: oldP.x,
                         startZ: oldP.z,
                         endX: p.x,
@@ -339,12 +426,44 @@ export abstract class SixDirectionEntity extends BaseEntity {
                     });
                 }
                 frames.push({
-                    type: AnimationFrameType.Stop,
+                    type: AnimationType.Move,
+                    frameType: AnimationFrameType.Stop,
                     startX: path[path.length - 1].x,
                     startZ: path[path.length - 1].z,
                     entity: this
                 });
                 break;
+            }
+            case "Attack": {
+                let attackAction = <GameMetricAttackVoteAction>action;
+                let tile = this.getTile();
+                frames.push({
+                    type: AnimationType.Attack,
+                    frameType: AnimationFrameType.Start,
+                    startX: attackAction.x,
+                    startZ: attackAction.z,
+                    entity: this
+                });
+                frames.push({
+                    frameType: AnimationFrameType.Tick,
+                    type: AnimationType.Attack,
+                    startX: tile.x,
+                    startZ: tile.z,
+                    endX: attackAction.x,
+                    endZ: attackAction.z,
+                    entity: this
+                });
+                frames.push({
+                    type: AnimationType.Attack,
+                    frameType: AnimationFrameType.Stop,
+                    startX: attackAction.x,
+                    startZ: attackAction.z,
+                    entity: this
+                });
+                break;
+            }
+
+
         }
 
         return frames;
@@ -352,22 +471,44 @@ export abstract class SixDirectionEntity extends BaseEntity {
 
     executeFrame(hexBoard: HexBoard, frame: AnimationFrame, duration: number) {
         switch (frame.type) {
-            case AnimationFrameType.Move:
-                let fromHex = hexBoard.getHexAtSpot(frame.startX, frame.startZ);
-                let toHex = hexBoard.getHexAtSpot(frame.endX, frame.endZ);
-                this.currentDirection = HexUtils.getDirection(fromHex, toHex);
-                this.animateFromHex = fromHex;
-                this.animateToHex = toHex;
-                this.durationTicks = Math.floor(duration / 16);
-                this.currentTick = 0;
+            case AnimationType.Move: {
+                switch (frame.frameType) {
+                    case AnimationFrameType.Tick: {
+                        let fromHex = hexBoard.getHexAtSpot(frame.startX, frame.startZ);
+                        let toHex = hexBoard.getHexAtSpot(frame.endX, frame.endZ);
+                        this.currentDirection = HexUtils.getDirection(fromHex, toHex);
+                        this._move_animateFromHex = fromHex;
+                        this._move_animateToHex = toHex;
+                        this._move_durationTicks = Math.floor(duration / 16);
+                        this._move_currentTick = 0;
+                        break;
+                    }
+                }
+
 
                 break;
+            }
+            case AnimationType.Attack : {
+                switch (frame.frameType) {
+                    case AnimationFrameType.Tick: {
+                        let fromHex = hexBoard.getHexAtSpot(frame.startX, frame.startZ);
+                        let toHex = hexBoard.getHexAtSpot(frame.endX, frame.endZ);
+                        this.missileDirection = HexUtils.getDirection(fromHex, toHex);
+                        this._attack_animateFromHex = fromHex;
+                        this._attack_animateToHex = toHex;
+                        this._attack_durationTicks = Math.floor(duration / 16);
+                        this._attack_currentTick = 0;
+                        break;
+                    }
+                }
+                break;
+            }
         }
     }
 
-    private directionToRadians(): number {
+    private directionToRadians(direction:Direction): number {
         let degrees = 0;
-        switch (this.currentDirection) {
+        switch (direction) {
             case Direction.TopLeft:
                 degrees = -45;
                 break;
@@ -391,7 +532,9 @@ export abstract class SixDirectionEntity extends BaseEntity {
     }
 }
 
-export abstract class StationaryEntity extends BaseEntity {
+export
+abstract class StationaryEntity
+    extends BaseEntity {
     getActionFrames(action: GameMetricVoteAction, hexBoard: HexBoard): AnimationFrame[] {
         return [];
     }
@@ -423,8 +566,8 @@ export abstract class StationaryEntity extends BaseEntity {
 export class HeliEntity extends SixDirectionEntity {
     realYOffset(): number {
 
-        let offset = GridHexagonConstants.depthHeight();
-        return -(Math.sin(this._drawTickNumber / 10)) * offset + offset * 1;
+        let offset = GridHexagonConstants.depthHeight()/3;
+        return -(Math.sin(this.drawTickNumber / 10)) * offset + offset * 1;
     }
 
 

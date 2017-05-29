@@ -58,8 +58,8 @@ export class PageManager {
             }
             this.menuManager.closeMenu();
             this.swipeVelocity.x = this.swipeVelocity.y = 0;
-            this.tapStart.x = this.gameManager.viewPort.x;
-            this.tapStart.y = this.gameManager.viewPort.y;
+            this.tapStart.x = this.gameManager.viewPort.getX();
+            this.tapStart.y = this.gameManager.viewPort.getY();
             this.gameManager.setView(this.tapStart.x - ev.deltaX, this.tapStart.y - ev.deltaY);
             return true;
         });
@@ -98,6 +98,7 @@ export class PageManager {
             this.draw();
         });
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
         this.gameManager.draw(this.context);
         this.menuManager.draw();
         this.fpsMeter.tick();

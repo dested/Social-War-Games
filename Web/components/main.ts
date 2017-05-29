@@ -4,6 +4,9 @@ import {AssetManager} from "./game/AssetManager";
 import {GameManager} from "./game/gameManager";
 import {PageManager} from "./pageManager";
 import {GameController} from "./ui/gameController";
+import {GridHexagonConstants} from "./game/gridHexagonConstants";
+import {GameService} from "./ui/gameService";
+import {AnimationUtils} from "./utils/animationUtils";
 declare const angular: angular.IAngularStatic;
 
 
@@ -11,6 +14,10 @@ export class Main {
     static pageManager: PageManager;
 
     static run() {
+        GridHexagonConstants.generate(60);
+
+
+
         this.loadAssets(() => {
             this.pageManager = new PageManager();
             this.pageManager.init();
@@ -45,11 +52,11 @@ export class Main {
         AssetManager.addAsset('Water.Right', 'images/water.png');
 
         /*
-                AssetManager.addAsset('Stone.Top', 'images/tile.png');
-                AssetManager.addAsset('Stone.Left', 'images/tile.png');
-                AssetManager.addAsset('Stone.Bottom', 'images/tile.png');
-                AssetManager.addAsset('Stone.Right', 'images/tile.png');
-        */
+         AssetManager.addAsset('Stone.Top', 'images/tile.png');
+         AssetManager.addAsset('Stone.Left', 'images/tile.png');
+         AssetManager.addAsset('Stone.Bottom', 'images/tile.png');
+         AssetManager.addAsset('Stone.Right', 'images/tile.png');
+         */
 
 
         AssetManager.addAssetFrame('Heli', 0, 'images/Heli/up_1.png', null, null);
@@ -57,6 +64,11 @@ export class Main {
 
         AssetManager.addAssetFrame('Tank', 0, 'images/Tank/up_1.png', null, null);
         AssetManager.addAssetFrame('Tank', 1, 'images/Tank/up_1.png', null, null);
+
+
+        AssetManager.addAssetFrame('Missile', 0, 'images/Missile/up_1.png', null, null);
+        AssetManager.addAssetFrame('Missile', 1, 'images/Missile/up_2.png', null, null);
+
 
         AssetManager.start();
     }

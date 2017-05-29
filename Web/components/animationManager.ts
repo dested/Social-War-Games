@@ -84,7 +84,8 @@ export class AnimationManager {
 }
 
 export interface AnimationFrame {
-    type: AnimationFrameType;
+    frameType: AnimationFrameType;
+    type: AnimationType;
     startX: number;
     startZ: number;
     endX?: number;
@@ -93,7 +94,10 @@ export interface AnimationFrame {
 }
 export enum AnimationFrameType{
     Start,
-    Move,
+    Tick,
     Stop,
+}
+export enum AnimationType{
+    Move,
     Attack
 }

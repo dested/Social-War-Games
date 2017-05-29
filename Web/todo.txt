@@ -1,6 +1,4 @@
-pathing is different on server
 need to redesign ui for spawn
-    add spawn and attack to the slammer
 add spawn time to spawn action
 optimize things
 cleanup animations

@@ -27,7 +27,7 @@ namespace ServerSlammer
         static void Main(string[] args)
         {
 
-
+            Thread.Sleep(5000);
             int workerThreads, complete;
             ThreadPool.GetMinThreads(out workerThreads, out complete);
 
@@ -65,38 +65,82 @@ namespace ServerSlammer
             var details = EntityDetails.Detail;
             while (true)
             {
+
+
+                bool result;
+
                 while (true)
                 {
-                    count++;
-                    var p = rand.Next(0, board.GameState.Entities.Count);
-                    ent = board.GameState.Entities[p];
-                    var detail = details[ent.EntityType];
-                    px = ent.X + rand.Next(-detail.MoveRadius, detail.MoveRadius + 1);
-                    pz = ent.Z + rand.Next(-detail.MoveRadius, detail.MoveRadius + 1);
-                    if (px == 0 && pz == 0) continue;
-                    if (board.GetHexagon(px, pz) == null) continue;
-                    if (board.GetHexagon(ent.X, ent.Z) == null) continue;
-
-                    var distance = HexUtils.Distance(board.GetHexagon(px, pz), board.GetHexagon(ent.X, ent.Z));
-                    if (distance <= detail.MoveRadius)
+                    if (rand.Next(0, 100) < 30)
                     {
-                        break;
+
+                        count++;
+                        var p = rand.Next(0, board.GameState.Entities.Count);
+                        ent = board.GameState.Entities[p];
+                        var detail = details[ent.EntityType];
+
+                        var entities = board.GameState.Entities.Where(
+                            a => a != ent &&
+                                 a.FactionId != ent.FactionId &&
+                                 HexUtils.Distance(board.GetHexagon(a.X, a.Z), board.GetHexagon(ent.X, ent.Z)) <
+                                 detail.AttackRadius
+                        ).ToArray();
+
+                        if (entities.Length == 0) continue;
+
+                        var attackEnt = entities[rand.Next(0, entities.Length)];
+
+                        result = Vote(new PostVoteRequest()
+                        {
+                            EntityId = ent.Id,
+                            Action = VoteActionType.Attack,
+                            UserId = "faa",
+                            Generation = board.GameState.Generation,
+                            X = attackEnt.X,
+                            Z = attackEnt.Z
+                        });
+                        if (result)
+                        {
+                            state = GetState();
+                            board = new GameBoard(state);
+                        }
+                    }
+                    else
+                    {
+                        count++;
+                        var p = rand.Next(0, board.GameState.Entities.Count);
+                        ent = board.GameState.Entities[p];
+                        var detail = details[ent.EntityType];
+                        px = ent.X + rand.Next(-detail.MoveRadius, detail.MoveRadius + 1);
+                        pz = ent.Z + rand.Next(-detail.MoveRadius, detail.MoveRadius + 1);
+                        if (px == 0 && pz == 0) continue;
+                        if (board.GetHexagon(px, pz) == null) continue;
+                        if (board.GetHexagon(ent.X, ent.Z) == null) continue;
+
+                        var distance = HexUtils.Distance(board.GetHexagon(px, pz), board.GetHexagon(ent.X, ent.Z));
+                        if (distance > detail.MoveRadius)
+                        {
+                            break;
+                        }
+                        result = Vote(new PostVoteRequest()
+                        {
+                            EntityId = ent.Id,
+                            Action = VoteActionType.Move,
+                            UserId = "faa",
+                            Generation = board.GameState.Generation,
+                            X = px,
+                            Z = pz
+                        });
+                        if (result)
+                        {
+                            state = GetState();
+                            board = new GameBoard(state);
+                        }
                     }
                 }
-                var result = Vote(new PostVoteRequest()
-                {
-                    EntityId = ent.Id,
-                    Action = VoteActionType.Move,
-                    UserId = "faa",
-                    Generation = board.GameState.Generation,
-                    X = px,
-                    Z = pz
-                });
-                if (result)
-                {
-                    state = GetState();
-                    board = new GameBoard(state);
-                }
+
+
+
             }
         }
 
@@ -118,7 +162,7 @@ namespace ServerSlammer
                     new ObjectIdJsonConverter()
                 }
             };
-//            Console.WriteLine("Get state");
+            //            Console.WriteLine("Get state");
             var ds = JsonConvert.DeserializeObject<STResponse<string>>(response.Content, settings);
             Console.WriteLine("Got state");
 
@@ -146,7 +190,7 @@ namespace ServerSlammer
                 }
             };
             var state = JsonConvert.DeserializeObject<STResponse<PostVoteResponse>>(response.Content, settings);
-//            Console.WriteLine("voted");
+            //            Console.WriteLine("voted");
 
             return state.Data.GenerationMismatch;
         }

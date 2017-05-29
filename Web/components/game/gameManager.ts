@@ -1,4 +1,4 @@
-import {BaseEntity, EntityDetail, EntityDetails} from "../entities/entityManager";
+import {BaseEntity, EntityDetails} from "../entities/entityManager";
 import {DrawingUtils} from "../utils/drawingUtilities";
 import {HexUtils} from "./hexUtils";
 import {GridHexagon} from "./gridHexagon";
@@ -10,6 +10,7 @@ import {HexagonColorUtils} from "../utils/hexagonColorUtils";
 import {GameService, PossibleActions} from "../ui/gameService";
 import {GameState} from "../models/hexBoard";
 import {DebounceUtils} from "../utils/debounceUtils";
+import {ViewPort} from "./viewPort";
 declare let Hammer;
 
 export class GameManager {
@@ -157,11 +158,23 @@ export class GameManager {
         this.miniContext.restore();
     }
 
+
     draw(context: CanvasRenderingContext2D) {
         context.save();
-        context.translate(-this.viewPort.x, -this.viewPort.y);
-        this.hexBoard.drawBoard(context, this.viewPort);
+
+        this.viewPort.zoom(context);
+
+        context.translate(-this.viewPort.getX(), -this.viewPort.getY());
+
+        this.hexBoard.drawBoard(context);
         context.restore();
+
+        /*        context.save();
+         context.strokeStyle='white';
+         context.lineWidth=3;
+         context.strokeRect(0, 0, this.viewPort.getWidth() / 2, this.viewPort.getHeight() / 2)
+         context.restore();*/
+
     }
 
     tick() {
@@ -175,10 +188,10 @@ export class GameManager {
 
     private async checkState() {
         // console.log('got state',+new Date());
-        if (this.cantAct()){
-            DebounceUtils.debounce("checkState",1000*5,() => {
+        if (this.cantAct()) {
+            DebounceUtils.debounce("checkState", 1000 * 5, () => {
                 this.checkState();
-            }) ;
+            });
             return;
         }
         this.checking = true;
@@ -196,6 +209,7 @@ export class GameManager {
         if (this.hexBoard.generation != metrics.generation) {
             console.log(`Gen - old: ${this.hexBoard.generation} new ${metrics.generation}`);
             let result = await DataService.getGenerationResult(this.hexBoard.generation);
+            GameService.resetSelection();
             let hexListLength = this.hexBoard.hexListLength;
             for (let i = 0; i < hexListLength; i++) {
                 let hex = this.hexBoard.hexList[i];
@@ -244,13 +258,13 @@ export class GameManager {
             this.rebuildMiniBoard(true);
         }
         this.checking = false;
-        DebounceUtils.debounce("checkState",1000 * (seconds  > 5 ? 5 : Math.max(seconds,.5) ),() => {
+        DebounceUtils.debounce("checkState", 1000 * (seconds > 5 ? 5 : Math.max(seconds, .5) ), () => {
             this.checkState();
-        }) ;
+        });
 
     }
 
-    startAction() {
+    startAction(): boolean {
 
 
         this.resetBoardColors();
@@ -259,7 +273,7 @@ export class GameManager {
         let selectedEntity = entities[0];
         if (!selectedEntity) {
             GameService.resetSelection();
-            return;
+            return false;
         }
 
 
@@ -349,6 +363,7 @@ export class GameManager {
 
 
         }
+        return true;
     }
 
     async processAction(hex: GridHexagon) {
@@ -496,52 +511,48 @@ export class GameManager {
             return;
         }
 
+
         let hex = this.getHexAtPoint(x, y);
         if (!hex) {
-            GameService.selectedHex = null;
+            GameService.resetSelection();
             return;
         }
 
 
         if (!GameService.selectedHex) {
             GameService.selectedHex = hex;
-            this.startAction();
+            this.startAction()
         } else {
             await this.processAction(hex);
         }
     }
 
     resize(width: number, height: number) {
-        this.viewPort.width = width;
-        this.viewPort.height = height;
+        this.viewPort.setSize(width, height);
         this.constrainViewPort();
     }
 
     offsetView(x: number, y: number) {
-        this.setView(this.viewPort.x + x, this.viewPort.y + y);
+        this.setView(this.viewPort.getX() + x, this.viewPort.getY() + y);
     }
 
     setView(x: number, y: number) {
-        this.viewPort.x = x;
-        this.viewPort.y = y;
+        this.viewPort.setPosition(x, y);
         this.constrainViewPort();
-        localStorage.setItem("lastX", this.viewPort.x.toString());
-        localStorage.setItem("lastY", this.viewPort.y.toString());
+
+        this.viewPort.setLocalStorage();
     }
 
     constrainViewPort() {
-        this.viewPort.x = Math.max(this.viewPort.x, 0 - this.viewPort.padding);
-        this.viewPort.y = Math.max(this.viewPort.y, 0 - this.viewPort.padding);
-        const size = this.hexBoard.gameDimensions();
-        this.viewPort.x = Math.min(this.viewPort.x, size.width + this.viewPort.padding - this.viewPort.width);
-        this.viewPort.y = Math.min(this.viewPort.y, size.height + this.viewPort.padding - this.viewPort.height);
+
+        this.viewPort.constrainViewPort(this.hexBoard.gameDimensions());
         this.hexBoard.resetVisibleHexList(this.viewPort);
     }
 
     getHexAtPoint(clickX, clickY): GridHexagon {
         let lastClick: GridHexagon = null;
-        clickX += this.viewPort.x;
-        clickY += this.viewPort.y;
+        clickX += this.viewPort.getX();
+        clickY += this.viewPort.getY();
 
         let hexWidth = GridHexagonConstants.width * 3 / 4;
         let gridHeight = GridHexagonConstants.height();
@@ -577,7 +588,7 @@ export class GameManager {
     centerOnHex(gridHexagon: GridHexagon): void {
         const x = gridHexagon.getRealX();
         const y = gridHexagon.getRealZ();
-        this.setView(x - this.viewPort.width / 2, y - this.viewPort.height / 2);
+        this.setView(x - this.viewPort.getWidth() / 2, y - this.viewPort.getHeight() / 2);
     }
 
     private resetBoardColors() {
@@ -591,10 +602,3 @@ export class GameManager {
     }
 }
 
-export class ViewPort {
-    x = 0;
-    y = 0;
-    width = 400;
-    height = 400;
-    padding = GridHexagonConstants.width * 2;
-}

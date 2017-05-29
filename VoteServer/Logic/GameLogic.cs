@@ -86,7 +86,7 @@ namespace VoteServer.Logic
             {
                 case VoteActionType.Move:
 
-                    if (distance <= 0 || distance > detail.MoveRadius)
+                    if (distance <= 0 || distance >= detail.MoveRadius)
                     {
                         return new PostVoteResponse() { IssueVoting = true }; ;
                     }

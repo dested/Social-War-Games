@@ -1,82 +1,48 @@
 ﻿import {Point} from "../utils/utils";
+import {GridHexagon} from "./gridHexagon";
+import {GameService} from "../ui/gameService";
 
 export class GridHexagonConstants {
 
-    static width = 50;
-    static heightSkew = .7;
-    static depthHeightSkew = .3;
 
-    private static _height = Math.sqrt(3) / 2 * GridHexagonConstants.width * GridHexagonConstants.heightSkew;
-    private static _depthHeight = GridHexagonConstants.height() * GridHexagonConstants.depthHeightSkew;
-    private static _topPolygon = [
-        new Point(-GridHexagonConstants.width / 2, 0),
-        new Point(-GridHexagonConstants.width / 4, -GridHexagonConstants._height / 2),
-        new Point(GridHexagonConstants.width / 4, -GridHexagonConstants._height / 2),
-        new Point(GridHexagonConstants.width / 2, 0),
-        new Point(GridHexagonConstants.width / 4, GridHexagonConstants._height / 2),
-        new Point(-GridHexagonConstants.width / 4, GridHexagonConstants._height / 2),
-        new Point(-GridHexagonConstants.width / 2, 0)
-    ];
+    static width: number;
+    static heightSkew: number;
+    static depthHeightSkew: number;
 
-    private static _leftPolygon = [
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(0),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(1),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(2),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(3),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(4),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(5),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(6),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(7),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(8),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(9),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(10),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(11),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(12),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(13),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(14),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(15),
-        GridHexagonConstants.makeHexagonDepthLeftPolygon(16),
-    ];
-    private static _bottomPolygon = [
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(0),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(1),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(2),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(3),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(4),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(5),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(6),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(7),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(8),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(9),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(10),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(11),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(12),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(13),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(14),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(15),
-        GridHexagonConstants.makeHexagonDepthBottomPolygon(16),
-    ];
+    private static _height: number;
+    private static _depthHeight: number;
 
-    private static _rightPolygon = [
-        GridHexagonConstants.makeHexagonDepthRightPolygon(0),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(1),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(2),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(3),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(4),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(5),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(6),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(7),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(8),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(9),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(10),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(11),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(12),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(13),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(14),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(15),
-        GridHexagonConstants.makeHexagonDepthRightPolygon(16),
-    ];
+    private static _topPolygon: Point[];
+    private static _leftPolygon: Point[][];
+    private static _bottomPolygon: Point[][];
+    private static _rightPolygon: Point[][];
 
+    public static generate(width: number) {
+        this.width = width;
+        this.heightSkew = .7;
+        this.depthHeightSkew = .3;
+
+        this._height = Math.sqrt(3) / 2 * GridHexagonConstants.width * GridHexagonConstants.heightSkew;
+        this._depthHeight = GridHexagonConstants.height() * GridHexagonConstants.depthHeightSkew;
+        this._topPolygon = GridHexagonConstants.makeHexagonDepthTopPolygon();
+
+        this._leftPolygon = [];
+        this._bottomPolygon = [];
+        this._rightPolygon = [];
+        for (let i = 0; i <= 16; i++) {
+            this._rightPolygon.push(GridHexagonConstants.makeHexagonDepthRightPolygon(i));
+            this._bottomPolygon.push(GridHexagonConstants.makeHexagonDepthBottomPolygon(i));
+            this._leftPolygon.push(GridHexagonConstants.makeHexagonDepthLeftPolygon(i));
+        }
+        GridHexagon.generateHexCenters();
+        if (GameService.getGameManager() && GameService.getGameManager().hexBoard && GameService.getGameManager().hexBoard.hexList) {
+            let hexList = GameService.getGameManager().hexBoard.hexList;
+            for (let i = 0; i < hexList.length; i++) {
+                let hex = hexList[i];
+                hex.buildPaths();
+            }
+        }
+    }
 
     static height() {
         return this._height;
@@ -110,6 +76,18 @@ export class GridHexagonConstants {
             new Point(-this.width / 4, this.height() / 2 + depthHeight),
             new Point(-this.width / 2, depthHeight),
             new Point(-this.width / 2, 0)
+        ];
+    };
+
+    static makeHexagonDepthTopPolygon() {
+        return [
+            new Point(-GridHexagonConstants.width / 2, 0),
+            new Point(-GridHexagonConstants.width / 4, -GridHexagonConstants._height / 2),
+            new Point(GridHexagonConstants.width / 4, -GridHexagonConstants._height / 2),
+            new Point(GridHexagonConstants.width / 2, 0),
+            new Point(GridHexagonConstants.width / 4, GridHexagonConstants._height / 2),
+            new Point(-GridHexagonConstants.width / 4, GridHexagonConstants._height / 2),
+            new Point(-GridHexagonConstants.width / 2, 0)
         ];
     };
 
@@ -152,17 +130,3 @@ export class GridMiniHexagonConstants {
 
 }
 
-/*
- setTimeout(() => {
-
- document.getElementById('ranger').oninput = () => {
- var ranger = document.getElementById('ranger');
- this.width = ranger.value;
- GridHexagon.caches = {};
- for (var i = 0; i < Main.gameManager.hexBoard.hexList.length; i++) {
- var hex = Main.gameManager.hexBoard.hexList[i];
- hex. buildPaths();
- hex.drawCache = null;
- }
- };
- }, 100)*/

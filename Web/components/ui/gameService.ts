@@ -13,19 +13,29 @@ export class GameService {
     static hasData: () => void;
     static onSetSelectedEntity: (entity: BaseEntity) => void;
 
-    static selectedEntity: BaseEntity;
+    private static _selectedEntity: BaseEntity;
+    static get selectedEntity(): BaseEntity {
+        return this._selectedEntity;
+    }
+
     static selectedHex: GridHexagon;
 
     static setSelectedEntity(entity: BaseEntity) {
-        this.selectedEntity = entity;
+        this._selectedEntity = entity;
         this.onSetSelectedEntity(entity);
+        if (entity != null) {
+            this.gameManager.viewPort.animateZoom(2, {x: entity.getTile().getScreenX(), y: entity.getTile().getScreenZ()})
+        } else {
+            this.gameManager.viewPort.animateZoom(1, null)
+        }
     }
 
     static resetSelection() {
-        this.selectedEntity = null;
+        this._selectedEntity = null;
         this.selectedHex = null;
         this.selectedAction = null;
         this.onSetSelectedEntity(null);
+        this.gameManager.viewPort.animateZoom(1, null)
     }
 
     static setGameManager(gameManager: GameManager) {

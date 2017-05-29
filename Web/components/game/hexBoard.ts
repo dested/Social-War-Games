@@ -8,8 +8,8 @@ import {
 } from "../entities/entityManager";
 import {Vector3, HexUtils, Node, Direction} from "./hexUtils";
 import {AssetManager} from "./assetManager";
-import {ViewPort} from "./gameManager";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
+import {ViewPort} from "./viewPort";
 
 export class HexBoard {
     hexListLength: number;
@@ -310,7 +310,7 @@ export class HexBoard {
     }
 
 
-    drawBoard(context: CanvasRenderingContext2D, viewPort: ViewPort): void {
+    drawBoard(context: CanvasRenderingContext2D): void {
         context.lineWidth = 1;
         for (let j = 0; j < this.visibleHexListHeightMap.length; j++) {
             let hexList = this.visibleHexListHeightMap[j];

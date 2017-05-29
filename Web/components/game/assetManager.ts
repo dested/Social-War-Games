@@ -1,22 +1,23 @@
-﻿export interface Asset {
+﻿import {IPoint, ISize} from "../utils/utils";
+export interface Asset {
     name: string;
-    size: {width: number;height: number};
-    base: {x: number;y: number};
+    size: ISize;
+    base: IPoint;
     image?: HTMLImageElement;
     images?: HTMLImageElement[];
     animated: boolean;
 }
 export interface AssetItem {
-    size: {width: number;height: number};
-    base: {x: number;y: number};
+    size: ISize;
+    base: IPoint;
     url: string;
     frameIndex?: number;
     realName: string;
 }
 export class AssetManager {
-    static assetQueue: {[key: string]: AssetItem} = {};
-    static assets: {[key: string]: Asset} = {};
-    static completed: ()=>void = null;
+    static assetQueue: { [key: string]: AssetItem } = {};
+    static assets: { [key: string]: Asset } = {};
+    static completed: () => void = null;
     static $assetsLoaded = 0;
     static $assetsRequested = 0;
 
@@ -26,7 +27,7 @@ export class AssetManager {
             if (this.assetQueue.hasOwnProperty(name)) {
                 const img = new Image();
 
-                img.onload = ()=> {
+                img.onload = () => {
                     this.imageLoaded(img, name);
                 };
 
@@ -36,12 +37,12 @@ export class AssetManager {
         }
     }
 
-    static addAsset(name: string, url: string, size?: {width: number,height: number}, base?: {x: number,y: number}) {
+    static addAsset(name: string, url: string, size?: ISize, base?: IPoint) {
         this.assetQueue[name] = {base, size, url, realName: name};
         this.$assetsRequested++;
     }
 
-    static addAssetFrame(name: string, frameIndex: number, url: string, size?: {width: number,height: number}, base?: {x: number,y: number}) {
+    static addAssetFrame(name: string, frameIndex: number, url: string, size?: ISize, base?: IPoint) {
         this.assetQueue[name + frameIndex] = {base, size, url, frameIndex: frameIndex, realName: name};
         this.$assetsRequested++;
     }

@@ -87,13 +87,7 @@ namespace Common.Game
             {
                 var sw = new Stopwatch();
                 sw.Start();
-                if (TrackedVotes.Count == 0)
-                {
-                    Console.WriteLine("Ticking No Data");
-                    GameState.LastGeneration = DateTime.UtcNow;
-                    GameState.UpdateSync();
-                    return;
-                }
+            
                 List<TrackedVote> votes = new List<TrackedVote>();
 
                 List<TrackedVote> moveVotes = new List<TrackedVote>();

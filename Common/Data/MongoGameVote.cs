@@ -60,9 +60,9 @@ namespace Common.Data
 
             public override bool Valid(GameManager gameManager)
             {
-                var entity = gameManager.GameState.Entities.First(a => a.Id == EntityId);
+                var entity = gameManager.GameState.Entities.FirstOrDefault(a => a.Id == EntityId);
 
-                if (gameManager.GameState.Entities.Any(a => a.X == X && a.Z == Z))
+                if (entity == null || gameManager.GameState.Entities.Any(a => a.X == X && a.Z == Z))
                 {
                     return false;
                 }
@@ -132,10 +132,10 @@ namespace Common.Data
 
             public override bool Valid(GameManager gameManager)
             {
-                var entity = gameManager.GameState.Entities.First(a => a.Id == EntityId);
+                var entity = gameManager.GameState.Entities.FirstOrDefault(a => a.Id == EntityId);
                 var enemyEntity = gameManager.GameState.Entities.FirstOrDefault(a => a.X == X && a.Z == Z);
 
-                if (enemyEntity == null)
+                if (entity == null || enemyEntity == null)
                 {
                     return false;
                 }

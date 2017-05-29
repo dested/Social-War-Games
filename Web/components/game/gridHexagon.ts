@@ -4,8 +4,10 @@ import {Asset} from "./AssetManager";
 import {HexagonColor, DrawingUtils} from "../utils/drawingUtilities";
 import {GridHexagonConstants, GridMiniHexagonConstants} from "./gridHexagonConstants";
 import {BaseEntity} from "../entities/entityManager";
-import {ViewPort} from "./gameManager";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
+import {IPoint} from "../utils/utils";
+import {GameService} from "../ui/gameService";
+import {ViewPort} from "./viewPort";
 
 export class GridHexagon {
 
@@ -66,14 +68,23 @@ export class GridHexagon {
             + this.y * GridHexagonConstants.depthHeight();
     }
 
+
+    getScreenX(): number {
+        return this.getRealX() - GameService.getGameManager().viewPort.getX();
+    }
+
+    getScreenZ(): number {
+        return this.getRealZ() - GameService.getGameManager().viewPort.getY();
+    }
+
+
     getRealMiniX(): number {
         return (GridMiniHexagonConstants.width * 3 / 4 * this.x);
     }
 
     getRealMiniZ(): number {
         let height = GridMiniHexagonConstants.height();
-        return (this.z * height + ((this.x % 2 === 1) ? (-height / 2) : 0))
-            + this.y * 0;
+        return (this.z * height + ((this.x % 2 === 1) ? (-height / 2) : 0)) + this.y * 0;
     }
 
     getDepthHeight(position: boolean): number {
@@ -179,6 +190,9 @@ export class GridHexagon {
     }
 
     public buildPaths(): void {
+        this._realX = undefined;
+        this._realZ = undefined;
+
         const depthHeight = this.getDepthHeight(false);
         this.topPath = GridHexagon.buildPath(GridHexagonConstants.hexagonTopPolygon());
         // this.topPathInner = GridHexagon.buildPath(GridHexagonConstants.hexagonTopInnerPolygon());
@@ -308,7 +322,7 @@ export class GridHexagon {
     }
 
     drawTopMini(context: CanvasRenderingContext2D): void {
-        var color = this.currentMiniColor.color;
+        let color = this.currentMiniColor.color;
         context.fillStyle = color;
         context.fill(this.topMiniPath);
         /*        context.lineWidth = 3;
@@ -316,7 +330,7 @@ export class GridHexagon {
          context.stroke(this.topMiniPath);*/
     }
 
-    private   envelope(): { width: number, height: number } {
+    private envelope(): { width: number, height: number } {
         const size = {width: 0, height: 0};
         size.width = GridHexagonConstants.width;
         size.height = GridHexagonConstants.height();
@@ -341,22 +355,27 @@ export class GridHexagon {
         return size;
     }
 
-    static hexCenter = {x: (GridHexagonConstants.width / 2 + 6), y: (GridHexagonConstants.height() / 2 + 6)};
-    static hexCenterMini = {
-        x: (GridMiniHexagonConstants.width / 2 + 6),
-        y: (GridMiniHexagonConstants.height() / 2 + 6)
-    };
+    static hexCenter: IPoint;
+    static hexCenterMini: IPoint;
+
+    static generateHexCenters() {
+        this.hexCenter = {x: (GridHexagonConstants.width / 2 + 6), y: (GridHexagonConstants.height() / 2 + 6)};
+        this.hexCenterMini = {
+            x: (GridMiniHexagonConstants.width / 2 + 6),
+            y: (GridMiniHexagonConstants.height() / 2 + 6)
+        };
+    }
 
     draw(context: CanvasRenderingContext2D, offsetX: number, offsetY: number): void {
         if (this.showVotes) {
             if (this.drawCache) {
                 context.drawImage(this.drawCache, offsetX - GridHexagon.hexCenter.x, offsetY - GridHexagon.hexCenter.y);
 
-/*
-                context.fillStyle='black';
-                context.font='11px bold san-serif';
-                context.fillText(this.x+","+this.z,offsetX -10,offsetY +5)
-*/
+                /*
+                 context.fillStyle='black';
+                 context.font='11px bold san-serif';
+                 context.fillText(this.x+","+this.z,offsetX -10,offsetY +5)
+                 */
 
             } else {
                 let cacheImage = GridHexagon.getCacheImage(this.getDepthHeight(false), this.currentDrawColor, this.textureTop.name);
@@ -398,7 +417,7 @@ export class GridHexagon {
         }
     }
 
-    getNeighbors(): { x: number, z: number }[] {
+    getNeighbors(): { x: number; z: number }[] {
         const neighbors = [];
         if ((this.x % 2 === 0)) {
             neighbors.push({x: this.x - 1, z: this.z});
@@ -517,18 +536,7 @@ export class GridHexagon {
         const x = this.getRealX();
         const y = this.getRealZ();
 
-
-        let x2 = viewPort.x;
-        let padding = viewPort.padding;
-        let y2 = viewPort.y;
-        let width = viewPort.width;
-
-        return x > x2 - padding &&
-            x < x2 + width + padding &&
-            y > y2 - padding &&
-            y < y2 + viewPort.height + padding;
-
-
+        return viewPort.shouldDraw(x, y);
     }
 
 
