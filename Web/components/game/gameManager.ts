@@ -1,4 +1,3 @@
-import {BaseEntity, EntityDetails} from "../entities/entityManager";
 import {DrawingUtils} from "../utils/drawingUtilities";
 import {HexUtils, Vector3} from "./hexUtils";
 import {GridHexagon} from "./gridHexagon";
@@ -7,11 +6,16 @@ import {DataService} from "../dataServices";
 import {AnimationManager} from "../animationManager";
 import {GridHexagonConstants, GridMiniHexagonConstants} from "./gridHexagonConstants";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
-import {GameService, PossibleActions} from "../ui/gameService";
+import {GameService} from "../ui/gameService";
 import {GameState} from "../models/hexBoard";
 import {DebounceUtils} from "../utils/debounceUtils";
 import {ViewPort} from "./viewPort";
-import {IPoint} from "../utils/utils";
+import {IPoint, Point} from "../utils/utils";
+import {PageManager} from "../pageManager";
+import {AssetManager} from "./AssetManager";
+import {BaseEntity} from "../entities/baseEntity";
+import {EntityDetails} from "../entities/entityDetails";
+import {PossibleActions} from "../entities/entityManager";
 declare let Hammer: any;
 
 export class GameManager {
@@ -20,7 +24,7 @@ export class GameManager {
     viewPort = new ViewPort();
     private checking: boolean;
 
-    constructor() {
+    constructor(private pageManager: PageManager) {
         GameService.setGameManager(this);
     }
 
@@ -96,7 +100,7 @@ export class GameManager {
                 canvas.style.marginTop = ry + "px";
             }
         });
-        mc.on('tap', (ev:{center:IPoint}) => {
+        mc.on('tap', (ev: { center: IPoint }) => {
             let rect = leftBubble.getBoundingClientRect();
 
             tapStart.x = parseInt(canvas.style.marginLeft.replace("px", ''));
@@ -114,7 +118,7 @@ export class GameManager {
     }
 
 
-    getMiniHexAtPoint(clickX:number, clickY:number): GridHexagon {
+    getMiniHexAtPoint(clickX: number, clickY: number): GridHexagon {
         let lastClick: GridHexagon = null;
 
         let hexListLength = this.hexBoard.hexListLength;
@@ -432,12 +436,22 @@ export class GameManager {
             }
                 break;
         }
-
+        this.pageManager.menuManager.openMenu([
+            {
+                image: AssetManager.getAsset("Missile").images[0],
+                action: "do this"
+            }, {
+                image: AssetManager.getAsset("Tank").images[0],
+                action: "do that"
+            }], new Point(100, 100), (item) => {
+            console.log(item);
+        });
+        return;
         await this.vote(GameService.selectedEntity, GameService.selectedAction, hex.x, hex.z);
         GameService.resetSelection();
     }
 
-    findAvailableSpots(radius:number, center:Vector3): GridHexagon[] {
+    findAvailableSpots(radius: number, center: Vector3): GridHexagon[] {
         let items = [];
         let hexListLength = this.hexBoard.hexListLength;
         for (let q = 0; q < hexListLength; q++) {

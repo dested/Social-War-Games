@@ -3,11 +3,11 @@
 import {Asset} from "./AssetManager";
 import {HexagonColor, DrawingUtils} from "../utils/drawingUtilities";
 import {GridHexagonConstants, GridMiniHexagonConstants} from "./gridHexagonConstants";
-import {BaseEntity} from "../entities/entityManager";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
 import {IPoint, Point} from "../utils/utils";
 import {GameService} from "../ui/gameService";
 import {ViewPort} from "./viewPort";
+import {BaseEntity} from "../entities/baseEntity";
 
 export class GridHexagon {
 

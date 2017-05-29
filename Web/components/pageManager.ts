@@ -5,7 +5,7 @@ import {HexagonColorUtils} from "./utils/hexagonColorUtils";
 import {IPoint} from "./utils/utils";
 declare let Hammer: any;
 export class PageManager {
-    private menuManager: MenuManager;
+    menuManager: MenuManager;
     private gameManager: GameManager;
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
@@ -18,7 +18,7 @@ export class PageManager {
     }
 
     async init() {
-        this.gameManager = new GameManager();
+        this.gameManager = new GameManager(this);
 
         await this.gameManager.init();
 

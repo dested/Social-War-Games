@@ -4,3 +4,5 @@ optimize things
 cleanup animations
 add other units
 add user login
+make the game play exaclty like server
+    attacks destory and set faction color

@@ -21,22 +21,15 @@ namespace ServerSlammer
     {
         private static double count = 0;
         private static Timer timer;
-        private static string url = "http://localhost:3568";
-        //        private static string url = "https://vote.socialwargames.com";
+//        private static string url = "http://localhost:3568";
+                private static string url = "https://vote.socialwargames.com";
 
         static void Main(string[] args)
         {
 
-            Thread.Sleep(5000);
-            int workerThreads, complete;
-            ThreadPool.GetMinThreads(out workerThreads, out complete);
+//            Thread.Sleep(5000);
 
-            // Comment out this line to see the difference...
-            // WIth this commented out, the second iteration will be immediate
-            ThreadPool.SetMinThreads(100, complete);
-
-
-            for (int i = 0; i < 16; i++)
+            for (int i = 0; i < 3; i++)
             {
                 Task.Factory.StartNew(runGame);
             }
@@ -53,7 +46,7 @@ namespace ServerSlammer
 
         }
 
-        private static void runGame()
+        private static async Task runGame()
         {
             var state = GetState();
             var board = new GameBoard(state);
@@ -90,7 +83,7 @@ namespace ServerSlammer
 
                         var attackEnt = entities[rand.Next(0, entities.Length)];
 
-                        result = Vote(new PostVoteRequest()
+                        result = await Vote(new PostVoteRequest()
                         {
                             EntityId = ent.Id,
                             Action = VoteActionType.Attack,
@@ -122,7 +115,7 @@ namespace ServerSlammer
                         {
                             break;
                         }
-                        result = Vote(new PostVoteRequest()
+                        result = await Vote(new PostVoteRequest()
                         {
                             EntityId = ent.Id,
                             Action = VoteActionType.Move,
@@ -170,7 +163,7 @@ namespace ServerSlammer
             return state.State;
         }
 
-        private static bool Vote(PostVoteRequest vote)
+        private static async Task<bool> Vote(PostVoteRequest vote)
         {
             //            Console.WriteLine("voting");
             var client = new RestClient(url);
@@ -180,7 +173,7 @@ namespace ServerSlammer
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
             request.AddJsonBody(vote);
-            var response = client.Execute(request);
+            var response = await client.ExecuteTaskAsync(request);
             var settings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,

@@ -1,17 +1,17 @@
-﻿import {Point} from "../utils/utils";
-export interface MenuItem {
+﻿import {IPoint, ISize, Point} from "../utils/utils";
+export interface IMenuItem {
     image: HTMLImageElement;
     action: string;
 }
 export class MenuManager {
     canvas: HTMLCanvasElement = null;
     context: CanvasRenderingContext2D = null;
-    items: MenuItem[] = [];
-    selectedItem: MenuItem = null;
+    items: IMenuItem[] = [];
+    selectedItem: IMenuItem = null;
     isOpen: boolean = false;
     iconSize: number = 0;
-    location: Point = null;
-    onClick: (selectedItem: MenuItem)=>void = null;
+    location: IPoint = null;
+    onClick: (selectedItem: IMenuItem)=>void = null;
 
     constructor(canvas:HTMLCanvasElement) {
 
@@ -27,7 +27,7 @@ export class MenuManager {
         this.iconSize = 100;
     }
 
-    openMenu(items: MenuItem[], location: Point, onClick: (selectedItem: MenuItem)=>void) {
+    openMenu(items: IMenuItem[], location: IPoint, onClick: (selectedItem: IMenuItem)=>void) {
         this.isOpen = true;
         this.location = location;
         this.items = items;
@@ -44,7 +44,7 @@ export class MenuManager {
         this.selectedItem = null;
     }
 
-    size() {
+    size() :ISize{
         const size = {width: this.iconSize * this.items.length, height: this.iconSize};
         return size;
     }
@@ -71,7 +71,7 @@ export class MenuManager {
         if (!this.isOpen)
             return;
 
-        this.canvas.width = this.canvas.width;
+        this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
 
         this.context.save();
 

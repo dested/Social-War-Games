@@ -19,8 +19,8 @@ namespace MasterVoteServer
     {
         public static void Main()
         {
-//            startNewGame();
-//            return;
+            startNewGame();
+            return;
             MongoServerLog.AddServerLog("Master.Start", "1", "1");
             var logic=MasterVoteServerLogic.GetServerLogic();
             while (true)
@@ -44,7 +44,7 @@ namespace MasterVoteServer
 
             MongoGameVote.Collection.Indexes.CreateOne(Builders<MongoGameVote.GameVote>.IndexKeys.Ascending(_ => _.Generation));
 
-            var terrain = GenerateTerrain(84 * 2, 84 * 2);
+            var terrain = GenerateTerrain(84 * 3, 84 * 3);
             var board = new GameBoard(new MongoGameState.GameState() { Terrain = terrain });
             var entities = new List<MongoGameState.GameEntity>();
 

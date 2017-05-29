@@ -1,8 +1,8 @@
-import {BaseEntity} from "../entities/entityManager";
 import {GameManager} from "../game/gameManager";
 import {GridHexagon} from "../game/gridHexagon";
+import {PossibleActions} from "../entities/entityManager";
+import {BaseEntity} from "../entities/baseEntity";
 
-export type PossibleActions = 'move' | 'attack' | 'spawn';
 export class GameService {
     static secondsPerGeneration: number;
     private static gameManager: GameManager;

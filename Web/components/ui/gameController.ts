@@ -1,7 +1,8 @@
 import angular from 'angular';
-import {GameService, PossibleActions} from "./gameService";
-import {BaseEntity, EntityDetails} from "../entities/entityManager";
-import {GameManager} from "../game/gameManager";
+import {GameService} from "./gameService";
+import {BaseEntity} from "../entities/baseEntity";
+import {EntityDetails} from "../entities/entityDetails";
+import {PossibleActions} from "../entities/entityManager";
 
 export class GameController {
     static $inject = ['$scope', '$interval'];

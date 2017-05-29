@@ -16,11 +16,14 @@ export interface AssetItem {
 }
 export class AssetManager {
     static assetQueue: { [key: string]: AssetItem } = {};
-    static assets: { [key: string]: Asset } = {};
+    private static assets: { [key: string]: Asset } = {};
     static completed: () => void = null;
     static $assetsLoaded = 0;
     static $assetsRequested = 0;
 
+    static getAsset(key: string): Asset {
+        return this.assets[key];
+    }
 
     static start() {
         for (const name in this.assetQueue) {
@@ -48,7 +51,7 @@ export class AssetManager {
     }
 
 
-    static  imageLoaded(img:HTMLImageElement, name:string) {
+    static  imageLoaded(img: HTMLImageElement, name: string) {
         var assetQueue = this.assetQueue[name];
 
         var asset: Asset = this.assets[assetQueue.realName] || {

@@ -1,6 +1,6 @@
-import {GameMetricsVote, GameEntity} from "./models/hexBoard";
+import {GameMetricsVote} from "./models/hexBoard";
 import {HexBoard} from "./game/hexBoard";
-import {BaseEntity} from "./entities/entityManager";
+import {BaseEntity} from "./entities/baseEntity";
 
 export class AnimationManager {
     private complete: () => void;

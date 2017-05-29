@@ -1,16 +1,19 @@
 ﻿import {GridHexagonConstants, GridMiniHexagonConstants} from ".//gridHexagonConstants";
 import {GameState} from "../models/hexBoard";
 import {GridHexagon} from "./gridHexagon";
-import {
-    EntityManager,
-    HeliEntity,
-    MainBaseEntity, BaseEntity, TankEntity, SixDirectionEntity, InfantryEntity, RegularBaseEntity
-} from "../entities/entityManager";
+import {EntityManager} from "../entities/entityManager";
 import {Vector3, HexUtils, Node, Direction} from "./hexUtils";
 import {AssetManager} from "./assetManager";
 import {HexagonColorUtils} from "../utils/hexagonColorUtils";
 import {ViewPort} from "./viewPort";
 import {ISize} from "../utils/utils";
+import {BaseEntity} from "../entities/baseEntity";
+import {MainBaseEntity} from "../entities/mainBaseEntity";
+import {RegularBaseEntity} from "../entities/regularBaseEntity";
+import {HeliEntity} from "../entities/heliEntity";
+import {SixDirectionEntity} from "../entities/sixDirectionEntity";
+import {InfantryEntity} from "../entities/infantyEntity";
+import {TankEntity} from "../entities/tankEntity";
 
 export class HexBoard {
     hexListLength: number;
@@ -190,21 +193,21 @@ export class HexBoard {
         let terrain = state.terrain;
         const str = terrain.boardStr;
         this.setSize(terrain.width, terrain.height);
-        let stoneTop = AssetManager.assets['Stone.Top'];
-        let stoneLeft = AssetManager.assets['Stone.Left'];
-        let stoneBottom = AssetManager.assets['Stone.Bottom'];
-        let stoneRight = AssetManager.assets['Stone.Right'];
+        let stoneTop = AssetManager.getAsset('Stone.Top');
+        let stoneLeft = AssetManager.getAsset('Stone.Left');
+        let stoneBottom = AssetManager.getAsset('Stone.Bottom');
+        let stoneRight = AssetManager.getAsset('Stone.Right');
 
 
-        let grassTop = AssetManager.assets['Grass.Top'];
-        let grassLeft = AssetManager.assets['Grass.Left'];
-        let grassBottom = AssetManager.assets['Grass.Bottom'];
-        let grassRight = AssetManager.assets['Grass.Right'];
+        let grassTop = AssetManager.getAsset('Grass.Top');
+        let grassLeft = AssetManager.getAsset('Grass.Left');
+        let grassBottom = AssetManager.getAsset('Grass.Bottom');
+        let grassRight = AssetManager.getAsset('Grass.Right');
 
-        let waterTop = AssetManager.assets['Water.Top'];
-        let waterLeft = AssetManager.assets['Water.Left'];
-        let waterBottom = AssetManager.assets['Water.Bottom'];
-        let waterRight = AssetManager.assets['Water.Right'];
+        let waterTop = AssetManager.getAsset('Water.Top');
+        let waterLeft = AssetManager.getAsset('Water.Left');
+        let waterBottom = AssetManager.getAsset('Water.Bottom');
+        let waterRight = AssetManager.getAsset('Water.Right');
 
         let ys = str.split('|');
         for (let z = 0; z < terrain.height; z++) {

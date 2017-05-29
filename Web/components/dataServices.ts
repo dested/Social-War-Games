@@ -1,5 +1,5 @@
 import {GameState, GameMetrics, VoteResponse} from "./models/hexBoard";
-import {PossibleActions} from "./ui/gameService";
+import {PossibleActions} from "./entities/entityManager";
 
 
 let rawDeflateWorker = new Worker("/libs/RawDeflate.js");
@@ -27,8 +27,8 @@ WorkerService.start();
 
 export class DataService {
 
-    // private static voteServer: string = 'https://vote.socialwargames.com/';
-    private static voteServer: string = 'http://localhost:3568/';
+    private static voteServer: string = 'https://vote.socialwargames.com/';
+    // private static voteServer: string = 'http://localhost:3568/';
 
     static async getGameMetrics(): Promise<GameMetrics> {
         try {
