@@ -19,8 +19,13 @@ export class HexagonColorUtils {
 
     public static setupColors() {
         this.baseColors = [new HexagonColor('#AFFFFF')];
+        this.baseColors.push(new HexagonColor('#dfdab8'));
+        this.baseColors.push(new HexagonColor('#c1bc9c'));
+        this.baseColors.push(new HexagonColor('#ada887'));
+        this.baseColors.push(new HexagonColor('#999470'));
+        this.baseColors.push(new HexagonColor('#747053'));
+        this.baseColors.push(new HexagonColor('#625d47'));
         for (let i = 0; i < 6; i++) {
-            this.baseColors.push(new HexagonColor(DrawingUtils.colorLuminance('#AFF000', (i / 6))));
         }
         this.factionColors = ["#444EF0", "#D24257", "#009900"];
         this.factionHexColors = [];

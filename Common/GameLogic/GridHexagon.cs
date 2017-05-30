@@ -6,7 +6,6 @@ namespace Common.GameLogic
     public class GridHexagon
     {
         public int X { get; set; }
-        public int Y { get; set; }
         public int Z { get; set; }
         public int Height { get; set; }
         public int Faction { get; set; }

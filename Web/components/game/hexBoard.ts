@@ -23,9 +23,8 @@ export class HexBoard {
     boardSize: ISize = {width: 0, height: 0};
     entityManager: EntityManager;
     generation: number = -1;
-    private hexListHeightMap: GridHexagon[][];
-    private visibleHexListHeightMap: GridHexagon[][];
-    private visibleEntityHeightMap: BaseEntity[][];
+    private visibleHexListMap: GridHexagon[];
+    private visibleEntityMap: BaseEntity[];
 
     constructor() {
         this.entityManager = new EntityManager(this);
@@ -58,36 +57,7 @@ export class HexBoard {
 
 
     reorderHexList() {
-
-        let hx = this.hexList.sort((a, b) => a.height - b.height);
-
-        let curHeight = 0;
-        let hx_h = [];
-
-        let c_h = [];
-        for (let t = 0; t < hx.length; t++) {
-            let hex = this.hexList[t];
-            if (hex.height != curHeight) {
-                curHeight = hex.height;
-                hx_h.push(c_h);
-                c_h = [];
-            }
-            c_h.push(hex);
-        }
-        hx_h.push(c_h);
-        for (let i = 0; i < hx_h.length; i++) {
-            hx_h[i] = HexUtils.orderBy(hx_h[i], m => (m.z) * 1000 + (m.x % 2) * -200)
-        }
-
-        this.hexList = [];
-        this.hexListHeightMap = [];
-        for (let i = 0; i < hx_h.length; i++) {
-            let h = hx_h[i];
-            // console.log(h.length);
-            this.hexListHeightMap[i] = h;
-            this.hexList.push(...h);
-        }
-
+        this.hexList = HexUtils.orderBy(this.hexList, m => (m.z) * 1000 + (m.x % 2) * -200)
         // this.hexList = HexUtils.orderBy(this.hexList, m => (m.z) * 1000 + (m.x % 2) * -200 + m.height);
     }
 
@@ -172,11 +142,13 @@ export class HexBoard {
                 for (i = 0, j = neighbors.length; i < j; i++) {
                     const n = this.getHexAtSpot(neighbors[i].x, neighbors[i].z);
                     if (!n) continue;
-                    if (Math.abs((node.item.y + node.item.height) - (n.y + n.height)) >= 2)
-                        continue;
+                    /*
+                     if (Math.abs((node.item.height) - (n.height)) >= 2)
+                     continue;
+                     */
                     path = new Node(node, n);
                     if (!aStar[path.value()]) {
-                        path.g = node.g + HexUtils.distance(n, node.item) + (Math.abs((node.item.y + node.item.height) - (n.y + n.height)) * 2);
+                        path.g = node.g + HexUtils.distance(n, node.item) /*+ (Math.abs((node.item.height) - (n.height)) * 2)*/;
                         path.f = path.g + HexUtils.distance(n, finish);
                         open.push(path);
                         aStar[path.value()] = true;
@@ -214,15 +186,14 @@ export class HexBoard {
         for (let z = 0; z < terrain.height; z++) {
             const yItem = ys[z].split('');
             for (let x = 0; x < terrain.width; x++) {
-                const result = parseInt(yItem[x]);
+                const tileType = parseInt(yItem[x]);
                 let gridHexagon = new GridHexagon();
                 gridHexagon.x = x;
-                gridHexagon.y = 0;
                 gridHexagon.z = z;
-                gridHexagon.height = result;
-                if (result == 0) {
+                gridHexagon.tileType = tileType;
+                if (tileType == 0) {
                     gridHexagon.setTexture(waterTop, waterLeft, waterBottom, waterRight);
-                } else if (result > 0 && result < 3) {
+                } else if (tileType > 0 && tileType < 3) {
                     gridHexagon.setTexture(grassTop, grassLeft, grassBottom, grassRight);
                 } else {
                     gridHexagon.setTexture(stoneTop, stoneLeft, stoneBottom, stoneRight);
@@ -316,72 +287,46 @@ export class HexBoard {
     }
 
 
-    drawBoard(context: CanvasRenderingContext2D): void {
+    drawBoard(context: CanvasRenderingContext2D, viewPort: ViewPort): void {
         context.lineWidth = 1;
-        let str = '';
-        for (let j = 0; j < this.visibleHexListHeightMap.length; j++) {
-            let hexList = this.visibleHexListHeightMap[j];
-            let entList = this.visibleEntityHeightMap[j];
-            for (let i = 0; i < hexList.length; i++) {
-                const gridHexagon = hexList[i];
-                gridHexagon.draw(context, gridHexagon.getRealX(), gridHexagon.getRealZ());
-            }
+        let vx = viewPort.getX();
+        let vy = viewPort.getY();
+        let vw = viewPort.getWidth();
+        let vh = viewPort.getHeight();
 
-            for (let j = 0; j < entList.length; j++) {
-                entList[j].draw(context);
-            }
-            str += `height ${j} hexes: ${hexList.length} entities: ${entList.length} \r\n`;
+
+        // context.drawImage(this.hexListCanvas.canvas, vx, vy, vw, vh, vx, vy, vw, vh);
+
+        for (let j = 0; j < this.visibleHexListMap.length; j++) {
+            let gridHexagon = this.visibleHexListMap[j];
+            gridHexagon.draw(context, gridHexagon.getRealX(), gridHexagon.getRealZ());
+
         }
-        str += '-------';
-        console.log(str);
+        let entList = this.visibleEntityMap;
+        for (let j = 0; j < entList.length; j++) {
+            entList[j].draw(context);
+        }
     }
 
     resetVisibleHexList(): void {
         let viewPort = GameService.getGameManager().viewPort;
-        let visibleHexList = new Array(10);
-        let visibleEntity = new Array(10);
-
-        for (let i = 0; i < 10; i++) {
-            visibleHexList[i] = [];
-            visibleEntity[i] = [];
-        }
-
-        for (let j = 0; j < this.hexListHeightMap.length; j++) {
-            let hexList = this.hexListHeightMap[j];
-            for (let i = 0; i < hexList.length; i++) {
-                const gridHexagon = hexList[i];
-                if (gridHexagon.shouldDraw(viewPort)) {
-                    visibleHexList[j].push(gridHexagon);
-                    let entities = this.entityManager.getEntitiesAtTile(gridHexagon);
-                    if (entities.length) {
-                        let aboveMe = this.getHexAtSpotDirection(gridHexagon.x, gridHexagon.z, Direction.Top);
-                        let localYOffset = 0;
-                        if (aboveMe && aboveMe.height > gridHexagon.height) {
-                            localYOffset = 1;
-                        } else {
-                            let topLeft = this.getHexAtSpotDirection(gridHexagon.x, gridHexagon.z, Direction.TopLeft);
-                            if (topLeft && topLeft.height > gridHexagon.height) {
-                                localYOffset = 1;
-                            } else {
-                                let topRight = this.getHexAtSpotDirection(gridHexagon.x, gridHexagon.z, Direction.TopRight);
-                                if (topRight && topRight.height > gridHexagon.height) {
-                                    localYOffset = 1;
-                                }
-                            }
-                        }
-
-
-                        for (let c = 0; c < entities.length; c++) {
-                            visibleEntity[j + entities[c].getYOffset() + localYOffset].push(entities[c]);
-                        }
+        let visibleHexList: GridHexagon[] = [];
+        let visibleEntity: BaseEntity[] = [];
+        for (let i = 0; i < this.hexList.length; i++) {
+            const gridHexagon = this.hexList[i];
+            if (gridHexagon.shouldDraw(viewPort)) {
+                visibleHexList.push(gridHexagon);
+                let entities = this.entityManager.getEntitiesAtTile(gridHexagon);
+                if (entities.length) {
+                    for (let c = 0; c < entities.length; c++) {
+                        visibleEntity.push(entities[c]);
                     }
                 }
             }
         }
 
-
-        this.visibleHexListHeightMap = visibleHexList;
-        this.visibleEntityHeightMap = visibleEntity;
+        this.visibleHexListMap = visibleHexList;
+        this.visibleEntityMap = visibleEntity;
     }
 
 }

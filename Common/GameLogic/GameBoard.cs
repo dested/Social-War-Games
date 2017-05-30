@@ -26,7 +26,6 @@ namespace Common.GameLogic
             {
                 var gridHexagon = new GridHexagon();
                 gridHexagon.X = vectorHex.X;
-                gridHexagon.Y = 0;
                 gridHexagon.Z = vectorHex.Z;
                 gridHexagon.Height = vectorHex.Item;
                 Add(gridHexagon);
@@ -129,12 +128,12 @@ namespace Common.GameLogic
                     {
                         var n = GetHexagon(neighbours[i].X, neighbours[i].Z);
                         if (n == null) continue;
-                        if (Math.Abs((node.Item.Y + node.Item.Height) - (n.Y + n.Height)) >= 2)
+                        if (Math.Abs(( node.Item.Height) - ( n.Height)) >= 2)
                             continue;
                         path = new Node(node, n);
                         if (!aStar.Contains(path.Value()))
                         {
-                            path.G = node.G + BoardUtils.HexUtils.Distance(n, node.Item) + (Math.Abs((node.Item.Y + node.Item.Height) - (n.Y + n.Height)) * 2);
+                            path.G = node.G + BoardUtils.HexUtils.Distance(n, node.Item) + (Math.Abs((node.Item.Height) - (n.Height)) * 2);
                             path.F = path.G + BoardUtils.HexUtils.Distance(n, finish);
                             open.Add(path);
                             aStar.Add(path.Value());

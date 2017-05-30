@@ -28,7 +28,6 @@ export class AnimationManager {
             let entity = this.hexBoard.entityManager.getEntityById(action.entityId);
             if (!entity) {
                 //idk
-                debugger;
                 continue;
             }
             let actionFrames = entity.getActionFrames(action, this.hexBoard);

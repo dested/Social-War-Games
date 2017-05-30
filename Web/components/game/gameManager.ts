@@ -168,7 +168,7 @@ export class GameManager {
         context.save();
         this.viewPort.offset(context);
 
-        this.hexBoard.drawBoard(context);
+        this.hexBoard.drawBoard(context, this.viewPort);
         context.restore();
 
         /*        context.save();
@@ -518,6 +518,11 @@ export class GameManager {
 
 
         let hex = this.getHexAtPoint(x, y);
+        /*    if(hex.highlightColor!=null){
+         hex.clearHighlightColor();
+         }else{
+         hex.setHighlightColor(HexagonColorUtils.voteColor[4]);
+         }*/
         if (!hex) {
             GameService.resetSelection();
             return;
@@ -572,25 +577,14 @@ export class GameManager {
             const gridHexagon = this.hexBoard.hexList[i];
             const x = hexWidth * gridHexagon.x;
             let z = gridHexagon.z * gridHeight + ((gridHexagon.x % 2 === 1) ? (-gridHeight / 2) : 0);
-            z -= gridHexagon.getDepthHeight(true);
-            z += gridHexagon.y * GridHexagonConstants.depthHeight();
-
-            let depthHeight = gridHexagon.getDepthHeight(false);
 
 
             let offClickX = clickX - x;
             let offClickY = clickY - z;
             if (DrawingUtils.pointInPolygon(offClickX, offClickY, GridHexagonConstants.hexagonTopPolygon())) {
                 lastClick = gridHexagon;
-            } else if (DrawingUtils.pointInPolygon(offClickX, offClickY, GridHexagonConstants.hexagonDepthLeftPolygon(depthHeight))) {
-                lastClick = gridHexagon;
-            } else if (DrawingUtils.pointInPolygon(offClickX, offClickY, GridHexagonConstants.hexagonDepthBottomPolygon(depthHeight))) {
-                lastClick = gridHexagon;
-            } else if (DrawingUtils.pointInPolygon(offClickX, offClickY, GridHexagonConstants.hexagonDepthRightPolygon(depthHeight))) {
-                lastClick = gridHexagon;
             }
         }
-        console.log(lastClick.x, lastClick.z);
         return lastClick;
     }
 

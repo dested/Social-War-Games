@@ -15,6 +15,11 @@ export class PageManager {
     private fpsMeter: any;
 
     constructor() {
+        document.onkeydown = (e) => {
+            if (e.key == 'a') {
+                // this.gameManager.viewPort.animateZoom(1.5,this.gameManager.selectedTile);
+            }
+        }
     }
 
     async init() {
@@ -125,8 +130,8 @@ export class PageManager {
             this.gameManager.offsetView(-this.swipeVelocity.x, -this.swipeVelocity.y);
         }
         /*else {
-            this.gameManager.hexBoard.resetVisibleHexList()
-        }*/
+         this.gameManager.hexBoard.resetVisibleHexList()
+         }*/
         this.gameManager.tick();
     }
 }

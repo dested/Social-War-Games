@@ -2,9 +2,10 @@ import {AnimationInstance, AnimationUtils} from "../utils/animationUtils";
 import {IPoint} from "../utils/utils";
 import {GridHexagonConstants} from "./gridHexagonConstants";
 import {DebounceUtils} from "../utils/debounceUtils";
+import {GridHexagon} from "./gridHexagon";
+import {GameService} from "../ui/gameService";
 export class ViewPort {
     private scaleFactor: IPoint;
-    private zoomPosition: IPoint;
 
     getX() {
         return this.x;
@@ -15,16 +16,10 @@ export class ViewPort {
     }
 
     getZoomedX() {
-        if (this.zoomPosition) {
-            return this.x + this.zoomPosition.x / this.scaleFactor.x;
-        }
         return this.x;
     }
 
     getZoomedY() {
-        if (this.zoomPosition) {
-            return this.y + this.zoomPosition.y / this.scaleFactor.y;
-        }
         return this.y;
 
     }
@@ -83,14 +78,14 @@ export class ViewPort {
 
     curAnimation: AnimationInstance;
 
-    animateZoom(scale: number, position: IPoint) {
+    animateZoom(scale: number, center: GridHexagon) {
 
         DebounceUtils.debounce("animateZoom", 10, () => {
             if (this.curAnimation) {
                 this.curAnimation.cancel = true
             }
 
-            if (!position) {
+            if (scale === 1) {
                 if (!this.scaleFactor)return;
                 this.curAnimation = AnimationUtils.start({
                     start: this.scaleFactor.x,
@@ -103,37 +98,37 @@ export class ViewPort {
                     complete: () => {
                         this.curAnimation = null;
                         this.scaleFactor = null;
-                        this.zoomPosition = null;
                     }
                 });
             } else {
-                if (this.scaleFactor) {
-                    AnimationUtils.start({
-                        start: this.zoomPosition.x,
-                        finish: position.x,
-                        callback: (c) => {
-                            this.zoomPosition.x = c;
-                        },
-                        duration: 600,
-                        easing: AnimationUtils.easings.easeOutQuint,
 
-                    });
-                    AnimationUtils.start({
-                        start: this.zoomPosition.y,
-                        finish: position.y,
-                        callback: (c) => {
-                            this.zoomPosition.y = c;
-                        },
-                        duration: 600,
-                        easing: AnimationUtils.easings.easeOutQuint,
-                    });
-                } else {
+                AnimationUtils.start({
+                    start: this.x,
+                    finish: center.getRealX() - this.getWidth() / scale / 2,
+                    callback: (c) => {
+                        this.x = c;
+                    },
+                    duration: 600,
+                    easing: AnimationUtils.easings.easeOutQuint,
+                });
+                AnimationUtils.start({
+                    start: this.y,
+                    finish: center.getRealZ() - this.getHeight() / scale / 2,
+                    callback: (c) => {
+                        this.y = c;
+                        GameService.getGameManager().constrainViewPort()
+                    },
+                    duration: 600,
+                    easing: AnimationUtils.easings.easeOutQuint,
+                });
+
+
+                if (!this.scaleFactor) {
                     this.curAnimation = AnimationUtils.start({
                         start: 1,
                         finish: scale,
                         callback: (c) => {
                             this.scaleFactor = {x: c, y: c};
-                            this.zoomPosition = position;
                         },
                         duration: 600,
                         easing: AnimationUtils.easings.easeOutQuint,
@@ -150,12 +145,7 @@ export class ViewPort {
     }
 
     offset(context: CanvasRenderingContext2D) {
-        if (this.scaleFactor && this.zoomPosition) {
-            context.translate(
-                -(this.scaleFactor.x - 1) * this.zoomPosition.x,
-                -(this.scaleFactor.y - 1) * this.zoomPosition.y
-            );
-
+        if (this.scaleFactor) {
             context.scale(this.scaleFactor.x, this.scaleFactor.y);
         }
         context.translate(-this.getX(), -this.getY());

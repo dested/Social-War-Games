@@ -5,8 +5,7 @@ import {SixDirectionEntity} from "./sixDirectionEntity";
 export class HeliEntity extends SixDirectionEntity {
     realYOffset(): number {
 
-        let offset = GridHexagonConstants.depthHeight()/3;
-        return -(Math.sin(this.drawTickNumber / 10)) * offset + offset * 1;
+        return -(Math.sin(this.drawTickNumber / 10)) ;
     }
 
 

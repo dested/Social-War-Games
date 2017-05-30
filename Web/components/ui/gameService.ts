@@ -24,7 +24,7 @@ export class GameService {
         this._selectedEntity = entity;
         this.onSetSelectedEntity(entity);
         if (entity != null) {
-            this.gameManager.viewPort.animateZoom(2, {x: entity.getTile().getScreenX(), y: entity.getTile().getScreenZ()})
+            this.gameManager.viewPort.animateZoom(1.5, entity.getTile())
         } else {
             this.gameManager.viewPort.animateZoom(1, null)
         }
