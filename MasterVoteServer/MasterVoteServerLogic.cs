@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,10 +12,13 @@ using Common.GameLogic;
 using Common.GameLogic.Models;
 using Common.BoardUtils;
 using Common.Utils;
+using Common.Utils.JsonUtils;
 using Common.Utils.Mongo;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace MasterVoteServer
 {
@@ -31,13 +35,37 @@ namespace MasterVoteServer
         }
 
         public GameManager GameManager;
-        public GameListener GameListener;
+        public OnPoolClient.OnPoolClient Client;
         public string VoteServerId = Guid.NewGuid().ToString();
         private Timer timer;
 
         private MasterVoteServerLogic()
         {
-            GameListener = new GameListener();
+            Client = new OnPoolClient.OnPoolClient();
+            Client.SetSerializerSettings(new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All,
+                Converters = new List<JsonConverter>()
+                {
+                    new ObjectIdJsonConverter(),
+                    new StringEnumConverter()
+                },
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
+            Client.ConnectToServer(ConfigurationManager.AppSettings["onPoolServer"]);
+            Client.JoinPool("VotePool").OnMessage((from, message, respond) =>
+            {
+                switch (message.Method)
+                {
+                    case "AddVote":
+                        {
+                            var result = message.GetJson<GameVoteMessage>();
+                            GameManager.AddVote(result.Vote);
+                            respond(null);
+                            break;
+                        }
+                }
+            });
             GameManager = new GameManager();
             gameTick(null);
         }
@@ -45,17 +73,14 @@ namespace MasterVoteServer
         public void gameTick(object state)
         {
             timer?.Dispose();
-            Task.WaitAll(GameListener.SendStopVote(new StopVoteMessage()));
+            Client.SendAllPoolMessage("VotePool", "StopVote");
             GameManager.Tick();
             timer = new Timer(gameTick, null, GameManager.GameState.TickIntervalSeconds * 1000, -1);
-            GameListener.OnGameVote(GameManager.GameState.Generation, (message) =>
-            {
-                GameManager.AddVote(message.Vote);
-            });
-            Task.WaitAll(GameListener.SendNewRound(new NewRoundMessage()
+
+            Client.SendAllPoolMessage("VotePool", "NewRound", new NewRoundMessage()
             {
                 State = GameManager.GameState
-            }));
+            });
         }
 
 

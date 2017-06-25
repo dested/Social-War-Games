@@ -21,8 +21,8 @@ namespace ServerSlammer
     {
         private static double count = 0;
         private static Timer timer;
-//        private static string url = "http://localhost:3568";
-                private static string url = "https://vote.socialwargames.com";
+        private static string url = "http://localhost:3568";
+//                private static string url = "https://vote.socialwargames.com";
 
         static void Main(string[] args)
         {

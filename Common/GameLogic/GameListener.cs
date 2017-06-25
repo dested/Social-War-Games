@@ -1,26 +1,20 @@
-﻿using System;
+﻿/*using System;
 using System.Configuration;
 using System.Threading.Tasks;
-using Common.GameLogic.Models;
-using Common.Utils.Redis;
-using Newtonsoft.Json;
+using Common.GameLogic.Models; 
+using Newtonsoft.Json; 
 
 namespace Common.GameLogic
 {
     public class GameListener
     {
-
+        private OnPoolClient.OnPoolClient client;
         public GameListener()
         {
 
-            VotePubSub = new PubSub(ConfigurationManager.AppSettings["redis-vote"]);
-            StatePubSub = new PubSub(ConfigurationManager.AppSettings["redis-state"]);
+            client = new OnPoolClient.OnPoolClient();
+            client.ConnectToServer(ConfigurationManager.AppSettings["redis-vote"]);
         }
-
-        private PubSub VotePubSub { get; set; }
-        private PubSub StatePubSub { get; set; }
-
-        private string lastGameVote = null;
 
         public void OnGameVote(int generation, Action<GameVoteMessage> callback)
         {
@@ -57,4 +51,4 @@ namespace Common.GameLogic
 
     }
 
-}
+}*/

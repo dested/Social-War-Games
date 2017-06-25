@@ -146,8 +146,7 @@ namespace VoteServer.Logic
                 trackedVote.Votes++;
             }
 
-            await logic.GameListener.SendGameVote(model.Generation, new GameVoteMessage() { Vote = gameVote });
-
+            logic.Client.SendAllPoolMessage("VotePool","AddVote", new GameVoteMessage() { Vote = gameVote });
 
 
             return new PostVoteResponse()

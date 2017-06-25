@@ -10,18 +10,21 @@ namespace Common.Utils.JsonUtils
 {
     public static class Json
     {
+        private static JsonSerializerSettings jsonSerializerSettings;
+
         public static T Deserialize<T>(byte[] bytes, bool fullTypes)
         {
-            var settings = new JsonSerializerSettings
+            jsonSerializerSettings = new JsonSerializerSettings
             {
                 TypeNameHandling = fullTypes ? TypeNameHandling.All : TypeNameHandling.None,
                 Converters = new List<JsonConverter>()
-                    {
-                        new ObjectIdJsonConverter(),
+                {
+                    new ObjectIdJsonConverter(),
                     new StringEnumConverter()
-                    },
+                },
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
+            var settings = jsonSerializerSettings;
 
 
             var res = Inflate(bytes);
