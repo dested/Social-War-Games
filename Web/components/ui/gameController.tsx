@@ -108,21 +108,21 @@ export class GameUI extends React.Component<{}, GameUIState> {
                                 </div>
                                 {
                                     this.state.canMove &&
-                                    <div className={`action-button move-button ${this.state.selectedAction == 'move' && 'selected-button'}` }
+                                    <div className={`action-button move-button ${this.state.selectedAction == 'move' && 'selected-button'}`}
                                          onClick={() => this.setSelectedAction('move')}>
                                         Move
                                     </div>
                                 }
                                 {
                                     this.state.canAttack &&
-                                    <div className={`action-button attack-button ${this.state.selectedAction == 'attack' && 'selected-button'}` }
+                                    <div className={`action-button attack-button ${this.state.selectedAction == 'attack' && 'selected-button'}`}
                                          onClick={() => this.setSelectedAction('attack')}>
                                         Attack
                                     </div>
                                 }
                                 {
                                     this.state.canSpawn &&
-                                    <div className={`action-button spawn-button ${this.state.selectedAction == 'spawn' && 'selected-button'}` }
+                                    <div className={`action-button spawn-button ${this.state.selectedAction == 'spawn' && 'selected-button'}`}
                                          onClick={() => this.setSelectedAction('spawn')}>
                                         Tank
                                     </div>
@@ -131,12 +131,13 @@ export class GameUI extends React.Component<{}, GameUIState> {
                         }
                     </div>
 
-                    <div className="left-bubble" id="leftBubble">
-
+                    <div className="left-bubble">
+                        <div id="leftBubble" >
+                        </div>
                     </div>
                 </div>
                 {
-                    this.state.loading && <div className="loading">>Loading&#8230;</div>
+                    this.state.loading && <div className="loading">Loading&#8230;</div>
                 }
             </div>
         );

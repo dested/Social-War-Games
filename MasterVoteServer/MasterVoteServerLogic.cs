@@ -64,6 +64,9 @@ namespace MasterVoteServer
                             respond(null);
                             break;
                         }
+                    default:
+                        respond(null);
+                        break;
                 }
             });
             GameManager = new GameManager();

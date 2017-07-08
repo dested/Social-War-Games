@@ -1,5 +1,6 @@
 import {HexagonColor, DrawingUtils} from "./drawingUtilities";
 import {ColorUtils} from "./color";
+
 export class HexagonColorUtils {
 
     static baseColors: HexagonColor[];
@@ -27,7 +28,7 @@ export class HexagonColorUtils {
         this.baseColors.push(new HexagonColor('#625d47'));
         for (let i = 0; i < 6; i++) {
         }
-        this.factionColors = ["#444EF0", "#D24257", "#009900"];
+        this.factionColors = ["#444EF0", "#ff5069", "#009900"];
         this.factionHexColors = [];
 
         this.voteColor = [];
@@ -47,7 +48,12 @@ export class HexagonColorUtils {
         for (let f = 0; f < this.factionColors.length; f++) {
             this.factionHexColors[f] = [];
             for (let i = 0; i < this.baseColors.length; i++) {
-                this.factionHexColors[f].push(new HexagonColor(ColorUtils.blend_colors(this.baseColors[i].color, DrawingUtils.colorLuminance(this.factionColors[f], i==0?1:((i - 1) / 6)), 1)));
+                this.factionHexColors[f].push(
+                    new HexagonColor(
+                        ColorUtils.blend_colors(this.baseColors[i].color,
+                            DrawingUtils.colorLuminance(this.factionColors[f], i == 0 ? 1 : ((i - 1) / 6)), .25)
+                    )
+                );
             }
         }
 

@@ -167,20 +167,11 @@ export class HexBoard {
         const str = terrain.boardStr;
         this.setSize(terrain.width, terrain.height);
         let stoneTop = AssetManager.getAsset('Stone.Top');
-        let stoneLeft = AssetManager.getAsset('Stone.Left');
-        let stoneBottom = AssetManager.getAsset('Stone.Bottom');
-        let stoneRight = AssetManager.getAsset('Stone.Right');
 
 
         let grassTop = AssetManager.getAsset('Grass.Top');
-        let grassLeft = AssetManager.getAsset('Grass.Left');
-        let grassBottom = AssetManager.getAsset('Grass.Bottom');
-        let grassRight = AssetManager.getAsset('Grass.Right');
 
         let waterTop = AssetManager.getAsset('Water.Top');
-        let waterLeft = AssetManager.getAsset('Water.Left');
-        let waterBottom = AssetManager.getAsset('Water.Bottom');
-        let waterRight = AssetManager.getAsset('Water.Right');
 
         let ys = str.split('|');
         for (let z = 0; z < terrain.height; z++) {
@@ -192,11 +183,11 @@ export class HexBoard {
                 gridHexagon.z = z;
                 gridHexagon.tileType = tileType;
                 if (tileType == 0) {
-                    gridHexagon.setTexture(waterTop, waterLeft, waterBottom, waterRight);
+                    gridHexagon.setTexture(waterTop);
                 } else if (tileType > 0 && tileType < 3) {
-                    gridHexagon.setTexture(grassTop, grassLeft, grassBottom, grassRight);
+                    gridHexagon.setTexture(grassTop);
                 } else {
-                    gridHexagon.setTexture(stoneTop, stoneLeft, stoneBottom, stoneRight);
+                    gridHexagon.setTexture(stoneTop);
                 }
                 gridHexagon.setBaseColor(HexagonColorUtils.baseColors);
                 gridHexagon.buildPaths();

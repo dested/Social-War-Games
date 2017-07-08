@@ -42,6 +42,7 @@ export class GridHexagon {
 
     private _realX: number = undefined;
     private _realZ: number = undefined;
+    private shouldStroke: boolean;
 
     getRealX(): number {
         if (this._realX !== undefined) {
@@ -156,7 +157,7 @@ export class GridHexagon {
         }
     }
 
-    setTexture(textureTop: Asset, textureLeft: Asset, textureBottom: Asset, textureRight: Asset): void {
+    setTexture(textureTop: Asset): void {
         this.textureTop = textureTop;
         this.invalidateColor();
     }
@@ -189,9 +190,10 @@ export class GridHexagon {
 
         this.currentMiniColor = voteColor || entityColor || factionColor || baseColor;
 
+        this.shouldStroke = !!highlightColor;
         if (this.currentDrawColor && this.textureTop) {
-            this.drawCache = GridHexagon.getCacheImage(this.currentDrawColor, this.textureTop.name);
-            this.drawCacheNoVote = GridHexagon.getCacheImage(this.currentDrawColorNoVote, this.textureTop.name);
+            this.drawCache = GridHexagon.getCacheImage(this.currentDrawColor, this.shouldStroke, this.textureTop.name);
+            this.drawCacheNoVote = GridHexagon.getCacheImage(this.currentDrawColorNoVote, this.shouldStroke, this.textureTop.name);
             this.drawMiniCache = GridHexagon.getMiniCacheImage(this.currentMiniColor)
         }
     }
@@ -205,8 +207,8 @@ export class GridHexagon {
                 context.clip(this.topPath);
 
                 context.fillStyle = context.createPattern(this.textureTop.image, 'repeat');
-                context.fillRect(-GridHexagonConstants.width / 2, -GridHexagonConstants.height() / 2, GridHexagonConstants.width, GridHexagonConstants.height()); // context.fillRect(x, y, width, height);
-                context.fillStyle = DrawingUtils.makeTransparent(color.color, .7);
+                // context.fillRect(-GridHexagonConstants.width / 2, -GridHexagonConstants.height() / 2, GridHexagonConstants.width, GridHexagonConstants.height()); // context.fillRect(x, y, width, height);
+                context.fillStyle = color.color;
                 context.fill(this.topPath);
 
                 /*  if (this.currentDrawColorVote !== this.currentDrawColor) {
@@ -220,7 +222,9 @@ export class GridHexagon {
             }
             context.restore();
             context.strokeStyle = color.darkBorder;
-            context.stroke(this.topPath);
+            if (this.shouldStroke) {
+                context.stroke(this.topPath);
+            }
         }
         context.restore();
     }
@@ -280,7 +284,7 @@ export class GridHexagon {
                  */
 
             } else {
-                let cacheImage = GridHexagon.getCacheImage(this.currentDrawColor, this.textureTop.name);
+                let cacheImage = GridHexagon.getCacheImage(this.currentDrawColor, this.shouldStroke, this.textureTop.name);
                 if (cacheImage) {
                     this.drawCache = cacheImage
                 } else {
@@ -293,7 +297,7 @@ export class GridHexagon {
             if (this.drawCacheNoVote) {
                 context.drawImage(this.drawCacheNoVote, offsetX - GridHexagon.hexCenter.x, offsetY - GridHexagon.hexCenter.y);
             } else {
-                let cacheImage = GridHexagon.getCacheImage(this.currentDrawColor, this.textureTop.name);
+                let cacheImage = GridHexagon.getCacheImage(this.currentDrawColor, this.shouldStroke, this.textureTop.name);
                 if (cacheImage) {
                     this.drawCacheNoVote = cacheImage
                 } else {
@@ -319,38 +323,42 @@ export class GridHexagon {
         }
     }
 
+    neighbors: { x: number; z: number }[] = null;
+
     getNeighbors(): { x: number; z: number }[] {
-        const neighbors = [];
-        if ((this.x % 2 === 0)) {
-            neighbors.push({x: this.x - 1, z: this.z});
-            neighbors.push({x: this.x, z: this.z - 1});
-            neighbors.push({x: this.x + 1, z: this.z});
+        if (this.neighbors === null) {
+            this.neighbors = [];
+            if ((this.x % 2 === 0)) {
+                this.neighbors.push({x: this.x - 1, z: this.z});
+                this.neighbors.push({x: this.x, z: this.z - 1});
+                this.neighbors.push({x: this.x + 1, z: this.z});
 
-            neighbors.push({x: this.x - 1, z: this.z + 1});
-            neighbors.push({x: this.x, z: this.z + 1});
-            neighbors.push({x: this.x + 1, z: this.z + 1});
-        } else {
-            neighbors.push({x: this.x - 1, z: this.z - 1});
-            neighbors.push({x: this.x, z: this.z - 1});
-            neighbors.push({x: this.x + 1, z: this.z - 1});
+                this.neighbors.push({x: this.x - 1, z: this.z + 1});
+                this.neighbors.push({x: this.x, z: this.z + 1});
+                this.neighbors.push({x: this.x + 1, z: this.z + 1});
+            } else {
+                this.neighbors.push({x: this.x - 1, z: this.z - 1});
+                this.neighbors.push({x: this.x, z: this.z - 1});
+                this.neighbors.push({x: this.x + 1, z: this.z - 1});
 
-            neighbors.push({x: this.x - 1, z: this.z});
-            neighbors.push({x: this.x, z: this.z + 1});
-            neighbors.push({x: this.x + 1, z: this.z});
+                this.neighbors.push({x: this.x - 1, z: this.z});
+                this.neighbors.push({x: this.x, z: this.z + 1});
+                this.neighbors.push({x: this.x + 1, z: this.z});
+            }
         }
-        return neighbors;
+        return this.neighbors;
     }
 
 
     static caches: { [key: string]: HTMLCanvasElement } = {};
 
-    static getCacheImage(hexColor: HexagonColor, texture: string): HTMLCanvasElement {
-        const c = `${hexColor.color}-${texture}`;
+    static getCacheImage(hexColor: HexagonColor, shouldStroke: boolean, texture: string): HTMLCanvasElement {
+        const c = `${hexColor.color}-${texture}-${shouldStroke}`;
         return GridHexagon.caches[c]
     }
 
-    static setCacheImage(hexColor: HexagonColor, texture: string, img: HTMLCanvasElement) {
-        const c = `${hexColor.color}-${texture}`;
+    static setCacheImage(hexColor: HexagonColor, shouldStroke: boolean, texture: string, img: HTMLCanvasElement) {
+        const c = `${hexColor.color}-${texture}-${shouldStroke}`;
         GridHexagon.caches[c] = img;
     }
 
@@ -398,7 +406,7 @@ export class GridHexagon {
 
         ctx.restore();
 
-        GridHexagon.setCacheImage(color, this.textureTop.name, can);
+        GridHexagon.setCacheImage(color, this.shouldStroke, this.textureTop.name, can);
         return can;
     }
 

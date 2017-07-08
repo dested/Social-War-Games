@@ -38,17 +38,21 @@ export class GridHexagonConstants {
 
 
     static makeHexagonDepthTopPolygon() {
-        let halfWidth = Math.ceil(GridHexagonConstants.width / 2);
-        let quarterWidth = Math.ceil(GridHexagonConstants.width / 4);
-        let halfHeight = Math.ceil(GridHexagonConstants._height / 2);
+        let halfWidth = GridHexagonConstants.width / 2;
+        let quarterWidth = GridHexagonConstants.width / 4;
+        let halfHeight = GridHexagonConstants._height / 2;
+        let offset=.7;
+        var floor=(_x:number)=>Math.floor(_x-offset);
+        var ceil=(_x:number)=>Math.ceil(_x+offset);
+
         return [
-            new Point(-halfWidth, 0),
-            new Point(-quarterWidth, -halfHeight),
-            new Point(quarterWidth, -halfHeight),
-            new Point(halfWidth, 0),
-            new Point(quarterWidth, halfHeight),
-            new Point(-quarterWidth, halfHeight),
-            new Point(-halfWidth, 0)
+            new Point(floor(-halfWidth), 0),
+            new Point(floor(-quarterWidth), floor(-halfHeight)),
+            new Point(ceil(quarterWidth), floor(-halfHeight)),
+            new Point(ceil(halfWidth), 0),
+            new Point(ceil(quarterWidth), ceil(halfHeight)),
+            new Point(floor(-quarterWidth), ceil(halfHeight)),
+            new Point(floor(-halfWidth), 0)
         ];
     };
 
@@ -61,18 +65,23 @@ export class GridMiniHexagonConstants {
     }
 
     static hexagonTopPolygon() {
-        let halfWidth = Math.ceil(this.width / 2);
-        let quarterWidth = Math.ceil(this.width / 4);
-        let halfHeight = Math.ceil(this.height() / 2);
+        let halfWidth = this.width / 2;
+        let quarterWidth = this.width / 4;
+        let halfHeight = this.height() / 2;
+        let offset=.7;
+        var floor=(_x:number)=>Math.floor(_x-offset);
+        var ceil=(_x:number)=>Math.ceil(_x+offset);
+
         return [
-            new Point(-halfWidth, 0),
-            new Point(-quarterWidth, -halfHeight),
-            new Point(quarterWidth, -halfHeight),
-            new Point(halfWidth, 0),
-            new Point(quarterWidth, halfHeight),
-            new Point(-quarterWidth, halfHeight),
-            new Point(-halfWidth, 0)
+            new Point(floor(-halfWidth), 0),
+            new Point(floor(-quarterWidth), floor(-halfHeight)),
+            new Point(ceil(quarterWidth), floor(-halfHeight)),
+            new Point(ceil(halfWidth), 0),
+            new Point(ceil(quarterWidth), ceil(halfHeight)),
+            new Point(floor(-quarterWidth), ceil(halfHeight)),
+            new Point(floor(-halfWidth), 0)
         ];
+
     };
 
 

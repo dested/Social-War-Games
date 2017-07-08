@@ -15,7 +15,7 @@ namespace VoteServer
         {
             LocalThreadManager.Start().Process();
 
-            var uri = new Uri("http://localhost:3568");
+            var uri = new Uri("http://localhost:"+ args[0]);
             HostConfiguration hostConfigs = new HostConfiguration();
             hostConfigs.UrlReservations.CreateAutomatically = true;
 
