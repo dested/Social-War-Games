@@ -15,7 +15,7 @@ export class GridHexagonConstants {
         this.width = width;
         this.heightSkew = .7;
 
-        this._height = Math.ceil(Math.sqrt(3) / 2 * GridHexagonConstants.width * GridHexagonConstants.heightSkew);
+        this._height = Math.sqrt(3) / 2 * GridHexagonConstants.width * GridHexagonConstants.heightSkew;
         this._topPolygon = GridHexagonConstants.makeHexagonDepthTopPolygon();
         GridHexagon.generateHexCenters();
         if (GameService.getGameManager() && GameService.getGameManager().hexBoard && GameService.getGameManager().hexBoard.hexList) {
@@ -42,8 +42,8 @@ export class GridHexagonConstants {
         let quarterWidth = GridHexagonConstants.width / 4;
         let halfHeight = GridHexagonConstants._height / 2;
         let offset=.7;
-        var floor=(_x:number)=>Math.floor(_x-offset);
-        var ceil=(_x:number)=>Math.ceil(_x+offset);
+        var floor=(_x:number)=>_x;
+        var ceil=(_x:number)=>_x;
 
         return [
             new Point(floor(-halfWidth), 0),

@@ -26,8 +26,7 @@ export class HexagonColorUtils {
         this.baseColors.push(new HexagonColor('#999470'));
         this.baseColors.push(new HexagonColor('#747053'));
         this.baseColors.push(new HexagonColor('#625d47'));
-        for (let i = 0; i < 6; i++) {
-        }
+
         this.factionColors = ["#444EF0", "#ff5069", "#009900"];
         this.factionHexColors = [];
 
@@ -51,7 +50,7 @@ export class HexagonColorUtils {
                 this.factionHexColors[f].push(
                     new HexagonColor(
                         ColorUtils.blend_colors(this.baseColors[i].color,
-                            DrawingUtils.colorLuminance(this.factionColors[f], i == 0 ? 1 : ((i - 1) / 6)), .25)
+                            DrawingUtils.colorLuminance(this.factionColors[f], i == 0 ? 1 : ((i - 1) / 6)), .9)
                     )
                 );
             }

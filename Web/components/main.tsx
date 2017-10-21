@@ -12,7 +12,7 @@ export class Main {
     static pageManager: PageManager;
 
     static run() {
-        GridHexagonConstants.generate(60);
+        GridHexagonConstants.generate(80);
 
         ReactDOM.render(<GameUI />, document.getElementById('game-ui'));
 

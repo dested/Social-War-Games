@@ -204,11 +204,10 @@ export class GridHexagon {
         {
             context.save();
             {
-                context.clip(this.topPath);
-
+                context.clip(this.topPath,"evenodd");
                 context.fillStyle = context.createPattern(this.textureTop.image, 'repeat');
                 // context.fillRect(-GridHexagonConstants.width / 2, -GridHexagonConstants.height() / 2, GridHexagonConstants.width, GridHexagonConstants.height()); // context.fillRect(x, y, width, height);
-                context.fillStyle = color.color;
+                context.fillStyle = DrawingUtils.makeTransparent(color.color, .7);
                 context.fill(this.topPath);
 
                 /*  if (this.currentDrawColorVote !== this.currentDrawColor) {
@@ -244,8 +243,8 @@ export class GridHexagon {
         size.height = GridHexagonConstants.height();
 
 
-        size.width += 12;
-        size.height += 6;
+        // size.width += 12;
+        // size.height += 6;
 
         return size;
     }
@@ -265,7 +264,7 @@ export class GridHexagon {
     static hexCenterMini: IPoint;
 
     static generateHexCenters() {
-        this.hexCenter = {x: (GridHexagonConstants.width / 2 + 6), y: (GridHexagonConstants.height() / 2 + 6)};
+        this.hexCenter = {x: (GridHexagonConstants.width / 2 /*+ 6*/), y: (GridHexagonConstants.height() / 2 /*+ 6*/)};
         this.hexCenterMini = {
             x: (GridMiniHexagonConstants.width / 2 + 6),
             y: (GridMiniHexagonConstants.height() / 2 + 6)
@@ -293,6 +292,7 @@ export class GridHexagon {
                 this.draw(context, offsetX, offsetY);
             }
         } else {
+
 
             if (this.drawCacheNoVote) {
                 context.drawImage(this.drawCacheNoVote, offsetX - GridHexagon.hexCenter.x, offsetY - GridHexagon.hexCenter.y);
@@ -374,6 +374,7 @@ export class GridHexagon {
     }
 
     static buildPath(path: Point[]): Path2D {
+
         const p2d = new Path2D();
         for (let i = 0; i < path.length; i++) {
             const point = path[i];
@@ -387,10 +388,10 @@ export class GridHexagon {
 
         const can = document.createElement('canvas');
         const ctx = can.getContext('2d');
-
+        ctx.translate(0.5,0.5)
         const size = this.envelope();
-        can.width = size.width;
-        can.height = size.height;
+        can.width = Math.ceil(size.width);
+        can.height = Math.ceil(size.height);
         ctx.save();
 
 
