@@ -200,30 +200,22 @@ export class GridHexagon {
 
     drawTop(context: CanvasRenderingContext2D, color: HexagonColor): void {
         context.save();
-
         {
-            context.save();
-            {
-                context.clip(this.topPath,"evenodd");
-                context.fillStyle = context.createPattern(this.textureTop.image, 'repeat');
-                // context.fillRect(-GridHexagonConstants.width / 2, -GridHexagonConstants.height() / 2, GridHexagonConstants.width, GridHexagonConstants.height()); // context.fillRect(x, y, width, height);
-                context.fillStyle = DrawingUtils.makeTransparent(color.color, .7);
-                context.fill(this.topPath);
 
-                /*  if (this.currentDrawColorVote !== this.currentDrawColor) {
-                 context.save();
-                 context.scale(0.4, 0.4);
-                 context.clip(this.topPath);
-                 context.fillStyle = DrawingUtils.makeTransparent(this.currentDrawColorVote.color, 0.6);
-                 context.fill(this.topPath);
-                 context.restore();
-                 }*/
-            }
-            context.restore();
-            context.strokeStyle = color.darkBorder;
+
             if (this.shouldStroke) {
-                context.stroke(this.topPath);
+                context.fillStyle = color.darkBorder;
+                context.fill(this.topPath);
+            } else {
+                context.fillStyle = DrawingUtils.makeTransparent(color.color, 0.8);
+                context.fill(this.topPath);
             }
+            context.scale(0.95, 0.95);
+            context.fillStyle = context.createPattern(this.textureTop.image, 'repeat');
+            context.fill(this.topPath);
+            context.fillStyle = DrawingUtils.makeTransparent(color.color,0.8);
+            context.fill(this.topPath);
+            context.restore();
         }
         context.restore();
     }
@@ -243,8 +235,8 @@ export class GridHexagon {
         size.height = GridHexagonConstants.height();
 
 
-        // size.width += 12;
-        // size.height += 6;
+        size.width += 12;
+        size.height += 6;
 
         return size;
     }
@@ -264,7 +256,7 @@ export class GridHexagon {
     static hexCenterMini: IPoint;
 
     static generateHexCenters() {
-        this.hexCenter = {x: (GridHexagonConstants.width / 2 /*+ 6*/), y: (GridHexagonConstants.height() / 2 /*+ 6*/)};
+        this.hexCenter = {x: (GridHexagonConstants.width / 2 + 6), y: (GridHexagonConstants.height() / 2 + 6)};
         this.hexCenterMini = {
             x: (GridMiniHexagonConstants.width / 2 + 6),
             y: (GridMiniHexagonConstants.height() / 2 + 6)
@@ -288,6 +280,7 @@ export class GridHexagon {
                     this.drawCache = cacheImage
                 } else {
                     this.drawCache = this.prepDraw(this.currentDrawColor);
+                    console.log(this.drawCache.toDataURL())
                 }
                 this.draw(context, offsetX, offsetY);
             }
@@ -388,22 +381,16 @@ export class GridHexagon {
 
         const can = document.createElement('canvas');
         const ctx = can.getContext('2d');
-        ctx.translate(0.5,0.5)
         const size = this.envelope();
         can.width = Math.ceil(size.width);
         can.height = Math.ceil(size.height);
         ctx.save();
 
-
         ctx.translate(GridHexagon.hexCenter.x, GridHexagon.hexCenter.y);
 
         ctx.save();
-        ctx.lineWidth = 1;
-        //ctx.lineCap = "round";
-        //ctx.lineJoin = "round";
         this.drawTop(ctx, color);
         ctx.restore();
-
 
         ctx.restore();
 

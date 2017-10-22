@@ -1,6 +1,6 @@
 ﻿/// <reference path="./typings/index.d.ts" />
-import React from "react";
-import ReactDOM from "react-dom";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
 import {AssetManager} from "./game/assetManager";
 import {PageManager} from "./pageManager";
@@ -14,7 +14,9 @@ export class Main {
     static run() {
         GridHexagonConstants.generate(80);
 
-        ReactDOM.render(<GameUI />, document.getElementById('game-ui'));
+        setTimeout(() => {
+            ReactDOM.render(<GameUI/>, document.getElementById('game-ui'));
+        });
 
         this.loadAssets(() => {
             this.pageManager = new PageManager();

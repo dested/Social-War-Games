@@ -285,7 +285,6 @@ export class HexBoard {
         let vw = viewPort.getWidth();
         let vh = viewPort.getHeight();
 
-
         // context.drawImage(this.hexListCanvas.canvas, vx, vy, vw, vh, vx, vy, vw, vh);
 
         for (let j = 0; j < this.visibleHexListMap.length; j++) {

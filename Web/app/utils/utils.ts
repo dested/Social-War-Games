@@ -1,22 +1,7 @@
 ﻿export class Point {
-    private _x: number;
-    private _y: number;
+    public x: number;
+    public y: number;
 
-    public get x(): number {
-        return this._x ;
-    }
-
-    public set x(val: number) {
-        this._x = val ;
-    }
-
-    public get y(): number {
-        return this._y ;
-    }
-
-    public set y(val: number) {
-        this._y = val;
-    }
 
     public static Create(pos: Point): Point {
         return new Point(pos.x, pos.y);

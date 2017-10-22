@@ -41,18 +41,14 @@ export class GridHexagonConstants {
         let halfWidth = GridHexagonConstants.width / 2;
         let quarterWidth = GridHexagonConstants.width / 4;
         let halfHeight = GridHexagonConstants._height / 2;
-        let offset=.7;
-        var floor=(_x:number)=>_x;
-        var ceil=(_x:number)=>_x;
-
         return [
-            new Point(floor(-halfWidth), 0),
-            new Point(floor(-quarterWidth), floor(-halfHeight)),
-            new Point(ceil(quarterWidth), floor(-halfHeight)),
-            new Point(ceil(halfWidth), 0),
-            new Point(ceil(quarterWidth), ceil(halfHeight)),
-            new Point(floor(-quarterWidth), ceil(halfHeight)),
-            new Point(floor(-halfWidth), 0)
+            new Point((-halfWidth), 0),
+            new Point((-quarterWidth), (-halfHeight)),
+            new Point((quarterWidth), (-halfHeight)),
+            new Point((halfWidth), 0),
+            new Point((quarterWidth), (halfHeight)),
+            new Point((-quarterWidth), (halfHeight)),
+            new Point((-halfWidth), 0)
         ];
     };
 

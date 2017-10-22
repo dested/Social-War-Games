@@ -329,7 +329,6 @@ export class GameManager {
                         spot.setHighlightColor(HexagonColorUtils.moveHighlightColor);
                         spot.setShowVotes(true);
                         selectedEntity.setSecondaryVoteColor(spot);
-                        // spot.setHeightOffset(.25);
                     }
                 }
                     break;
@@ -342,12 +341,10 @@ export class GameManager {
                             spot.setHighlightColor(HexagonColorUtils.moveHighlightColor);
                             spot.setShowVotes(true);
                             selectedEntity.setSecondaryVoteColor(spot);
-                            // spot.setHeightOffset(.25);
                         } else {
                             spot.setHighlightColor(HexagonColorUtils.attackHighlightColor);
                             spot.setShowVotes(true);
                             selectedEntity.setSecondaryVoteColor(spot);
-                            // spot.setHeightOffset(.25);
                         }
 
                     }
