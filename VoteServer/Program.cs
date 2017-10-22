@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using Common.Utils.Nancy;
 using Nancy.Hosting.Self;
+using OnPoolCommon;
 
 namespace VoteServer
 {
@@ -12,7 +13,9 @@ namespace VoteServer
 
         static void Main(string[] args)
         {
-            var uri = new Uri("http://localhost:3568");
+            LocalThreadManager.Start().Process();
+
+            var uri = new Uri("http://localhost:"+ args[0]);
             HostConfiguration hostConfigs = new HostConfiguration();
             hostConfigs.UrlReservations.CreateAutomatically = true;
 

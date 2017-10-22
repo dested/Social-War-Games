@@ -12,6 +12,7 @@ using Common.Utils.JsonUtils;
 using Common.Utils.Mongo;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using OnPoolCommon;
 
 namespace MasterVoteServer
 {
@@ -19,10 +20,11 @@ namespace MasterVoteServer
     {
         public static void Main()
         {
-            startNewGame();
-            return;
+//            startNewGame();
+//            return;
+            LocalThreadManager.Start().Process();
             MongoServerLog.AddServerLog("Master.Start", "1", "1");
-            var logic=MasterVoteServerLogic.GetServerLogic();
+            var logic = MasterVoteServerLogic.GetServerLogic();
             while (true)
             {
                 Console.WriteLine("Press enter to die");
@@ -44,7 +46,7 @@ namespace MasterVoteServer
 
             MongoGameVote.Collection.Indexes.CreateOne(Builders<MongoGameVote.GameVote>.IndexKeys.Ascending(_ => _.Generation));
 
-            var terrain = GenerateTerrain(84 *2, 84 * 2);
+            var terrain = GenerateTerrain(84 * 3, 84 * 3);
             var board = new GameBoard(new MongoGameState.GameState() { Terrain = terrain });
             var entities = new List<MongoGameState.GameEntity>();
 
